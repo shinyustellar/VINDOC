@@ -532,24 +532,38 @@ function serializeSlot(s){
   }
   return d;
 }
-function uploadVideo(jobId, slot, file) {
+function uploadVideo(jobId, slot, file, onProgress) {
   return new Promise(function(resolve, reject) {
     if (!storage) { reject(new Error('Storage not configured')); return; }
     var ext = file.name.split('.').pop() || 'mp4';
     var ref = storage.ref('jobs/' + jobId + '/' + slot.type + '_' + Date.now() + '.' + ext);
     var task = ref.put(file);
-    task.on('state_changed', function(snapshot){}, function(err){reject(err);}, function(){ task.snapshot.ref.getDownloadURL().then(resolve).catch(reject); });
+    task.on('state_changed', function(snapshot){
+      var progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+      if (onProgress) onProgress(progress);
+    }, function(err){reject(err);}, function(){ 
+      task.snapshot.ref.getDownloadURL().then(resolve).catch(reject); 
+    });
   });
 }
 function saveJobToDB(silent){
   if(!state.currentJob){showToast('No job open','error');return;}
   var btn=document.getElementById('saveJobBtn');
   if(btn){btn.disabled=true;btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Saving...';}
+  
+  var videosToUpload = state.slots.filter(function(s){ return s.isVideo && s.videoFile; });
   var uploads=[];
+  var videoIndex=0;
+
   var sd=state.slots.map(function(s){
     var d=serializeSlot(s);
     if(s.isVideo && s.videoFile){
-      uploads.push(uploadVideo(state.currentJob.id, s, s.videoFile).then(function(url){
+      var currentVideo = ++videoIndex;
+      uploads.push(uploadVideo(state.currentJob.id, s, s.videoFile, function(progress){
+        if(btn){
+          btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading '+currentVideo+'/'+videosToUpload.length+' ('+progress+'%)';
+        }
+      }).then(function(url){
         s.videoURL=url; d.videoURL=url; s.videoFile=null;
       }).catch(function(err){
         showToast('Video sync failed: '+err.message,'error');
@@ -558,10 +572,12 @@ function saveJobToDB(silent){
     }
     return d;
   });
+
   Promise.all(uploads).then(function(){
     var hp=sd.filter(function(x){return x.imageData||x.videoURL;}).length>0;
     if(state.currentJob.status==='pending'&&hp)state.currentJob.status='in_progress';
     var jr=fs.collection('jobs').doc(state.currentJob.id);
+    if(btn){btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Syncing DB...';}
     jr.set(state.currentJob,{merge:true}).then(function(){
       return jr.collection('slots').get();
     }).then(function(snap){
