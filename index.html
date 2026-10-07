@@ -336,6 +336,7 @@ body.compact .act-btn span{display:none}
 <div class="header-right"><div class="clock-display" id="clockDisplay"><i class="far fa-clock"></i><span>--</span></div><div class="user-badge"><i class="fas fa-user-circle"></i><span id="userNameDisplay"></span> <span class="role-tag" id="userRoleTag">ADMIN</span></div><button class="btn-logout" onclick="doLogout()"><i class="fas fa-sign-out-alt"></i> Logout</button></div></header>
 
 <div id="inspHeader" class="insp-header">
+<button class="insp-btn" style="background:var(--bg);border-color:var(--border-hi);color:var(--muted);" onclick="closeJob()"><i class="fas fa-times"></i> Close Job</button>
 <div class="insp-title" id="currentJobTitle">Untitled Job</div>
 <div class="header-right"><div class="stat"><div class="stat-val" id="photoCount">0</div><div class="stat-lbl">Photos</div></div><div class="format-toggle"><button class="fmt-btn active" data-fmt="png" onclick="setFormat('png')">PNG</button><button class="fmt-btn" data-fmt="jpeg" onclick="setFormat('jpeg')">JPG</button></div><button class="btn-logout" id="compactToggle" onclick="toggleCompact()"><i class="fas fa-compress-alt"></i> Compact</button></div>
 <div class="insp-actions"><button class="insp-btn" id="saveJobBtn" onclick="saveJobToDB()"><i class="fas fa-save"></i> Save Job</button><button class="insp-btn" onclick="generatePDF()"><i class="fas fa-file-pdf"></i> PDF Report</button><button class="insp-btn primary" onclick="openSaveModal()"><i class="fas fa-download"></i> Save All (ZIP)</button><button class="insp-btn success" id="completeBtn" onclick="completeJob()"><i class="fas fa-check-circle"></i> Complete</button></div>
@@ -440,6 +441,13 @@ function openUserModal(id){editingUserId=id||null;document.getElementById('userN
 function saveUser(){var n=document.getElementById('userNameInput').value.trim(),e=document.getElementById('userEmailInput').value.trim(),p=document.getElementById('userPasswordInput').value,r=document.getElementById('userRoleInput').value;if(!n||!e){showToast('Name and email required','error');return;}if(!editingUserId&&!p){showToast('Password required','error');return;}if(p&&p.length<6){showToast('Password min 6 chars','error');return;}if(editingUserId){DB.get('users',editingUserId).then(function(ex){var u=Object.assign({},ex||{});u.name=n;u.email=e;u.role=r;DB.put('users',u).then(function(){closeModal('userModal');showToast('User updated','success');renderUsers();});});}else{var sa=firebase.initializeApp(firebaseConfig,'sec_'+Date.now());sa.auth().createUserWithEmailAndPassword(e,p).then(function(c){return fs.collection('users').doc(c.user.uid).set({id:c.user.uid,name:n,email:e,role:r,createdAt:new Date().toISOString()}).then(function(){return sa.auth().signOut();});}).then(function(){closeModal('userModal');showToast('User created','success');renderUsers();}).catch(function(er){showToast(er.message,'error');try{firebase.app('sec_'+Date.now()).delete();}catch(e){}});}}
 function deleteUser(id){if(id===currentUser.id){showToast('Cannot delete yourself','error');return;}if(!confirm('Delete this user profile?'))return;DB.del('users',id).then(function(){showToast('User deleted','success');renderUsers();});}
 
+function closeJob(){
+  // Unload images from memory to free up browser RAM
+  clearSlots(); 
+  // Go back to the jobs list
+  showView('jobs');
+}
+
 var state={slots:[],editContext:null,viewContext:null,cropRect:{x:0,y:0,w:0,h:0},dragMode:null,dragStart:null,suppressModalClick:false,editMode:'crop',prevEditDims:{w:0,h:0},hoveredSlot:null,format:'png',currentJob:null};
 var drawState={isDrawing:false,tool:'brush',color:'#ff0000',brushSize:4,lastX:0,lastY:0,startX:0,startY:0,savedState:null};
 var undoStack=[];var slotIdCounter=0;var editShapes=[];var selectedShapeId=null;var shapeInteraction=null;var shapeInteractionStart=null;var brushCanvas=null;var shapeIdCounter=0;
@@ -530,9 +538,6 @@ function saveJobToDB(silent){
   var hp=sd.filter(function(x){return x.imageData;}).length>0;
   if(state.currentJob.status==='pending'&&hp)state.currentJob.status='in_progress';
   var jr=fs.collection('jobs').doc(state.currentJob.id);
-  
-  // Changed from "Syncing DB..." to "Saving..."
-  if(btn){btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Saving...';}
   
   jr.set(state.currentJob,{merge:true}).then(function(){
     return jr.collection('slots').get();
