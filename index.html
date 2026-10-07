@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VINDOC — Vehicle Inspection Documentation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<style>
+:root{--bg:#fff;--bg-2:#fafafa;--bg-3:#f4f4f5;--card:#fff;--border:#e5e5e7;--border-hi:#d4d4d8;--fg:#0a0a0a;--fg-2:#2a2a2a;--muted:#6b6b70;--muted-2:#9a9aa0;--danger:#c8102e;--success:#1b6b3c}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{font-family:'Hanken Grotesk',sans-serif;background:var(--bg);color:var(--fg);min-height:100vh;line-height:1.5;-webkit-font-smoothing:antialiased}
+.auth-screen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:3000;overflow-y:auto;padding:20px}
+.auth-box{background:var(--bg);border:1px solid var(--fg);padding:36px;max-width:400px;width:100%}
+.auth-logo{width:52px;height:52px;background:var(--fg);color:var(--bg);display:grid;place-items:center;font-family:'Archivo',sans-serif;font-size:24px;font-weight:800;margin:0 auto 16px}
+.auth-title{font-family:'Archivo',sans-serif;font-size:22px;font-weight:800;text-align:center}
+.auth-subtitle{font-size:11px;color:var(--muted);text-align:center;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:24px;font-family:'Archivo',sans-serif;font-weight:600}
+.auth-form{display:flex;flex-direction:column;gap:10px}
+.auth-input{width:100%;background:var(--bg);border:1px solid var(--border-hi);color:var(--fg);padding:11px 14px;font-size:13px;font-family:'Hanken Grotesk',sans-serif;font-weight:500;transition:all 0.15s}
+.auth-input:focus{outline:none;border-color:var(--fg)}
+.auth-btn{background:var(--fg);color:var(--bg);border:1px solid var(--fg);padding:12px;font-family:'Archivo',sans-serif;font-weight:600;font-size:12px;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;transition:all 0.15s;margin-top:4px}
+.auth-btn:hover{background:var(--bg);color:var(--fg)}
+.auth-toggle{text-align:center;font-size:11px;color:var(--muted);margin-top:14px}
+.auth-toggle a{color:var(--fg);cursor:pointer;text-decoration:underline;font-weight:600}
+.auth-hint{text-align:center;font-size:10px;color:var(--muted);margin-top:16px;padding:10px;background:var(--bg-2);border:1px dashed var(--border-hi)}
+.auth-hint b{color:var(--fg)}
+.auth-config-note{text-align:center;font-size:11px;color:var(--danger);margin-top:16px;padding:12px;background:#fff5f5;border:1px solid rgba(200,16,46,0.3)}
+.app-shell{display:none}
+.app-shell.active{display:block}
+.app-header{background:var(--bg);border-bottom:1px solid var(--border);padding:14px 36px;position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px}
+.brand-logo{width:34px;height:34px;background:var(--fg);color:var(--bg);display:grid;place-items:center;font-family:'Archivo',sans-serif;font-size:16px;font-weight:800}
+.brand-text h1{font-family:'Archivo',sans-serif;font-size:14px;font-weight:800;line-height:1.1}
+.brand-text p{font-size:9px;color:var(--muted);letter-spacing:0.15em;text-transform:uppercase;margin-top:2px}
+.app-nav{display:flex;gap:2px}
+.nav-btn{background:transparent;border:none;color:var(--muted);padding:8px 14px;font-family:'Archivo',sans-serif;font-weight:600;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;transition:all 0.15s;border-bottom:2px solid transparent}
+.nav-btn:hover{color:var(--fg)}
+.nav-btn.active{color:var(--fg);border-bottom-color:var(--fg)}
+.header-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.user-badge{font-size:11px;color:var(--muted);font-family:'Hanken Grotesk',sans-serif;font-weight:600}
+.user-badge i{color:var(--fg);margin-right:4px}
+.role-tag{font-size:8px;background:var(--fg);color:var(--bg);padding:2px 6px;font-family:'Archivo',sans-serif;font-weight:700;letter-spacing:0.1em;text-transform:uppercase}
+.role-tag.inspector{background:var(--bg-3);color:var(--fg);border:1px solid var(--border-hi)}
+.btn-logout{background:transparent;border:1px solid var(--border-hi);color:var(--muted);padding:7px 12px;font-family:'Archivo',sans-serif;font-weight:600;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;transition:all 0.15s}
+.btn-logout:hover{border-color:var(--danger);color:var(--danger)}
+.insp-header{background:var(--bg);border-bottom:1px solid var(--border);padding:10px 36px;display:none;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.insp-header.active{display:flex}
+.insp-back{background:var(--bg);border:1px solid var(--border-hi);color:var(--muted);padding:8px 14px;font-family:'Archivo',sans-serif;font-weight:600;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all 0.15s}
+.insp-back:hover{border-color:var(--fg);color:var(--fg)}
+.insp-title{font-family:'Archivo',sans-serif;font-size:13px;font-weight:700;flex:1;text-align:center}
+.insp-actions{display:flex;gap:8px;flex-wrap:wrap}
+.insp-btn{background:var(--bg);border:1px solid var(--fg);color:var(--fg);padding:8px 14px;font-family:'Archivo',sans-serif;font-weight:600;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all 0.15s}
+.insp-btn:hover{background:var(--bg-2)}
+.insp-btn.primary{background:var(--fg);color:var(--bg)}
+.insp-btn.primary:hover{background:var(--bg);color:var(--fg)}
+.insp-btn.success{background:var(--success);border-color:var(--success);color:#fff}
+.insp-btn.success:hover{background:#155a30;border-color:#155a30}
+.insp-btn:disabled{opacity:0.5;cursor:wait}
+.view{display:none}
+.view.active{display:block}
+.view-pad{padding:24px 36px 80px;max-width:1500px;margin:0 auto}
+.dash-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
+@media(max-width:900px){.dash-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:500px){.dash-grid{grid-template-columns:1fr}}
+.dash-card{background:var(--card);border:1px solid var(--border);padding:22px;transition:all 0.15s;cursor:pointer}
+.dash-card:hover{border-color:var(--fg)}
+.dash-card-icon{width:36px;height:36px;background:var(--bg-3);display:grid;place-items:center;color:var(--fg);font-size:14px;margin-bottom:14px}
+.dash-card-num{font-family:'Archivo',sans-serif;font-size:30px;font-weight:800;line-height:1}
+.dash-card-lbl{font-size:9px;color:var(--muted);letter-spacing:0.15em;text-transform:uppercase;margin-top:6px;font-family:'Archivo',sans-serif;font-weight:700}
+.dash-section{margin-bottom:28px}
+.dash-section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:12px;flex-wrap:wrap}
+.dash-section-title{font-family:'Archivo',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase}
+.btn-add{background:var(--bg);border:1px solid var(--fg);color:var(--fg);padding:9px 16px;font-family:'Archivo',sans-serif;font-weight:600;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all 0.15s}
+.btn-add:hover{background:var(--fg);color:var(--bg)}
+.btn-add.primary{background:var(--fg);color:var(--bg)}
+.btn-add.primary:hover{background:var(--bg);color:var(--fg)}
+.data-table{width:100%;border-collapse:collapse;font-family:'Hanken Grotesk',sans-serif}
+.data-table th{text-align:left;font-family:'Archivo',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);padding:10px 12px;border-bottom:2px solid var(--fg);white-space:nowrap}
+.data-table td{padding:10px 12px;border-bottom:1px solid var(--border);font-size:12px}
+.data-table tr:hover td{background:var(--bg-2)}
+.table-wrap{overflow-x:auto;border:1px solid var(--border);background:var(--card)}
+.status-pill{font-size:8px;padding:3px 8px;font-family:'Archivo',sans-serif;font-weight:700;letter-spacing:0.1em;text-transform:uppercase}
+.status-pill.pending{background:var(--bg-3);color:var(--muted)}
+.status-pill.in_progress{background:#fff3cd;color:#856404}
+.status-pill.completed{background:rgba(27,107,60,0.1);color:var(--success);border:1px solid var(--success)}
+.table-actions{display:flex;gap:4px}
+.table-action{background:transparent;border:1px solid var(--border-hi);color:var(--muted);padding:5px 8px;font-size:9px;font-family:'Archivo',sans-serif;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;gap:4px}
+.table-action:hover{border-color:var(--fg);color:var(--fg)}
+.table-action.danger:hover{border-color:var(--danger);color:var(--danger)}
+.table-action.primary{border-color:var(--fg);color:var(--fg)}
+.gen-modal{position:fixed;inset:0;background:rgba(255,255,255,0.97);backdrop-filter:blur(8px);z-index:2000;display:none;align-items:center;justify-content:center;padding:32px;overflow-y:auto}
+.gen-modal.active{display:flex}
+.gen-box{background:var(--bg);border:1px solid var(--fg);padding:28px;max-width:440px;width:100%}
+.gen-box.wide{max-width:560px}
+.gen-box-title{font-family:'Archivo',sans-serif;font-size:14px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;text-align:center;margin-bottom:20px}
+.gen-form{display:flex;flex-direction:column;gap:10px}
+.gen-form-row{display:flex;gap:10px}
+.gen-form-row>*{flex:1}
+.gen-label{font-size:9px;color:var(--muted);letter-spacing:0.15em;text-transform:uppercase;font-family:'Archivo',sans-serif;font-weight:700;margin-bottom:3px;display:block}
+.gen-input{width:100%;background:var(--bg);border:1px solid var(--border-hi);color:var(--fg);padding:9px 12px;font-size:13px;font-family:'Hanken Grotesk',sans-serif;font-weight:500;transition:all 0.15s}
+.gen-input:focus{outline:none;border-color:var(--fg)}
+.gen-select{width:100%;background:var(--bg);border:1px solid var(--border-hi);color:var(--fg);padding:9px 12px;font-size:13px;font-family:'Hanken Grotesk',sans-serif;font-weight:500;cursor:pointer}
+.gen-select:focus{outline:none;border-color:var(--fg)}
+.gen-textarea{width:100%;background:var(--bg);border:1px solid var(--border-hi);color:var(--fg);padding:9px 12px;font-size:13px;font-family:'Hanken Grotesk',sans-serif;font-weight:500;resize:vertical;min-height:60px}
+.gen-actions{display:flex;gap:10px;margin-top:16px}
+.gen-btn{flex:1;background:var(--bg);border:1px solid var(--border-hi);color:var(--muted);padding:11px;font-family:'Archivo',sans-serif;font-weight:600;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;transition:all 0.15s}
+.gen-btn:hover{border-color:var(--fg);color:var(--fg)}
+.gen-btn.primary{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.gen-btn.primary:hover{background:var(--bg);color:var(--fg)}
+.gen-form-sep{border:none;border-top:1px solid var(--border);margin:6px 0}
+.gen-empty{text-align:center;padding:40px 20px;color:var(--muted)}
+.gen-empty i{font-size:32px;color:var(--muted-2);margin-bottom:10px}
+.gen-empty p{font-size:12px}
+.help-bar{background:var(--bg-2);border:1px solid var(--border);border-left:3px solid var(--fg);padding:14px 20px;margin-bottom:28px;display:flex;align-items:center;gap:12px;font-size:12px;color:var(--muted);line-height:1.6}
+.help-bar i{color:var(--fg)}
+.help-bar strong{color:var(--fg);font-weight:600}
+.section{margin-bottom:48px}
+.section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;gap:16px;flex-wrap:wrap;padding-bottom:14px;border-bottom:1px solid var(--border)}
+.section-title{display:flex;align-items:center;gap:14px}
+.section-num{font-family:'Archivo',sans-serif;background:var(--fg);color:var(--bg);width:36px;height:36px;display:grid;place-items:center;font-size:14px;font-weight:700}
+.section-info h2{font-family:'Archivo',sans-serif;font-size:17px;font-weight:700;line-height:1.1;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.section-info p{font-size:12px;color:var(--muted);margin-top:4px}
+.section-count{font-family:'Hanken Grotesk',sans-serif;font-size:11px;color:var(--fg);background:var(--bg-3);padding:2px 8px;font-weight:600}
+.photo-grid{display:grid;gap:16px}
+.grid-4{grid-template-columns:repeat(4,1fr)}
+.grid-3{grid-template-columns:repeat(3,1fr)}
+@media(max-width:1100px){.grid-4,.grid-3{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:640px){.grid-4,.grid-3{grid-template-columns:1fr}}
+.clock-display{font-family:'Hanken Grotesk',sans-serif;font-size:11px;color:var(--fg-2);background:var(--bg-2);border:1px solid var(--border);padding:7px 12px;display:flex;align-items:center;gap:6px;font-weight:500}
+.clock-display i{color:var(--muted);font-size:10px}
+.format-toggle{display:flex;border:1px solid var(--border-hi)}
+.fmt-btn{padding:7px 10px;border:none;background:var(--bg);color:var(--muted);font-family:'Archivo',sans-serif;font-weight:700;font-size:10px;letter-spacing:0.08em;cursor:pointer;transition:all 0.15s}
+.fmt-btn:not(:last-child){border-right:1px solid var(--border-hi)}
+.fmt-btn.active{background:var(--fg);color:var(--bg)}
+.fmt-btn:hover:not(.active){color:var(--fg)}
+.slot{background:var(--card);border:1px solid var(--border);display:flex;flex-direction:column;transition:all 0.15s}
+.slot:hover{border-color:var(--border-hi)}
+.slot.has-image{border-color:var(--fg)}
+.slot-head{padding:10px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+.slot-title{display:flex;align-items:center;gap:8px;font-family:'Archivo',sans-serif;font-weight:700;font-size:11px;letter-spacing:0.06em;text-transform:uppercase}
+.slot-icon{width:24px;height:24px;background:var(--bg-3);display:grid;place-items:center;color:var(--fg);font-size:11px}
+.slot-status{font-size:9px;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);padding:3px 7px;background:var(--bg-2);border:1px solid var(--border);font-family:'Archivo',sans-serif;font-weight:700}
+.slot-status.ready{color:var(--success);border-color:var(--success);background:rgba(27,107,60,0.05)}
+.slot-head-right{display:flex;align-items:center;gap:6px}
+.slot-remove{background:transparent;border:1px solid var(--border);color:var(--muted);cursor:pointer;padding:3px 6px;font-size:10px;transition:all 0.15s}
+.slot-remove:hover{color:var(--danger);border-color:var(--danger)}
+.slot-preview{position:relative;background:var(--bg-2);display:flex;align-items:center;justify-content:center;overflow:hidden;height:200px;padding:6px}
+.preview-empty{text-align:center;color:var(--muted);cursor:pointer;padding:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:all 0.15s;border:1px dashed var(--border-hi);width:100%;height:100%}
+.preview-empty:hover{color:var(--fg);border-color:var(--fg)}
+.preview-empty .upload-icons{display:flex;gap:12px;justify-content:center;margin-bottom:6px}
+.preview-empty .upload-icons i{font-size:22px;color:var(--muted-2);transition:all 0.15s}
+.preview-empty:hover .upload-icons i{color:var(--fg)}
+.preview-empty p{font-size:10px;letter-spacing:0.1em;font-weight:600;font-family:'Archivo',sans-serif;text-transform:uppercase}
+.preview-canvas{max-width:100%;max-height:100%;display:block;cursor:pointer}
+.action-bar{position:absolute;bottom:0;left:0;right:0;display:flex;background:rgba(10,10,10,0.88);backdrop-filter:blur(8px);opacity:0;transition:opacity 0.2s;z-index:5}
+.slot-preview:hover .action-bar{opacity:1}
+.act-btn{flex:1;background:transparent;border:none;color:rgba(255,255,255,0.7);padding:7px 2px;font-size:9px;font-family:'Archivo',sans-serif;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;transition:all 0.15s;border-right:1px solid rgba(255,255,255,0.1)}
+.act-btn:last-child{border-right:none}
+.act-btn:hover{background:rgba(255,255,255,0.12);color:#fff}
+.act-btn i{font-size:12px}
+.act-btn.danger{color:rgba(255,100,100,0.8)}
+.act-btn.danger:hover{background:var(--danger);color:#fff}
+.slot-preview.dragover{background:var(--bg-3);outline:2px solid var(--fg);outline-offset:-4px}
+.paste-btn{background:var(--bg);border:1px solid var(--border-hi);color:var(--muted);padding:5px 10px;font-family:'Archivo',sans-serif;font-weight:600;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;gap:4px;transition:all 0.15s;margin-top:4px}
+.paste-btn:hover{border-color:var(--fg);color:var(--fg)}
+.kbd{background:var(--bg-3);border:1px solid var(--border);padding:1px 4px;font-family:'Hanken Grotesk',sans-serif;font-size:8px;color:var(--fg)}
+.paste-hint{font-size:8px;color:var(--muted-2);margin-top:4px;display:flex;align-items:center;gap:2px;justify-content:center;flex-wrap:wrap}
+.slot-controls{padding:12px;display:flex;flex-direction:column;gap:10px;border-top:1px solid var(--border)}
+.control-label{font-size:9px;color:var(--muted);letter-spacing:0.18em;text-transform:uppercase;font-family:'Archivo',sans-serif;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:5px}
+.control-label i{color:var(--fg);font-size:10px}
+.label-input{width:100%;background:var(--bg);border:1px solid var(--border-hi);color:var(--fg);padding:8px 10px;font-size:12px;font-family:'Hanken Grotesk',sans-serif;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;transition:all 0.15s}
+.label-input:focus{outline:none;border-color:var(--fg)}
+.label-input::placeholder{color:var(--muted-2);text-transform:none;letter-spacing:0;font-weight:400}
+.date-input{width:100%;background:var(--bg);border:1px solid var(--border-hi);color:var(--fg);padding:8px 10px;font-size:12px;font-family:'Hanken Grotesk',sans-serif;font-weight:600;transition:all 0.15s}
+.date-input:focus{outline:none;border-color:var(--fg)}
+.date-input::-webkit-calendar-picker-indicator{cursor:pointer;opacity:0.6}
+.date-hint{font-size:9px;color:var(--muted-2);margin-top:3px;display:block}
+.quick-chips{display:flex;gap:5px;margin-top:5px}
+.chip{flex:1;background:var(--bg);border:1px solid var(--border-hi);color:var(--muted);padding:7px 8px;font-size:10px;font-family:'Archivo',sans-serif;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:5px}
+.chip:hover{border-color:var(--fg);color:var(--fg)}
+.chip.active{background:var(--fg);border-color:var(--fg);color:var(--bg)}
+.chip i{font-size:7px}
+.font-row{display:flex;align-items:center;gap:10px}
+.font-slider{flex:1;-webkit-appearance:none;appearance:none;height:2px;background:var(--border-hi);outline:none;cursor:pointer}
+.font-slider::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;background:var(--fg);border-radius:50%;cursor:pointer}
+.font-slider::-moz-range-thumb{width:12px;height:12px;background:var(--fg);border-radius:50%;cursor:pointer;border:none}
+.font-val{font-size:10px;color:var(--fg);min-width:28px;text-align:right;font-weight:600}
+.toggle-group{display:flex;gap:6px}
+.toggle-pill{flex:1;background:var(--bg);border:1px solid var(--border-hi);color:var(--muted);padding:7px 8px;font-size:10px;font-family:'Archivo',sans-serif;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;transition:all 0.15s}
+.toggle-pill:hover{border-color:var(--fg);color:var(--fg)}
+.toggle-pill.active{background:var(--fg);border-color:var(--fg);color:var(--bg)}
+.toggle-pill i{font-size:8px}
+.btn-download{background:var(--fg);color:var(--bg);border:1px solid var(--fg);padding:10px;font-family:'Archivo',sans-serif;font-weight:700;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all 0.15s}
+.btn-download:hover:not(:disabled){background:var(--bg);color:var(--fg)}
+.btn-download:disabled{background:var(--bg-2);color:var(--muted-2);border-color:var(--border);cursor:not-allowed}
+.btn-reset{background:var(--bg);border:1px solid var(--border-hi);color:var(--muted);padding:8px;font-family:'Archivo',sans-serif;font-weight:600;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;transition:all 0.15s}
+.btn-reset:hover{border-color:var(--danger);color:var(--danger)}
+.edit-modal{position:fixed;inset:0;background:rgba(255,255,255,0.98);backdrop-filter:blur(8px);z-index:2500;display:none;flex-direction:column;padding:0;overflow:hidden}
+.edit-modal.active{display:flex}
+.edit-header{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;border-bottom:1px solid var(--border);flex-shrink:0;background:var(--bg)}
+.edit-header .modal-title{text-align:left}
+.edit-header .modal-title p{margin-top:2px}
+.modal-title{font-family:'Archivo',sans-serif;font-size:14px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;text-align:center}
+.modal-title p{font-size:12px;color:var(--muted);margin-top:4px;font-weight:400}
+.edit-close-btn{background:var(--bg);border:1px solid var(--border-hi);width:36px;height:36px;cursor:pointer;display:grid;place-items:center;font-size:14px;color:var(--muted);transition:all 0.15s}
+.edit-close-btn:hover{border-color:var(--danger);color:var(--danger)}
+.edit-layout{display:flex;flex:1;overflow:hidden}
+.edit-canvas-area{flex:1;display:flex;align-items:center;justify-content:center;padding:28px;overflow:auto;background:var(--bg-2)}
+.edit-sidebar{width:360px;flex-shrink:0;border-left:1px solid var(--border);overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:16px;background:var(--bg)}
+.edit-container{position:relative;background:var(--bg-2);border:1px solid var(--border);overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08)}
+.edit-canvas-wrap{position:relative;display:inline-block;line-height:0}
+.edit-canvas{display:block}
+.draw-canvas{position:absolute;top:0;left:0;pointer-events:none;z-index:1;touch-action:none}
+.draw-canvas.active{pointer-events:auto;cursor:crosshair}
+.crop-rect{position:absolute;border:2px solid var(--fg);box-shadow:0 0 0 9999px rgba(255,255,255,0.5);cursor:move;touch-action:none;z-index:2}
+.crop-rect.hidden{display:none}
+.crop-rect::before,.crop-rect::after{content:'';position:absolute;pointer-events:none}
+.crop-rect::before{top:33.33%;bottom:33.33%;left:0;right:0;border-top:1px solid rgba(0,0,0,0.25);border-bottom:1px solid rgba(0,0,0,0.25)}
+.crop-rect::after{left:33.33%;right:33.33%;top:0;bottom:0;border-left:1px solid rgba(0,0,0,0.25);border-right:1px solid rgba(0,0,0,0.25)}
+.crop-handle{position:absolute;width:14px;height:14px;background:var(--fg);border:2px solid var(--bg);z-index:3;touch-action:none}
+.crop-handle.tl{top:-7px;left:-7px;cursor:nwse-resize}
+.crop-handle.tr{top:-7px;right:-7px;cursor:nesw-resize}
+.crop-handle.bl{bottom:-7px;left:-7px;cursor:nesw-resize}
+.crop-handle.br{bottom:-7px;right:-7px;cursor:nwse-resize}
+.mode-toggle{display:flex;border:1px solid var(--fg)}
+.mode-btn{flex:1;background:var(--bg);border:none;color:var(--fg);padding:10px 16px;font-family:'Archivo',sans-serif;font-weight:600;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.15s}
+.mode-btn.active{background:var(--fg);color:var(--bg)}
+.draw-tools{display:none;flex-direction:column;gap:10px}
+.draw-tools.active{display:flex}
+.tool-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.tool-btns{display:flex;gap:3px}
+.tool-btn{width:34px;height:34px;border:1px solid var(--border-hi);background:var(--bg);color:var(--muted);cursor:pointer;display:grid;place-items:center;font-size:12px;transition:all 0.15s;padding:0}
+.tool-btn:hover{border-color:var(--fg);color:var(--fg)}
+.tool-btn.active{background:var(--fg);border-color:var(--fg);color:var(--bg)}
+.color-btns{display:flex;gap:4px}
+.color-btn{width:26px;height:26px;border:2px solid var(--border);cursor:pointer;padding:0;transition:all 0.15s}
+.color-btn.active{border-color:var(--fg);transform:scale(1.1)}
+.brush-control{display:flex;align-items:center;gap:8px}
+.brush-control span{font-size:9px;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;font-family:'Archivo',sans-serif;font-weight:600}
+.tool-action-btn{background:var(--bg);border:1px solid var(--border-hi);color:var(--muted);padding:6px 12px;font-family:'Archivo',sans-serif;font-weight:600;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;gap:6px}
+.tool-action-btn:hover{border-color:var(--fg);color:var(--fg)}
+.tool-action-btn.danger:hover{border-color:var(--danger);color:var(--danger)}
+.draw-hint{font-size:9px;color:var(--muted);padding:6px 8px;background:var(--bg-3);border:1px solid var(--border);text-align:center;line-height:1.5}
+.adjust-panel{padding:14px;background:var(--bg-2);border:1px solid var(--border)}
+.adjust-section-title{font-family:'Archivo',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.adjust-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.adjust-label{font-family:'Archivo',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);width:70px;flex-shrink:0}
+.adj-btn{background:var(--bg);border:1px solid var(--fg);color:var(--fg);padding:3px 8px;font-size:10px;font-family:'Archivo',sans-serif;font-weight:600;cursor:pointer;transition:all 0.15s}
+.adj-btn:hover{background:var(--fg);color:var(--bg)}
+.adj-slider{flex:1;-webkit-appearance:none;appearance:none;height:2px;background:var(--border-hi);outline:none;cursor:pointer;min-width:50px}
+.adj-slider::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;background:var(--fg);border-radius:50%;cursor:pointer}
+.adj-slider::-moz-range-thumb{width:12px;height:12px;background:var(--fg);border-radius:50%;cursor:pointer;border:none}
+.adj-val{font-size:10px;color:var(--fg);min-width:36px;text-align:right;font-weight:600}
+.reset-adj-btn{background:transparent;border:1px solid var(--border-hi);color:var(--muted);padding:6px 12px;font-size:10px;font-family:'Archivo',sans-serif;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;margin-top:4px;width:100%}
+.reset-adj-btn:hover{border-color:var(--fg);color:var(--fg)}
+.edit-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:auto;padding-top:8px}
+.edit-btn{flex:1;background:var(--bg);border:1px solid var(--fg);color:var(--fg);padding:11px 14px;font-family:'Archivo',sans-serif;font-weight:600;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all 0.15s}
+.edit-btn:hover{background:var(--bg-2)}
+.edit-btn.primary{background:var(--fg);color:var(--bg)}
+.edit-btn.primary:hover{background:var(--bg);color:var(--fg)}
+@media(max-width:900px){.edit-layout{flex-direction:column}.edit-sidebar{width:100%;border-left:none;border-top:1px solid var(--border);max-height:45vh}.edit-canvas-area{padding:16px}.edit-header{padding:10px 16px}}
+.view-modal{position:fixed;inset:0;background:rgba(255,255,255,0.97);backdrop-filter:blur(8px);z-index:2500;display:none;align-items:center;justify-content:center;flex-direction:column;padding:32px}
+.view-modal.active{display:flex}
+.view-container{background:var(--bg-2);border:1px solid var(--border);padding:4px}
+.view-container img{display:block;max-width:85vw;max-height:72vh}
+.view-actions{margin-top:20px;display:flex;gap:10px}
+.view-btn{background:var(--bg);border:1px solid var(--fg);color:var(--fg);padding:11px 20px;font-family:'Archivo',sans-serif;font-weight:600;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;gap:8px;transition:all 0.15s}
+.view-btn:hover{background:var(--bg-2)}
+.view-btn.primary{background:var(--fg);color:var(--bg)}
+.view-btn.primary:hover{background:var(--bg);color:var(--fg)}
+.toast-container{position:fixed;bottom:24px;right:24px;z-index:4000;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{background:var(--fg);color:var(--bg);padding:12px 18px;display:flex;align-items:center;gap:10px;font-size:12px;font-weight:500;box-shadow:0 8px 24px rgba(0,0,0,0.12);animation:slideIn 0.25s ease;pointer-events:auto;min-width:200px}
+.toast.error{background:var(--danger)}
+.toast.success{background:var(--success)}
+.toast i{font-size:14px}
+@keyframes slideIn{from{transform:translateX(120%);opacity:0}to{transform:translateX(0);opacity:1}}
+.toast.out{animation:slideOut 0.25s ease forwards}
+@keyframes slideOut{from{transform:translateX(0);opacity:1}to{transform:translateX(120%);opacity:0}}
+.app-footer{border-top:1px solid var(--border);padding:20px 36px;text-align:center;color:var(--muted);font-size:9px;letter-spacing:0.2em;text-transform:uppercase;font-family:'Archivo',sans-serif;font-weight:600}
+.app-footer span{color:var(--fg)}
+</style>
+</head>
+<body>
+
+<!-- AUTH SCREEN -->
+<div id="authScreen" class="auth-screen">
+  <div class="auth-box">
+    <div class="auth-logo">V</div>
+    <div class="auth-title">VINDOC</div>
+    <div class="auth-subtitle">Vehicle Inspection Documentation</div>
+    <div id="loginForm" class="auth-form">
+      <input type="email" id="loginEmail" class="auth-input" placeholder="Email" onkeydown="if(event.key==='Enter')doLogin()">
+      <input type="password" id="loginPassword" class="auth-input" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()">
+      <button class="auth-btn" onclick="doLogin()">Sign In</button>
+      <div class="auth-toggle">No account? <a onclick="showRegister()">Register</a></div>
+    </div>
+    <div id="registerForm" class="auth-form" style="display:none">
+      <input type="text" id="regName" class="auth-input" placeholder="Full Name" onkeydown="if(event.key==='Enter')doRegister()">
+      <input type="email" id="regEmail" class="auth-input" placeholder="Email" onkeydown="if(event.key==='Enter')doRegister()">
+      <input type="password" id="regPassword" class="auth-input" placeholder="Password (min 6 chars)" onkeydown="if(event.key==='Enter')doRegister()">
+      <button class="auth-btn" onclick="doRegister()">Create Account</button>
+      <div class="auth-toggle">Have an account? <a onclick="showLogin()">Sign In</a></div>
+    </div>
+    <div class="auth-hint">First registered user becomes <b>Admin</b></div>
+  </div>
+</div>
+
+<!-- APP SHELL -->
+<div id="appShell" class="app-shell">
+  <header class="app-header">
+    <div class="brand"><div class="brand-logo">V</div><div class="brand-text"><h1>VINDOC</h1><p>Inspection Platform</p></div></div>
+    <nav class="app-nav">
+      <button class="nav-btn active" data-nav="dashboard" onclick="showView('dashboard')">Dashboard</button>
+      <button class="nav-btn" data-nav="jobs" onclick="showView('jobs')">Jobs</button>
+      <button class="nav-btn" data-nav="customers" onclick="showView('customers')">Customers</button>
+      <button class="nav-btn" id="navUsers" data-nav="users" onclick="showView('users')" style="display:none">Users</button>
+    </nav>
+    <div class="header-right">
+      <div class="clock-display" id="clockDisplay"><i class="far fa-clock"></i><span>--</span></div>
+      <div class="user-badge"><i class="fas fa-user-circle"></i><span id="userNameDisplay"></span> <span class="role-tag" id="userRoleTag">ADMIN</span></div>
+      <button class="btn-logout" onclick="doLogout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+    </div>
+  </header>
+  <div id="inspHeader" class="insp-header">
+    <button class="insp-back" onclick="showView('jobs')"><i class="fas fa-arrow-left"></i> Back to Jobs</button>
+    <div class="insp-title" id="currentJobTitle">Untitled Job</div>
+    <div class="insp-actions">
+      <button class="insp-btn" id="saveJobBtn" onclick="saveJobToDB()"><i class="fas fa-save"></i> Save Job</button>
+      <button class="insp-btn" onclick="generatePDF()"><i class="fas fa-file-pdf"></i> PDF Report</button>
+      <button class="insp-btn primary" onclick="openSaveModal()"><i class="fas fa-download"></i> Save All (ZIP)</button>
+      <button class="insp-btn success" id="completeBtn" onclick="completeJob()"><i class="fas fa-check-circle"></i> Complete</button>
+    </div>
+  </div>
+  <div id="dashboardView" class="view active"><div class="view-pad">
+    <div class="dash-grid">
+      <div class="dash-card" onclick="showView('jobs')"><div class="dash-card-icon"><i class="fas fa-clipboard-list"></i></div><div class="dash-card-num" id="dashJobs">0</div><div class="dash-card-lbl">Total Jobs</div></div>
+      <div class="dash-card" onclick="showView('customers')"><div class="dash-card-icon"><i class="fas fa-users"></i></div><div class="dash-card-num" id="dashCustomers">0</div><div class="dash-card-lbl">Customers</div></div>
+      <div class="dash-card" onclick="showView('jobs')"><div class="dash-card-icon"><i class="fas fa-spinner"></i></div><div class="dash-card-num" id="dashPending">0</div><div class="dash-card-lbl">In Progress</div></div>
+      <div class="dash-card" onclick="showView('jobs')"><div class="dash-card-icon"><i class="fas fa-check-circle"></i></div><div class="dash-card-num" id="dashCompleted">0</div><div class="dash-card-lbl">Completed</div></div>
+    </div>
+    <div class="dash-section">
+      <div class="dash-section-head"><div class="dash-section-title">Recent Jobs</div><button class="btn-add primary" onclick="showView('jobs')"><i class="fas fa-plus"></i> New Job</button></div>
+      <div class="table-wrap" id="dashRecentJobs"></div>
+    </div>
+  </div></div>
+  <div id="jobsView" class="view"><div class="view-pad">
+    <div class="dash-section-head"><div class="dash-section-title">Inspection Jobs</div><button class="btn-add primary" onclick="openJobModal()"><i class="fas fa-plus"></i> New Job</button></div>
+    <div class="table-wrap" id="jobsTable"></div>
+  </div></div>
+  <div id="customersView" class="view"><div class="view-pad">
+    <div class="dash-section-head"><div class="dash-section-title">Customers</div><button class="btn-add primary" onclick="openCustomerModal()"><i class="fas fa-plus"></i> Add Customer</button></div>
+    <div class="table-wrap" id="customersTable"></div>
+  </div></div>
+  <div id="usersView" class="view"><div class="view-pad">
+    <div class="dash-section-head"><div class="dash-section-title">User Management</div><button class="btn-add primary" onclick="openUserModal()"><i class="fas fa-plus"></i> Add User</button></div>
+    <div class="table-wrap" id="usersTable"></div>
+  </div></div>
+  <div id="inspectionView" class="view"><div class="view-pad">
+    <div class="help-bar"><i class="fas fa-info-circle"></i><span><strong>Add photos</strong> by Click, Drop, or Ctrl+V paste. Use Edit to crop, rotate, adjust, and draw shapes. <strong>Save Job</strong> syncs to cloud. <strong>PDF Report</strong> generates a downloadable report.</span></div>
+    <section class="section"><div class="section-head"><div class="section-title"><div class="section-num">01</div><div class="section-info"><h2>VEHICLE DOCUMENTATION <span class="section-count" id="count-vehicle">0/4</span></h2><p>Mileage, views, VIN plate</p></div></div></div><div class="photo-grid grid-4" id="vehicleGrid"></div></section>
+    <section class="section"><div class="section-head"><div class="section-title"><div class="section-num">02</div><div class="section-info"><h2>DEFECT DOCUMENTATION <span class="section-count" id="count-defect">0/0</span></h2><p>Damage, dents, scratches</p></div></div><button class="btn-add" onclick="addDefectSlot()"><i class="fas fa-plus"></i> Add Photo</button></div><div class="photo-grid grid-3" id="defectGrid"></div></section>
+    <section class="section"><div class="section-head"><div class="section-title"><div class="section-num">03</div><div class="section-info"><h2>PARTS REPLACEMENT <span class="section-count" id="count-parts">0/0</span></h2><p>Use OLD / NEW quick-toggle</p></div></div><button class="btn-add" onclick="addPartsSlot()"><i class="fas fa-plus"></i> Add Photo</button></div><div class="photo-grid grid-3" id="partsGrid"></div></section>
+  </div></div>
+  <footer class="app-footer">VINDOC &nbsp;&middot;&nbsp; <span>Cloud Edition</span> &nbsp;&middot;&nbsp; Firebase</footer>
+</div>
+
+<!-- MODALS -->
+<div class="gen-modal" id="customerModal"><div class="gen-box wide">
+  <div class="gen-box-title" id="customerModalTitle">ADD CUSTOMER</div>
+  <div class="gen-form">
+    <div class="gen-form-row"><div><label class="gen-label">Name *</label><input class="gen-input" id="custName" placeholder="John Smith"></div><div><label class="gen-label">Company</label><input class="gen-input" id="custCompany" placeholder="ABC Motors"></div></div>
+    <div class="gen-form-row"><div><label class="gen-label">Phone</label><input class="gen-input" id="custPhone" placeholder="+60123456789"></div><div><label class="gen-label">Email</label><input class="gen-input" id="custEmail" placeholder="john@example.com"></div></div>
+    <hr class="gen-form-sep">
+    <div class="gen-form-row"><div><label class="gen-label">Vehicle Plate</label><input class="gen-input" id="custPlate" placeholder="ABC 1234"></div><div><label class="gen-label">Vehicle Make</label><input class="gen-input" id="custMake" placeholder="Toyota"></div></div>
+    <div class="gen-form-row"><div><label class="gen-label">Vehicle Model</label><input class="gen-input" id="custModel" placeholder="Camry"></div><div><label class="gen-label">Vehicle Year</label><input class="gen-input" id="custYear" placeholder="2021"></div></div>
+    <div><label class="gen-label">VIN Number</label><input class="gen-input" id="custVin" placeholder="JTDBT123456789012"></div>
+  </div>
+  <div class="gen-actions"><button class="gen-btn" onclick="closeModal('customerModal')">Cancel</button><button class="gen-btn primary" onclick="saveCustomer()">Save Customer</button></div>
+</div></div>
+<div class="gen-modal" id="jobModal"><div class="gen-box">
+  <div class="gen-box-title" id="jobModalTitle">NEW INSPECTION JOB</div>
+  <div class="gen-form">
+    <div><label class="gen-label">Customer *</label><select class="gen-select" id="jobCustomer"></select></div>
+    <div><label class="gen-label">Job Title *</label><input class="gen-input" id="jobTitleInput" placeholder="Pre-purchase inspection"></div>
+    <div><label class="gen-label">Inspection Date</label><input type="date" class="gen-input" id="jobDateInput"></div>
+    <div><label class="gen-label">Notes</label><textarea class="gen-textarea" id="jobNotesInput" placeholder="Optional notes..."></textarea></div>
+  </div>
+  <div class="gen-actions"><button class="gen-btn" onclick="closeModal('jobModal')">Cancel</button><button class="gen-btn primary" id="jobModalSave" onclick="saveJob()">Create & Open</button></div>
+</div></div>
+<div class="gen-modal" id="userModal"><div class="gen-box">
+  <div class="gen-box-title" id="userModalTitle">ADD USER</div>
+  <div class="gen-form">
+    <div><label class="gen-label">Full Name *</label><input class="gen-input" id="userNameInput" placeholder="Jane Doe"></div>
+    <div><label class="gen-label">Email *</label><input class="gen-input" id="userEmailInput" placeholder="jane@vindoc.com"></div>
+    <div><label class="gen-label">Password</label><input type="password" class="gen-input" id="userPasswordInput" placeholder="Password"></div>
+    <div><label class="gen-label">Role</label><select class="gen-select" id="userRoleInput"><option value="inspector">Inspector</option><option value="admin">Admin</option></select></div>
+  </div>
+  <div class="gen-actions"><button class="gen-btn" onclick="closeModal('userModal')">Cancel</button><button class="gen-btn primary" onclick="saveUser()">Save User</button></div>
+</div></div>
+<div class="edit-modal" id="editModal">
+  <div class="edit-header"><div class="modal-title">EDIT &amp; CROP<p>Crop, rotate, adjust, draw shapes &mdash; then Apply</p></div><button class="edit-close-btn" onclick="closeEditModal()"><i class="fas fa-times"></i></button></div>
+  <div class="edit-layout">
+    <div class="edit-canvas-area"><div class="edit-container" onclick="event.stopPropagation()"><div class="edit-canvas-wrap" id="editWrap"><canvas class="edit-canvas" id="editCanvas"></canvas><canvas class="draw-canvas" id="drawCanvas"></canvas><div class="crop-rect" id="cropRect"><div class="crop-handle tl" data-handle="tl"></div><div class="crop-handle tr" data-handle="tr"></div><div class="crop-handle bl" data-handle="bl"></div><div class="crop-handle br" data-handle="br"></div></div></div></div></div>
+    <div class="edit-sidebar">
+      <div class="mode-toggle"><button class="mode-btn active" id="mode-crop" onclick="setEditMode('crop')"><i class="fas fa-crop-alt"></i> Crop</button><button class="mode-btn" id="mode-draw" onclick="setEditMode('draw')"><i class="fas fa-pencil"></i> Draw</button></div>
+      <div class="draw-tools" id="drawTools">
+        <div class="draw-hint">Draw a shape &middot; Click it to select &middot; Drag body to move &middot; Drag corners to resize</div>
+        <div class="tool-row"><div class="tool-btns"><button class="tool-btn active" data-tool="brush" onclick="setDrawTool('brush')"><i class="fas fa-paint-brush"></i></button><button class="tool-btn" data-tool="oval" onclick="setDrawTool('oval')"><i class="far fa-circle"></i></button><button class="tool-btn" data-tool="rect" onclick="setDrawTool('rect')"><i class="far fa-square"></i></button><button class="tool-btn" data-tool="arrow" onclick="setDrawTool('arrow')"><i class="fas fa-long-arrow-alt-right"></i></button></div><div class="color-btns"><button class="color-btn active" style="background:#ff0000" data-color="#ff0000" onclick="setDrawColor('#ff0000')"></button><button class="color-btn" style="background:#ffff00" data-color="#ffff00" onclick="setDrawColor('#ffff00')"></button><button class="color-btn" style="background:#000000" data-color="#000000" onclick="setDrawColor('#000000')"></button><button class="color-btn" style="background:#fff;border-color:#999" data-color="#ffffff" onclick="setDrawColor('#ffffff')"></button></div><div class="brush-control"><span>Size</span><input type="range" class="adj-slider" min="1" max="20" value="4" oninput="setBrushSize(this.value)" style="width:70px"><span class="adj-val" id="brushVal">4</span></div></div>
+        <div class="tool-row"><button class="tool-action-btn" onclick="undoDrawing()"><i class="fas fa-undo"></i> Undo</button><button class="tool-action-btn danger" id="deleteShapeBtn" onclick="deleteSelectedShape()" style="display:none"><i class="fas fa-trash"></i> Delete Shape</button><button class="tool-action-btn danger" onclick="clearDrawing()"><i class="fas fa-eraser"></i> Clear All</button></div>
+      </div>
+      <div class="adjust-panel">
+        <div class="adjust-section-title">Adjustments (Live)</div>
+        <div class="adjust-row"><span class="adjust-label">Rotate</span><button class="adj-btn" onclick="adjustRotation(-1)">&#8722;1&deg;</button><input type="range" class="adj-slider" id="rotSlider" min="-45" max="45" value="0" oninput="updateRotation(this.value)"><button class="adj-btn" onclick="adjustRotation(1)">+1&deg;</button><span class="adj-val" id="rotVal">0&deg;</span></div>
+        <div class="adjust-row"><span class="adjust-label">Bright</span><input type="range" class="adj-slider" id="briSlider" min="50" max="150" value="100" oninput="updateBrightness(this.value)"><span class="adj-val" id="briVal">100%</span></div>
+        <div class="adjust-row"><span class="adjust-label">Contrast</span><input type="range" class="adj-slider" id="conSlider" min="50" max="150" value="100" oninput="updateContrast(this.value)"><span class="adj-val" id="conVal">100%</span></div>
+        <div class="adjust-row"><span class="adjust-label">Saturate</span><input type="range" class="adj-slider" id="satSlider" min="0" max="200" value="100" oninput="updateSaturation(this.value)"><span class="adj-val" id="satVal">100%</span></div>
+        <button class="reset-adj-btn" onclick="resetAdjustments()"><i class="fas fa-undo"></i> Reset All</button>
+      </div>
+      <div class="edit-actions"><button class="edit-btn" onclick="resetCropRect()"><i class="fas fa-expand"></i> Full</button><button class="edit-btn" onclick="closeEditModal()"><i class="fas fa-times"></i> Cancel</button><button class="edit-btn primary" onclick="applyEdit()"><i class="fas fa-check"></i> Apply</button></div>
+    </div>
+  </div>
+</div>
+<div class="view-modal" id="viewModal"><div class="modal-title">PREVIEW<p>How the downloaded photo will look</p></div><div class="view-container" onclick="event.stopPropagation()"><img id="viewImage" alt="Preview"></div><div class="view-actions" onclick="event.stopPropagation()"><button class="view-btn" onclick="closeViewModal()"><i class="fas fa-times"></i> Close</button><button class="view-btn primary" onclick="downloadFromView()"><i class="fas fa-download"></i> Download</button></div></div>
+<div class="gen-modal" id="saveModal"><div class="gen-box">
+  <div class="gen-box-title">SAVE ALL PHOTOS</div>
+  <div class="gen-form"><div class="gen-form-row" style="justify-content:center;align-items:center"><span class="gen-label" style="margin:0">Format</span><div class="format-toggle"><button class="fmt-btn active" id="saveFmtPng" onclick="setFormat('png')">PNG</button><button class="fmt-btn" id="saveFmtJpeg" onclick="setFormat('jpeg')">JPG</button></div></div></div>
+  <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px">
+    <button class="gen-btn" style="text-align:left;padding:14px;border:1px solid var(--border-hi);display:flex;align-items:center;gap:14px;width:100%" onclick="saveAsZip()"><i class="fas fa-file-archive" style="font-size:20px;color:var(--fg)"></i><div style="text-align:left"><strong style="display:block;font-size:13px">Save as ZIP</strong><small style="font-size:11px;color:var(--muted)">One file with all photos inside</small></div></button>
+    <button class="gen-btn" style="text-align:left;padding:14px;border:1px solid var(--border-hi);display:flex;align-items:center;gap:14px;width:100%" onclick="saveToFolder()"><i class="fas fa-folder-open" style="font-size:20px;color:var(--fg)"></i><div style="text-align:left"><strong style="display:block;font-size:13px">Save to Folder</strong><small style="font-size:11px;color:var(--muted)">Pick a folder — all photos saved at once</small></div></button>
+  </div>
+  <button class="gen-btn" onclick="closeModal('saveModal')">Cancel</button>
+</div></div>
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+// ============================================================
+//  PASTE YOUR FIREBASE CONFIG HERE
+//  Go to: console.firebase.google.com → Project Settings →
+//  General → Your apps → Web App (</>) → Copy config
+// ============================================================
+var firebaseConfig = {
+  apiKey: "PASTE_API_KEY_HERE",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+
+// Initialize Firebase
+try {
+  firebase.initializeApp(firebaseConfig);
+} catch(e) {
+  document.getElementById('authScreen').innerHTML = '<div class="auth-box"><div class="auth-title">VINDOC</div><div class="auth-config-note"><b>Firebase not configured!</b><br><br>1. Go to console.firebase.google.com<br>2. Create a project<br>3. Add a Web App<br>4. Copy the config<br>5. Paste it in the code where marked<br>6. Enable: Authentication → Email/Password<br>7. Enable: Firestore Database</div></div>';
+}
+
+var fs = firebase.firestore();
+
+/* ===== Firestore DB wrapper ===== */
+var DB = {
+  add: function(collection, data) {
+    if (!data.id) data.id = collection.slice(0, -1) + '_' + Date.now();
+    return fs.collection(collection).doc(data.id).set(data).then(function() { return data; });
+  },
+  put: function(collection, data) {
+    return fs.collection(collection).doc(data.id).set(data, {merge: true}).then(function() { return data; });
+  },
+  get: function(collection, id) {
+    return fs.collection(collection).doc(id).get().then(function(doc) { return doc.exists ? doc.data() : null; });
+  },
+  getAll: function(collection) {
+    return fs.collection(collection).get().then(function(snapshot) { return snapshot.docs.map(function(d) { return d.data(); }); });
+  },
+  del: function(collection, id) {
+    return fs.collection(collection).doc(id).delete();
+  }
+};
+
+/* ===== Auth ===== */
+var currentUser = null;
+
+function showLogin() { document.getElementById('loginForm').style.display = 'flex'; document.getElementById('registerForm').style.display = 'none'; }
+function showRegister() { document.getElementById('loginForm').style.display = 'none'; document.getElementById('registerForm').style.display = 'flex'; }
+
+function doLogin() {
+  var email = document.getElementById('loginEmail').value.trim();
+  var pw = document.getElementById('loginPassword').value;
+  if (!email || !pw) { showToast('Enter email and password', 'error'); return; }
+  firebase.auth().signInWithEmailAndPassword(email, pw).catch(function(error) { showToast(error.message, 'error'); });
+}
+
+function doRegister() {
+  var name = document.getElementById('regName').value.trim();
+  var email = document.getElementById('regEmail').value.trim();
+  var pw = document.getElementById('regPassword').value;
+  if (!name || !email || !pw) { showToast('All fields required', 'error'); return; }
+  if (pw.length < 6) { showToast('Password must be at least 6 characters', 'error'); return; }
+  firebase.auth().createUserWithEmailAndPassword(email, pw).then(function(cred) {
+    var uid = cred.user.uid;
+    // First user becomes admin
+    return DB.getAll('users').then(function(users) {
+      var role = users.length === 0 ? 'admin' : 'inspector';
+      return fs.collection('users').doc(uid).set({ id: uid, name: name, email: email, role: role, createdAt: new Date().toISOString() });
+    });
+  }).catch(function(error) { showToast(error.message, 'error'); });
+}
+
+function doLogout() {
+  firebase.auth().signOut().then(function() {
+    currentUser = null;
+    document.getElementById('appShell').classList.remove('active');
+    document.getElementById('authScreen').style.display = 'flex';
+    clearSlots();
+  });
+}
+
+function checkSession() {
+  firebase.auth().onAuthStateChanged(function(user) {
+    if (user) {
+      fs.collection('users').doc(user.uid).get().then(function(doc) {
+        if (doc.exists) {
+          currentUser = doc.data();
+          showApp();
+        } else {
+          // Auth user exists but no Firestore profile - create one as inspector
+          var profile = { id: user.uid, name: user.email.split('@')[0], email: user.email, role: 'inspector', createdAt: new Date().toISOString() };
+          fs.collection('users').doc(user.uid).set(profile).then(function() { currentUser = profile; showApp(); });
+        }
+      });
+    } else {
+      document.getElementById('authScreen').style.display = 'flex';
+      document.getElementById('appShell').classList.remove('active');
+    }
+  });
+}
+
+function showApp() {
+  document.getElementById('authScreen').style.display = 'none';
+  document.getElementById('appShell').classList.add('active');
+  document.getElementById('userNameDisplay').textContent = currentUser.name;
+  var tag = document.getElementById('userRoleTag');
+  tag.textContent = currentUser.role.toUpperCase();
+  tag.className = 'role-tag ' + (currentUser.role === 'admin' ? '' : 'inspector');
+  document.getElementById('navUsers').style.display = currentUser.role === 'admin' ? 'block' : 'none';
+  showView('dashboard');
+}
+
+/* ===== View Router ===== */
+function showView(name) {
+  document.querySelectorAll('.view').forEach(function(v) { v.classList.remove('active'); });
+  var view = document.getElementById(name + 'View'); if (view) view.classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(function(b) { b.classList.toggle('active', b.dataset.nav === name); });
+  var ih = document.getElementById('inspHeader'); if (ih) ih.classList.toggle('active', name === 'inspection');
+  if (name === 'dashboard') renderDashboard();
+  else if (name === 'jobs') renderJobs();
+  else if (name === 'customers') renderCustomers();
+  else if (name === 'users') renderUsers();
+}
+function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+/* ===== Dashboard ===== */
+function renderDashboard() {
+  DB.getAll('jobs').then(function(jobs) {
+    DB.getAll('customers').then(function(customers) {
+      document.getElementById('dashJobs').textContent = jobs.length;
+      document.getElementById('dashCustomers').textContent = customers.length;
+      document.getElementById('dashPending').textContent = jobs.filter(function(j) { return j.status === 'in_progress'; }).length;
+      document.getElementById('dashCompleted').textContent = jobs.filter(function(j) { return j.status === 'completed'; }).length;
+      var sorted = jobs.slice().sort(function(a, b) { return new Date(b.createdAt) - new Date(a.createdAt); }).slice(0, 5);
+      var html = '<table class="data-table"><thead><tr><th>Job Title</th><th>Status</th><th>Date</th><th>By</th><th>Action</th></tr></thead><tbody>';
+      if (sorted.length === 0) html += '<tr><td colspan="5"><div class="gen-empty"><i class="fas fa-clipboard"></i><p>No jobs yet. Click "New Job" to start.</p></div></td></tr>';
+      else sorted.forEach(function(j) {
+        var sc = j.status === 'completed' ? 'completed' : (j.status === 'in_progress' ? 'in_progress' : 'pending');
+        var sl = j.status === 'completed' ? 'Completed' : (j.status === 'in_progress' ? 'In Progress' : 'Pending');
+        html += '<tr><td><strong>' + esc(j.title) + '</strong></td><td><span class="status-pill ' + sc + '">' + sl + '</span></td><td>' + (j.inspectionDate || '-') + '</td><td>' + esc(j.createdByName || '-') + '</td><td><button class="table-action primary" onclick="openJob(\'' + j.id + '\')"><i class="fas fa-folder-open"></i> Open</button></td></tr>';
+      });
+      html += '</tbody></table>';
+      document.getElementById('dashRecentJobs').innerHTML = html;
+    });
+  });
+}
+
+/* ===== Jobs ===== */
+function renderJobs() {
+  DB.getAll('jobs').then(function(jobs) {
+    DB.getAll('customers').then(function(customers) {
+      var cmap = {}; customers.forEach(function(c) { cmap[c.id] = c; });
+      var sorted = jobs.slice().sort(function(a, b) { return new Date(b.createdAt) - new Date(a.createdAt); });
+      var html = '<table class="data-table"><thead><tr><th>Job Title</th><th>Customer</th><th>Vehicle</th><th>Status</th><th>Date</th><th>By</th><th>Actions</th></tr></thead><tbody>';
+      if (sorted.length === 0) html += '<tr><td colspan="7"><div class="gen-empty"><i class="fas fa-clipboard-list"></i><p>No inspection jobs yet.<br><button class="btn-add primary" style="margin-top:12px" onclick="openJobModal()"><i class="fas fa-plus"></i> Create First Job</button></p></div></td></tr>';
+      else sorted.forEach(function(j) {
+        var c = cmap[j.customerId] || {};
+        var veh = (c.vehicleMake || '') + ' ' + (c.vehicleModel || ''); if (!veh.trim()) veh = '-';
+        var sc = j.status === 'completed' ? 'completed' : (j.status === 'in_progress' ? 'in_progress' : 'pending');
+        var sl = j.status === 'completed' ? 'Completed' : (j.status === 'in_progress' ? 'In Progress' : 'Pending');
+        html += '<tr><td><strong>' + esc(j.title) + '</strong></td><td>' + esc(c.name || '-') + '</td><td>' + esc(veh) + '</td><td><span class="status-pill ' + sc + '">' + sl + '</span></td><td>' + (j.inspectionDate || '-') + '</td><td>' + esc(j.createdByName || '-') + '</td>';
+        html += '<td><div class="table-actions"><button class="table-action primary" onclick="openJob(\'' + j.id + '\')"><i class="fas fa-folder-open"></i> Open</button>';
+        html += '<button class="table-action" onclick="generateJobPDF(\'' + j.id + '\')"><i class="fas fa-file-pdf"></i> PDF</button>';
+        if (currentUser.role === 'admin' || j.createdBy === currentUser.id) html += '<button class="table-action danger" onclick="deleteJob(\'' + j.id + '\')"><i class="fas fa-trash"></i></button>';
+        html += '</div></td></tr>';
+      });
+      html += '</tbody></table>';
+      document.getElementById('jobsTable').innerHTML = html;
+    });
+  });
+}
+
+var editingJobId = null;
+function openJobModal() {
+  DB.getAll('customers').then(function(customers) {
+    var sel = document.getElementById('jobCustomer');
+    if (customers.length === 0) { showToast('Add a customer first', 'error'); showView('customers'); return; }
+    sel.innerHTML = customers.map(function(c) { return '<option value="' + c.id + '">' + esc(c.name) + (c.vehiclePlate ? ' — ' + c.vehiclePlate : '') + '</option>'; }).join('');
+    document.getElementById('jobTitleInput').value = '';
+    document.getElementById('jobDateInput').value = formatDateStamp(new Date()).replace(/\./g, '-');
+    document.getElementById('jobNotesInput').value = '';
+    document.getElementById('jobModalTitle').textContent = 'NEW INSPECTION JOB';
+    document.getElementById('jobModalSave').textContent = 'Create & Open';
+    editingJobId = null;
+    document.getElementById('jobModal').classList.add('active');
+  });
+}
+
+function saveJob() {
+  var custId = document.getElementById('jobCustomer').value;
+  var title = document.getElementById('jobTitleInput').value.trim();
+  var date = document.getElementById('jobDateInput').value;
+  var notes = document.getElementById('jobNotesInput').value.trim();
+  if (!custId || !title) { showToast('Customer and title required', 'error'); return; }
+  if (editingJobId) {
+    DB.get('jobs', editingJobId).then(function(job) {
+      job.customerId = custId; job.title = title; job.inspectionDate = date; job.notes = notes;
+      DB.put('jobs', job).then(function() { closeModal('jobModal'); showToast('Job updated', 'success'); renderJobs(); });
+    });
+  } else {
+    var job = { id: 'job_' + Date.now(), customerId: custId, title: title, inspectionDate: date, notes: notes, status: 'pending', createdBy: currentUser.id, createdByName: currentUser.name, createdAt: new Date().toISOString() };
+    DB.add('jobs', job).then(function() { closeModal('jobModal'); openJob(job.id); });
+  }
+}
+
+function deleteJob(id) {
+  if (!confirm('Delete this job and all its photos? This cannot be undone.')) return;
+  // Delete slot documents first
+  fs.collection('jobs').doc(id).collection('slots').get().then(function(snapshot) {
+    var batch = fs.batch();
+    snapshot.docs.forEach(function(doc) { batch.delete(doc.ref); });
+    return batch.commit();
+  }).then(function() {
+    return DB.del('jobs', id);
+  }).then(function() { showToast('Job deleted', 'success'); renderJobs(); renderDashboard(); });
+}
+
+function completeJob() {
+  if (!state.currentJob) return;
+  state.currentJob.status = 'completed';
+  saveJobToDB(true);
+  document.getElementById('currentJobTitle').textContent = state.currentJob.title + ' ✓';
+  document.getElementById('completeBtn').style.display = 'none';
+  showToast('Job marked as completed', 'success');
+}
+
+/* ===== Customers ===== */
+function renderCustomers() {
+  DB.getAll('customers').then(function(customers) {
+    var sorted = customers.slice().sort(function(a, b) { return new Date(b.createdAt) - new Date(a.createdAt); });
+    var html = '<table class="data-table"><thead><tr><th>Name</th><th>Company</th><th>Phone</th><th>Vehicle</th><th>Plate</th><th>Actions</th></tr></thead><tbody>';
+    if (sorted.length === 0) html += '<tr><td colspan="6"><div class="gen-empty"><i class="fas fa-users"></i><p>No customers yet.<br><button class="btn-add primary" style="margin-top:12px" onclick="openCustomerModal()"><i class="fas fa-plus"></i> Add First Customer</button></p></div></td></tr>';
+    else sorted.forEach(function(c) {
+      var veh = (c.vehicleMake || '') + ' ' + (c.vehicleModel || '') + (c.vehicleYear ? ' (' + c.vehicleYear + ')' : ''); if (!veh.trim()) veh = '-';
+      html += '<tr><td><strong>' + esc(c.name) + '</strong></td><td>' + esc(c.company || '-') + '</td><td>' + esc(c.phone || '-') + '</td><td>' + esc(veh) + '</td><td>' + esc(c.vehiclePlate || '-') + '</td>';
+      html += '<td><div class="table-actions"><button class="table-action" onclick="openCustomerModal(\'' + c.id + '\')"><i class="fas fa-edit"></i> Edit</button>';
+      if (currentUser.role === 'admin') html += '<button class="table-action danger" onclick="deleteCustomer(\'' + c.id + '\')"><i class="fas fa-trash"></i></button>';
+      html += '</div></td></tr>';
+    });
+    html += '</tbody></table>';
+    document.getElementById('customersTable').innerHTML = html;
+  });
+}
+
+var editingCustomerId = null;
+function openCustomerModal(id) {
+  editingCustomerId = id || null;
+  ['custName','custCompany','custPhone','custEmail','custPlate','custMake','custModel','custYear','custVin'].forEach(function(f) { document.getElementById(f).value = ''; });
+  if (id) {
+    DB.get('customers', id).then(function(c) {
+      if (!c) return;
+      document.getElementById('custName').value = c.name || ''; document.getElementById('custCompany').value = c.company || '';
+      document.getElementById('custPhone').value = c.phone || ''; document.getElementById('custEmail').value = c.email || '';
+      document.getElementById('custPlate').value = c.vehiclePlate || ''; document.getElementById('custMake').value = c.vehicleMake || '';
+      document.getElementById('custModel').value = c.vehicleModel || ''; document.getElementById('custYear').value = c.vehicleYear || '';
+      document.getElementById('custVin').value = c.vin || '';
+      document.getElementById('customerModalTitle').textContent = 'EDIT CUSTOMER';
+      document.getElementById('customerModal').classList.add('active');
+    });
+  } else {
+    document.getElementById('customerModalTitle').textContent = 'ADD CUSTOMER';
+    document.getElementById('customerModal').classList.add('active');
+  }
+}
+
+function saveCustomer() {
+  var name = document.getElementById('custName').value.trim();
+  if (!name) { showToast('Name is required', 'error'); return; }
+  var data = { id: editingCustomerId || ('cust_' + Date.now()), name: name, company: document.getElementById('custCompany').value.trim(), phone: document.getElementById('custPhone').value.trim(), email: document.getElementById('custEmail').value.trim(), vehiclePlate: document.getElementById('custPlate').value.trim(), vehicleMake: document.getElementById('custMake').value.trim(), vehicleModel: document.getElementById('custModel').value.trim(), vehicleYear: document.getElementById('custYear').value.trim(), vin: document.getElementById('custVin').value.trim(), createdBy: currentUser.id, createdAt: new Date().toISOString() };
+  DB.put('customers', data).then(function() { closeModal('customerModal'); showToast('Customer saved', 'success'); renderCustomers(); });
+}
+
+function deleteCustomer(id) {
+  if (!confirm('Delete this customer?')) return;
+  DB.del('customers', id).then(function() { showToast('Customer deleted', 'success'); renderCustomers(); });
+}
+
+/* ===== Users ===== */
+function renderUsers() {
+  if (currentUser.role !== 'admin') { showView('dashboard'); return; }
+  DB.getAll('users').then(function(users) {
+    var html = '<table class="data-table"><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Created</th><th>Actions</th></tr></thead><tbody>';
+    users.forEach(function(u) {
+      html += '<tr><td><strong>' + esc(u.name) + '</strong>' + (u.id === currentUser.id ? ' <span style="font-size:9px;color:var(--success)">(you)</span>' : '') + '</td><td>' + esc(u.email) + '</td><td><span class="role-tag ' + (u.role === 'admin' ? '' : 'inspector') + '">' + u.role.toUpperCase() + '</span></td><td>' + (u.createdAt ? new Date(u.createdAt).toLocaleDateString() : '-') + '</td>';
+      html += '<td><div class="table-actions"><button class="table-action" onclick="openUserModal(\'' + u.id + '\')"><i class="fas fa-edit"></i> Edit</button>';
+      if (u.id !== currentUser.id) html += '<button class="table-action danger" onclick="deleteUser(\'' + u.id + '\')"><i class="fas fa-trash"></i></button>';
+      html += '</div></td></tr>';
+    });
+    html += '</tbody></table>';
+    document.getElementById('usersTable').innerHTML = html;
+  });
+}
+
+var editingUserId = null;
+function openUserModal(id) {
+  editingUserId = id || null;
+  document.getElementById('userNameInput').value = ''; document.getElementById('userEmailInput').value = ''; document.getElementById('userPasswordInput').value = ''; document.getElementById('userRoleInput').value = 'inspector';
+  if (id) {
+    DB.get('users', id).then(function(u) {
+      if (!u) return;
+      document.getElementById('userNameInput').value = u.name; document.getElementById('userEmailInput').value = u.email;
+      document.getElementById('userRoleInput').value = u.role; document.getElementById('userPasswordInput').placeholder = 'Leave blank to keep current';
+      document.getElementById('userModalTitle').textContent = 'EDIT USER';
+      document.getElementById('userModal').classList.add('active');
+    });
+  } else {
+    document.getElementById('userPasswordInput').placeholder = 'Password (min 6 chars)';
+    document.getElementById('userModalTitle').textContent = 'ADD USER';
+    document.getElementById('userModal').classList.add('active');
+  }
+}
+
+function saveUser() {
+  var name = document.getElementById('userNameInput').value.trim();
+  var email = document.getElementById('userEmailInput').value.trim();
+  var pw = document.getElementById('userPasswordInput').value;
+  var role = document.getElementById('userRoleInput').value;
+  if (!name || !email) { showToast('Name and email required', 'error'); return; }
+  if (!editingUserId && !pw) { showToast('Password required for new user', 'error'); return; }
+  if (pw && pw.length < 6) { showToast('Password must be at least 6 characters', 'error'); return; }
+
+  if (editingUserId) {
+    // Update existing user profile in Firestore
+    DB.get('users', editingUserId).then(function(existing) {
+      var updated = Object.assign({}, existing || {});
+      updated.name = name; updated.email = email; updated.role = role;
+      DB.put('users', updated).then(function() {
+        if (pw) showToast('Note: Password not changed. Use Firebase Console to reset.', 'info');
+        else showToast('User updated', 'success');
+        closeModal('userModal'); renderUsers();
+      });
+    });
+  } else {
+    // Create new user via secondary Firebase app (so current session isn't affected)
+    var secondaryApp = firebase.initializeApp(firebaseConfig, 'secondary_' + Date.now());
+    secondaryApp.auth().createUserWithEmailAndPassword(email, pw).then(function(cred) {
+      var uid = cred.user.uid;
+      return fs.collection('users').doc(uid).set({ id: uid, name: name, email: email, role: role, createdAt: new Date().toISOString() }).then(function() {
+        return secondaryApp.auth().signOut();
+      }).then(function() {
+        // Delete the secondary app instance
+        firebase.app('secondary_' + Date.now()).delete();
+      });
+    }).then(function() { closeModal('userModal'); showToast('User created', 'success'); renderUsers(); }).catch(function(error) {
+      showToast(error.message, 'error');
+      try { firebase.app('secondary_' + Date.now()).delete(); } catch(e) {}
+    });
+  }
+}
+
+function deleteUser(id) {
+  if (id === currentUser.id) { showToast('Cannot delete yourself', 'error'); return; }
+  if (!confirm('Delete this user? Note: This removes the profile. To fully remove the auth account, use Firebase Console.')) return;
+  DB.del('users', id).then(function() { showToast('User deleted from system', 'success'); renderUsers(); });
+}
+
+/* ===== Inspection State ===== */
+var state = { slots: [], editContext: null, viewContext: null, cropRect: {x:0,y:0,w:0,h:0}, dragMode: null, dragStart: null, suppressModalClick: false, editMode: 'crop', prevEditDims: {w:0,h:0}, hoveredSlot: null, format: 'png', currentJob: null };
+var drawState = { isDrawing: false, tool: 'brush', color: '#ff0000', brushSize: 4, lastX: 0, lastY: 0, startX: 0, startY: 0, savedState: null };
+var undoStack = []; var slotIdCounter = 0;
+var editShapes = []; var selectedShapeId = null; var shapeInteraction = null; var shapeInteractionStart = null; var brushCanvas = null; var shapeIdCounter = 0;
+
+function setFormat(fmt) { state.format = fmt; document.querySelectorAll('.fmt-btn').forEach(function(b) { b.classList.toggle('active', b.dataset.fmt === fmt); }); var e1 = document.getElementById('saveFmtPng'), e2 = document.getElementById('saveFmtJpeg'); if (e1) e1.classList.toggle('active', fmt === 'png'); if (e2) e2.classList.toggle('active', fmt === 'jpeg'); }
+function getExt() { return state.format === 'jpeg' ? 'jpg' : 'png'; }
+function getMime() { return state.format === 'jpeg' ? 'image/jpeg' : 'image/png'; }
+
+function createSlot(config) { var id = ++slotIdCounter; var slot = { id: id, type: config.type, title: config.title, icon: config.icon, removable: config.removable || false, container: config.container, originalImage: null, croppedCanvas: null, labelText: config.labelText || '', fontSize: config.fontSize || 48, showDate: config.showDate !== false, showLabel: config.showLabel !== false, rotation: 0, brightness: 100, contrast: 100, saturation: 100, drawData: null, drawImage: null, customDate: null }; state.slots.push(slot); renderSlot(slot); updateStats(); return slot; }
+
+function renderSlot(slot) {
+  var el = document.createElement('div'); el.className = 'slot'; el.dataset.slotId = slot.id;
+  el.innerHTML = '<div class="slot-head"><div class="slot-title"><div class="slot-icon"><i class="' + slot.icon + '"></i></div><span>' + slot.title + '</span></div><div class="slot-head-right"><span class="slot-status">Empty</span>' + (slot.removable ? '<button class="slot-remove" onclick="removeSlot(' + slot.id + ')"><i class="fas fa-times"></i></button>' : '') + '</div></div><div class="slot-preview" data-slot-id="' + slot.id + '"><div class="preview-empty" onclick="triggerUpload(' + slot.id + ')"><div class="upload-icons"><i class="fas fa-cloud-upload-alt"></i><i class="fas fa-paste"></i></div><p>Click, Drop, or Paste</p><button class="paste-btn" onclick="event.stopPropagation();pasteFromClipboard(' + slot.id + ')"><i class="fas fa-paste"></i> Paste</button><div class="paste-hint"><span>or</span> <span class="kbd">Ctrl</span>+<span class="kbd">V</span></div></div></div><div class="slot-controls"><div><div class="control-label"><i class="fas fa-tag"></i> Label</div><input type="text" class="label-input" placeholder="OLD, NEW, or blank" value="' + slot.labelText + '" oninput="updateLabel(' + slot.id + ',this.value)"><div class="quick-chips"><button class="chip" id="chip-old-' + slot.id + '" onclick="setQuickLabel(' + slot.id + ',\'OLD\')"><i class="fas fa-circle"></i> OLD</button><button class="chip" id="chip-new-' + slot.id + '" onclick="setQuickLabel(' + slot.id + ',\'NEW\')"><i class="fas fa-circle"></i> NEW</button></div></div><div><div class="control-label"><i class="fas fa-text-height"></i> Font Size</div><div class="font-row"><input type="range" class="font-slider" min="20" max="120" value="' + slot.fontSize + '" oninput="updateFontSize(' + slot.id + ',this.value)"><span class="font-val" id="fs-' + slot.id + '">' + slot.fontSize + '</span></div></div><div><div class="control-label"><i class="far fa-calendar-alt"></i> Date Stamp</div><input type="date" class="date-input" onchange="updateDate(' + slot.id + ',this.value)" oninput="updateDate(' + slot.id + ',this.value)"><small class="date-hint">Leave blank = today</small></div><div class="toggle-group"><button class="toggle-pill ' + (slot.showLabel ? 'active' : '') + '" id="tg-label-' + slot.id + '" onclick="toggleLabel(' + slot.id + ')"><i class="fas fa-tag"></i> Label</button><button class="toggle-pill ' + (slot.showDate ? 'active' : '') + '" id="tg-date-' + slot.id + '" onclick="toggleDate(' + slot.id + ')"><i class="far fa-calendar"></i> Date</button></div><button class="btn-download" onclick="downloadSlot(' + slot.id + ')" disabled><i class="fas fa-download"></i> Download</button><button class="btn-reset" onclick="resetSlot(' + slot.id + ')"><i class="fas fa-undo"></i> Reset</button></div>';
+  slot.container.appendChild(el); slot.element = el;
+  var preview = el.querySelector('.slot-preview');
+  preview.addEventListener('dragover', function(e) { e.preventDefault(); preview.classList.add('dragover'); });
+  preview.addEventListener('dragleave', function() { preview.classList.remove('dragover'); });
+  preview.addEventListener('drop', function(e) { e.preventDefault(); preview.classList.remove('dragover'); var f = e.dataTransfer.files[0]; if (f && f.type.indexOf('image/') === 0) loadFileIntoSlot(slot.id, f); else showToast('Drop an image file', 'error'); });
+  preview.addEventListener('mouseenter', function() { state.hoveredSlot = slot; });
+  preview.addEventListener('mouseleave', function() { if (state.hoveredSlot === slot) state.hoveredSlot = null; });
+  if (slot.customDate) { var d = new Date(slot.customDate); el.querySelector('.date-input').value = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+}
+
+function triggerUpload(slotId) { var input = document.createElement('input'); input.type = 'file'; input.accept = 'image/*'; input.onchange = function(e) { var f = e.target.files[0]; if (f) loadFileIntoSlot(slotId, f); }; input.click(); }
+
+function loadFileIntoSlot(slotId, file) {
+  var slot = state.slots.find(function(s) { return s.id === slotId; }); if (!slot) return;
+  if (file.size > 10 * 1024 * 1024) { showToast('File too large (max 10MB)', 'error'); return; }
+  var reader = new FileReader(); reader.onload = function(e) { var img = new Image(); img.onload = function() { slot.originalImage = img; slot.croppedCanvas = null; slot.rotation = 0; slot.brightness = 100; slot.contrast = 100; slot.saturation = 100; slot.drawData = null; slot.drawImage = null; updateSlotPreview(slot); updateStats(); showToast(slot.title + ' loaded', 'success'); }; img.onerror = function() { showToast('Failed to load', 'error'); }; img.src = e.target.result; }; reader.readAsDataURL(file);
+}
+
+function pasteFromClipboard(slotId) {
+  if (navigator.clipboard && navigator.clipboard.read) { navigator.clipboard.read().then(function(ci) { var found = false; var p = Promise.resolve(); ci.forEach(function(item) { item.types.forEach(function(type) { if (type.indexOf('image/') === 0 && !found) { found = true; p = p.then(function() { return item.getType(type); }).then(function(blob) { var ext = type.split('/')[1] || 'png'; var file = new File([blob], 'paste_' + Date.now() + '.' + ext, { type: type }); loadFileIntoSlot(slotId, file); showToast('Pasted', 'success'); }); } }); }); p.then(function() { if (!found) showToast('No image in clipboard', 'error'); }); }).catch(function() { showToast('Press Ctrl+V to paste', 'info'); }); } else { showToast('Press Ctrl+V to paste', 'info'); }
+}
+
+window.addEventListener('paste', function(e) {
+  if (document.getElementById('editModal').classList.contains('active')) return;
+  if (document.getElementById('viewModal').classList.contains('active')) return;
+  if (!document.getElementById('inspectionView').classList.contains('active')) return;
+  var cd = e.clipboardData || window.clipboardData; if (!cd) return; var items = cd.items; if (!items || items.length === 0) return;
+  for (var i = 0; i < items.length; i++) { var item = items[i]; if (item.type && item.type.indexOf('image/') === 0) { var file = item.getAsFile(); if (file) { e.preventDefault(); var target = state.hoveredSlot; if (!target) { for (var j = 0; j < state.slots.length; j++) { if (!state.slots[j].originalImage) { target = state.slots[j]; break; } } } if (!target) target = state.slots[0]; if (target) { loadFileIntoSlot(target.id, file); showToast('Pasted into ' + target.title, 'success'); return; } } } }
+});
+
+function buildActionBar(slot) { var bar = document.createElement('div'); bar.className = 'action-bar'; bar.innerHTML = '<button class="act-btn" onclick="event.stopPropagation();openViewModal(' + slot.id + ')"><i class="fas fa-eye"></i><span>View</span></button><button class="act-btn" onclick="event.stopPropagation();openEditModal(' + slot.id + ')"><i class="fas fa-edit"></i><span>Edit</span></button><button class="act-btn" onclick="event.stopPropagation();resetSlot(' + slot.id + ')"><i class="fas fa-undo"></i><span>Reset</span></button><button class="act-btn" onclick="event.stopPropagation();triggerUpload(' + slot.id + ')"><i class="fas fa-sync"></i><span>Replace</span></button><button class="act-btn" onclick="event.stopPropagation();pasteFromClipboard(' + slot.id + ')"><i class="fas fa-paste"></i><span>Paste</span></button><button class="act-btn danger" onclick="event.stopPropagation();deleteImage(' + slot.id + ')"><i class="fas fa-trash"></i><span>Delete</span></button>'; return bar; }
+
+function deleteImage(slotId) { var slot = state.slots.find(function(s) { return s.id === slotId; }); if (!slot || !slot.originalImage) { showToast('No image to delete', 'error'); return; } slot.originalImage = null; slot.croppedCanvas = null; slot.rotation = 0; slot.brightness = 100; slot.contrast = 100; slot.saturation = 100; slot.drawData = null; slot.drawImage = null; slot.customDate = null; var di = slot.element.querySelector('.date-input'); if (di) di.value = ''; updateSlotPreview(slot); updateStats(); showToast('Image deleted', 'success'); }
+
+function updateSlotPreview(slot) {
+  var preview = slot.element.querySelector('.slot-preview'); var hasImage = slot.originalImage !== null; var statusEl = slot.element.querySelector('.slot-status'); var dlBtn = slot.element.querySelector('.btn-download');
+  if (hasImage) { statusEl.textContent = 'Ready'; statusEl.classList.add('ready'); slot.element.classList.add('has-image'); dlBtn.disabled = false; var canvas = renderAnnotatedCanvas(slot); canvas.className = 'preview-canvas'; canvas.onclick = function() { openViewModal(slot.id); }; preview.innerHTML = ''; preview.appendChild(canvas); preview.appendChild(buildActionBar(slot)); }
+  else { statusEl.textContent = 'Empty'; statusEl.classList.remove('ready'); slot.element.classList.remove('has-image'); dlBtn.disabled = true; preview.innerHTML = '<div class="preview-empty" onclick="triggerUpload(' + slot.id + ')"><div class="upload-icons"><i class="fas fa-cloud-upload-alt"></i><i class="fas fa-paste"></i></div><p>Click, Drop, or Paste</p><button class="paste-btn" onclick="event.stopPropagation();pasteFromClipboard(' + slot.id + ')"><i class="fas fa-paste"></i> Paste</button><div class="paste-hint"><span>or</span> <span class="kbd">Ctrl</span>+<span class="kbd">V</span></div></div>'; }
+}
+
+function renderAnnotatedCanvas(slot) {
+  if (!slot.originalImage) return null; var source = slot.croppedCanvas || slot.originalImage; var w = source instanceof HTMLCanvasElement ? source.width : source.naturalWidth; var h = source instanceof HTMLCanvasElement ? source.height : source.naturalHeight; var canvas = document.createElement('canvas'); canvas.width = w; canvas.height = h; var ctx = canvas.getContext('2d'); ctx.drawImage(source, 0, 0, w, h); var minDim = Math.min(w, h); var actualFontPx = Math.max(10, (slot.fontSize / 800) * minDim); ctx.font = '700 ' + actualFontPx + 'px \'Hanken Grotesk\', sans-serif'; var padX = actualFontPx * 0.15, padY = actualFontPx * 0.12; if (slot.showLabel && slot.labelText.trim()) { ctx.textBaseline = 'top'; ctx.fillStyle = '#ffffff'; ctx.fillText(slot.labelText.trim().toUpperCase(), padX, padY); } if (slot.showDate) { var dateObj = slot.customDate || new Date(); var ds = formatDateStamp(dateObj); var m = ctx.measureText(ds); ctx.textBaseline = 'bottom'; ctx.fillStyle = '#ffffff'; ctx.fillText(ds, w - m.width - padX, h - padY); } return canvas;
+}
+
+function formatDateStamp(date) { return String(date.getDate()).padStart(2, '0') + '.' + String(date.getMonth() + 1).padStart(2, '0') + '.' + date.getFullYear(); }
+
+function resetSlot(slotId) { var s = state.slots.find(function(x) { return x.id === slotId; }); if (!s || !s.originalImage) { showToast('No image', 'error'); return; } s.croppedCanvas = null; s.rotation = 0; s.brightness = 100; s.contrast = 100; s.saturation = 100; s.drawData = null; s.drawImage = null; s.customDate = null; var di = s.element.querySelector('.date-input'); if (di) di.value = ''; updateSlotPreview(s); showToast('Reset to original', 'success'); }
+
+function setQuickLabel(slotId, value) { var s = state.slots.find(function(x) { return x.id === slotId; }); if (!s) return; var isActive = s.labelText.trim().toUpperCase() === value && s.showLabel; if (isActive) { s.showLabel = false; document.getElementById('tg-label-' + slotId).classList.remove('active'); } else { s.labelText = value; s.showLabel = true; s.element.querySelector('.label-input').value = value; document.getElementById('tg-label-' + slotId).classList.add('active'); } updateChipStates(s); if (s.originalImage) updateSlotPreview(s); }
+function updateChipStates(slot) { var old = document.getElementById('chip-old-' + slot.id), nw = document.getElementById('chip-new-' + slot.id); if (!old || !nw) return; var lt = slot.labelText.trim().toUpperCase(); var v = slot.showLabel && lt.length > 0; old.classList.toggle('active', v && lt === 'OLD'); nw.classList.toggle('active', v && lt === 'NEW'); }
+function updateLabel(slotId, value) { var s = state.slots.find(function(x) { return x.id === slotId; }); if (!s) return; s.labelText = value; if (value.trim()) { s.showLabel = true; document.getElementById('tg-label-' + slotId).classList.add('active'); } updateChipStates(s); if (s.originalImage) updateSlotPreview(s); }
+function updateFontSize(slotId, value) { var s = state.slots.find(function(x) { return x.id === slotId; }); if (!s) return; s.fontSize = parseInt(value); document.getElementById('fs-' + slotId).textContent = value; if (s.originalImage) updateSlotPreview(s); }
+function updateDate(slotId, value) { var s = state.slots.find(function(x) { return x.id === slotId; }); if (!s) return; if (value) { var parts = value.split('-'); s.customDate = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2])); } else { s.customDate = null; } if (s.originalImage) updateSlotPreview(s); }
+function toggleLabel(slotId) { var s = state.slots.find(function(x) { return x.id === slotId; }); if (!s) return; s.showLabel = !s.showLabel; document.getElementById('tg-label-' + slotId).classList.toggle('active', s.showLabel); updateChipStates(s); if (s.originalImage) updateSlotPreview(s); }
+function toggleDate(slotId) { var s = state.slots.find(function(x) { return x.id === slotId; }); if (!s) return; s.showDate = !s.showDate; document.getElementById('tg-date-' + slotId).classList.toggle('active', s.showDate); if (s.originalImage) updateSlotPreview(s); }
+
+function downloadSlot(slotId) { var slot = state.slots.find(function(s) { return s.id === slotId; }); if (!slot || !slot.originalImage) { showToast('No image', 'error'); return; } var ext = getExt(), mime = getMime(); renderAnnotatedCanvas(slot).toBlob(function(blob) { var url = URL.createObjectURL(blob); var a = document.createElement('a'); a.href = url; a.download = slot.type + '_' + formatDateStamp(new Date()).replace(/\./g, '-') + '.' + ext; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url); showToast('Downloaded ' + slot.title, 'success'); }, mime, 0.92); }
+function downloadFromView() { if (state.viewContext) { downloadSlot(state.viewContext.id); closeViewModal(); } }
+
+function openSaveModal() { var ready = state.slots.filter(function(s) { return s.originalImage; }); if (ready.length === 0) { showToast('No photos loaded', 'error'); return; } document.getElementById('saveModal').classList.add('active'); }
+
+function saveAsZip() { var ready = state.slots.filter(function(s) { return s.originalImage; }); if (ready.length === 0) { showToast('No photos loaded', 'error'); return; } closeModal('saveModal'); var dateStr = formatDateStamp(new Date()).replace(/\./g, '-'); var ext = getExt(), mime = getMime(); if (typeof JSZip === 'undefined') { showToast('ZIP not available', 'info'); saveIndividualFallback(ready, dateStr, ext, mime); return; } showToast('Creating ZIP...', 'info'); var zip = new JSZip(); var completed = 0; function addNext(i) { if (i >= ready.length) { zip.generateAsync({ type: 'blob' }).then(function(content) { var url = URL.createObjectURL(content); var a = document.createElement('a'); a.href = url; a.download = 'VINDOC_' + dateStr + '.zip'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url); showToast('Downloaded ZIP with ' + ready.length + ' photos', 'success'); }); return; } renderAnnotatedCanvas(ready[i]).toBlob(function(blob) { zip.file(ready[i].type + '_' + dateStr + '.' + ext, blob); completed++; showToast('Processing ' + completed + ' of ' + ready.length + '...', 'info'); addNext(i + 1); }, mime, 0.92); } addNext(0); }
+function saveToFolder() { var ready = state.slots.filter(function(s) { return s.originalImage; }); if (ready.length === 0) { showToast('No photos loaded', 'error'); return; } var dateStr = formatDateStamp(new Date()).replace(/\./g, '-'); var ext = getExt(), mime = getMime(); if (window.showDirectoryPicker) { window.showDirectoryPicker().then(function(dirHandle) { closeModal('saveModal'); showToast('Saving ' + ready.length + ' photos to folder...', 'info'); var completed = 0; function saveNext(i) { if (i >= ready.length) { showToast('All ' + ready.length + ' photos saved!', 'success'); return; } renderAnnotatedCanvas(ready[i]).toBlob(function(blob) { var fileName = ready[i].type + '_' + dateStr + '.' + ext; dirHandle.getFileHandle(fileName, { create: true }).then(function(fh) { return fh.createWritable(); }).then(function(writable) { return writable.write(blob).then(function() { return writable.close(); }); }).then(function() { completed++; showToast('Saved ' + completed + ' of ' + ready.length, 'info'); saveNext(i + 1); }).catch(function() { saveNext(i + 1); }); }, mime, 0.92); } saveNext(0); }).catch(function(e) { if (e.name !== 'AbortError') { closeModal('saveModal'); saveIndividualFallback(ready, dateStr, ext, mime); } }); } else { closeModal('saveModal'); saveIndividualFallback(ready, dateStr, ext, mime); } }
+function saveIndividualFallback(ready, dateStr, ext, mime) { showToast('Downloading ' + ready.length + ' photos...', 'info'); ready.forEach(function(slot, i) { setTimeout(function() { renderAnnotatedCanvas(slot).toBlob(function(blob) { var url = URL.createObjectURL(blob); var a = document.createElement('a'); a.href = url; a.download = slot.type + '_' + dateStr + '.' + ext; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url); }, mime, 0.92); }, i * 500); }); }
+
+function removeSlot(slotId) { var idx = state.slots.findIndex(function(s) { return s.id === slotId; }); if (idx === -1) return; if (state.slots[idx].element) state.slots[idx].element.remove(); state.slots.splice(idx, 1); updateStats(); showToast('Slot removed', 'success'); }
+
+function openViewModal(slotId) { var slot = state.slots.find(function(s) { return s.id === slotId; }); if (!slot || !slot.originalImage) return; state.viewContext = slot; document.getElementById('viewImage').src = renderAnnotatedCanvas(slot).toDataURL('image/png'); document.getElementById('viewModal').classList.add('active'); }
+function closeViewModal() { document.getElementById('viewModal').classList.remove('active'); state.viewContext = null; }
+
+/* ===== Edit Modal (shapes etc) ===== */
+function openEditModal(slotId) { var slot = state.slots.find(function(s) { return s.id === slotId; }); if (!slot || !slot.originalImage) return; state.editContext = slot; state.prevEditDims = { w: 0, h: 0 }; slot.rotation = 0; slot.brightness = 100; slot.contrast = 100; slot.saturation = 100; document.getElementById('rotSlider').value = 0; document.getElementById('rotVal').textContent = '0\u00B0'; document.getElementById('briSlider').value = 100; document.getElementById('briVal').textContent = '100%'; document.getElementById('conSlider').value = 100; document.getElementById('conVal').textContent = '100%'; document.getElementById('satSlider').value = 100; document.getElementById('satVal').textContent = '100%'; setDrawTool('brush'); brushCanvas = null; editShapes = []; selectedShapeId = null; shapeInteraction = null; shapeInteractionStart = null; shapeIdCounter = 0; undoStack.length = 0; document.getElementById('editModal').classList.add('active'); requestAnimationFrame(function() { requestAnimationFrame(function() { renderEditCanvas(); document.getElementById('drawCanvas').getContext('2d').clearRect(0, 0, 9999, 9999); setEditMode('crop'); }); }); }
+function closeEditModal() { document.getElementById('editModal').classList.remove('active'); state.editContext = null; }
+
+function renderDrawCanvas() { var dc = document.getElementById('drawCanvas'); if (!dc || dc.width === 0) return; var ctx = dc.getContext('2d'); ctx.clearRect(0, 0, dc.width, dc.height); if (brushCanvas && brushCanvas.width > 0) ctx.drawImage(brushCanvas, 0, 0); editShapes.forEach(function(shape) { drawShapeObject(ctx, shape); }); if (selectedShapeId !== null) { var shape = editShapes.find(function(s) { return s.id === selectedShapeId; }); if (shape) drawSelectionUI(ctx, shape); } var btn = document.getElementById('deleteShapeBtn'); if (btn) btn.style.display = (selectedShapeId !== null) ? 'flex' : 'none'; }
+
+function drawShapeObject(ctx, shape) { ctx.strokeStyle = shape.color; ctx.lineWidth = shape.lineWidth; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; var x1 = Math.min(shape.x1, shape.x2), y1 = Math.min(shape.y1, shape.y2), x2 = Math.max(shape.x1, shape.x2), y2 = Math.max(shape.y1, shape.y2); if (shape.type === 'oval') { var cx = (x1 + x2) / 2, cy = (y1 + y2) / 2; var rx = Math.max(1, (x2 - x1) / 2), ry = Math.max(1, (y2 - y1) / 2); ctx.beginPath(); ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2); ctx.stroke(); } else if (shape.type === 'rect') { ctx.strokeRect(x1, y1, Math.max(1, x2 - x1), Math.max(1, y2 - y1)); } else if (shape.type === 'arrow') { var headLen = Math.max(10, shape.lineWidth * 4); var angle = Math.atan2(shape.y2 - shape.y1, shape.x2 - shape.x1); ctx.beginPath(); ctx.moveTo(shape.x1, shape.y1); ctx.lineTo(shape.x2, shape.y2); ctx.stroke(); ctx.beginPath(); ctx.moveTo(shape.x2, shape.y2); ctx.lineTo(shape.x2 - headLen * Math.cos(angle - Math.PI / 6), shape.y2 - headLen * Math.sin(angle - Math.PI / 6)); ctx.lineTo(shape.x2 - headLen * Math.cos(angle + Math.PI / 6), shape.y2 - headLen * Math.sin(angle + Math.PI / 6)); ctx.closePath(); ctx.fillStyle = shape.color; ctx.fill(); } }
+function drawSelectionUI(ctx, shape) { var x1 = Math.min(shape.x1, shape.x2), y1 = Math.min(shape.y1, shape.y2), x2 = Math.max(shape.x1, shape.x2), y2 = Math.max(shape.y1, shape.y2); var pad = 6; ctx.strokeStyle = 'rgba(10,10,10,0.5)'; ctx.lineWidth = 1; ctx.setLineDash([4, 4]); ctx.strokeRect(x1 - pad, y1 - pad, x2 - x1 + pad * 2, y2 - y1 + pad * 2); ctx.setLineDash([]); var hs = 8; var handles = [{ x: x1 - pad, y: y1 - pad }, { x: x2 + pad, y: y1 - pad }, { x: x1 - pad, y: y2 + pad }, { x: x2 + pad, y: y2 + pad }]; ctx.fillStyle = '#0a0a0a'; ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; handles.forEach(function(h) { ctx.beginPath(); ctx.rect(h.x - hs / 2, h.y - hs / 2, hs, hs); ctx.fill(); ctx.stroke(); }); }
+function getShapeBounds(shape) { return { left: Math.min(shape.x1, shape.x2), top: Math.min(shape.y1, shape.y2), right: Math.max(shape.x1, shape.x2), bottom: Math.max(shape.y1, shape.y2) }; }
+function pointToLineDistance(px, py, x1, y1, x2, y2) { var dx = x2 - x1, dy = y2 - y1, lenSq = dx * dx + dy * dy; if (lenSq === 0) return Math.hypot(px - x1, py - y1); var t = ((px - x1) * dx + (py - y1) * dy) / lenSq; t = Math.max(0, Math.min(1, t)); return Math.hypot(px - (x1 + t * dx), py - (y1 + t * dy)); }
+function hitTestShape(shape, x, y) { var b = getShapeBounds(shape); var pad = Math.max(shape.lineWidth / 2 + 4, 8); if (shape.type === 'rect') { return x >= b.left - pad && x <= b.right + pad && y >= b.top - pad && y <= b.bottom + pad; } else if (shape.type === 'oval') { var cx = (b.left + b.right) / 2, cy = (b.top + b.bottom) / 2; var rx = Math.max(1, (b.right - b.left) / 2), ry = Math.max(1, (b.bottom - b.top) / 2); var dx = (x - cx) / (rx + pad), dy = (y - cy) / (ry + pad); return dx * dx + dy * dy <= 1; } else if (shape.type === 'arrow') { return pointToLineDistance(x, y, shape.x1, shape.y1, shape.x2, shape.y2) <= pad; } return false; }
+function hitTestHandle(shape, x, y) { var b = getShapeBounds(shape); var pad = 6, hs = 12; var corners = [{ name: 'tl', x: b.left - pad, y: b.top - pad }, { name: 'tr', x: b.right + pad, y: b.top - pad }, { name: 'bl', x: b.left - pad, y: b.bottom + pad }, { name: 'br', x: b.right + pad, y: b.bottom + pad }]; for (var i = 0; i < corners.length; i++) { if (Math.abs(x - corners[i].x) <= hs && Math.abs(y - corners[i].y) <= hs) return corners[i].name; } return null; }
+function resizeShape(shape, handle, mx, my, original) { var b = getShapeBounds(original); var nL = b.left, nT = b.top, nR = b.right, nB = b.bottom, min = 10; if (handle.indexOf('l') >= 0) nL = Math.min(mx, nR - min); if (handle.indexOf('r') >= 0) nR = Math.max(mx, nL + min); if (handle.indexOf('t') >= 0) nT = Math.min(my, nB - min); if (handle.indexOf('b') >= 0) nB = Math.max(my, nT + min); if (original.x1 <= original.x2) { shape.x1 = nL; shape.x2 = nR; } else { shape.x1 = nR; shape.x2 = nL; } if (original.y1 <= original.y2) { shape.y1 = nT; shape.y2 = nB; } else { shape.y1 = nB; shape.y2 = nT; } }
+function deleteSelectedShape() { if (selectedShapeId === null) return; saveUndoState(); var idx = editShapes.findIndex(function(s) { return s.id === selectedShapeId; }); if (idx >= 0) editShapes.splice(idx, 1); selectedShapeId = null; renderDrawCanvas(); }
+
+function renderEditCanvas() { var slot = state.editContext; if (!slot || !slot.originalImage) return; var src = slot.originalImage, w = src.naturalWidth, h = src.naturalHeight; var rad = (slot.rotation * Math.PI) / 180, cos = Math.abs(Math.cos(rad)), sin = Math.abs(Math.sin(rad)); var newW = Math.round(w * cos + h * sin), newH = Math.round(w * sin + h * cos); var canvas = document.getElementById('editCanvas'); canvas.width = newW; canvas.height = newH; var isWide = window.innerWidth > 900; var sidebarW = isWide ? 360 + 48 : 0; var maxW = isWide ? Math.min(window.innerWidth - sidebarW - 56, 1200) : window.innerWidth - 32; var maxH = isWide ? Math.min(window.innerHeight - 70, 900) : window.innerHeight * 0.42; var scale = Math.min(maxW / newW, maxH / newH, 1); var dispW = Math.round(newW * scale), dispH = Math.round(newH * scale); canvas.style.width = dispW + 'px'; canvas.style.height = dispH + 'px'; var ctx = canvas.getContext('2d'); ctx.clearRect(0, 0, newW, newH); ctx.filter = 'brightness(' + slot.brightness + '%) contrast(' + slot.contrast + '%) saturate(' + slot.saturation + '%)'; ctx.translate(newW / 2, newH / 2); ctx.rotate(rad); ctx.drawImage(src, -w / 2, -h / 2); ctx.filter = 'none'; ctx.setTransform(1, 0, 0, 1, 0, 0); var dc = document.getElementById('drawCanvas'); var oldW = dc.width, oldH = dc.height; var dimsChanged = (oldW !== dispW || oldH !== dispH); if (dimsChanged || !brushCanvas) { var savedBrushURL = null; if (brushCanvas && brushCanvas.width > 0 && brushCanvas.height > 0) { try { savedBrushURL = brushCanvas.toDataURL('image/png'); } catch (e) {} } dc.width = dispW; dc.height = dispH; dc.style.width = dispW + 'px'; dc.style.height = dispH + 'px'; if (!brushCanvas) brushCanvas = document.createElement('canvas'); brushCanvas.width = dispW; brushCanvas.height = dispH; if (oldW > 0 && oldH > 0 && dimsChanged) { var sx = dispW / oldW, sy = dispH / oldH; editShapes.forEach(function(s) { s.x1 *= sx; s.y1 *= sy; s.x2 *= sx; s.y2 *= sy; }); } if (savedBrushURL) { var img = new Image(); img.onload = function() { var bctx = brushCanvas.getContext('2d'); bctx.clearRect(0, 0, dispW, dispH); bctx.drawImage(img, 0, 0, dispW, dispH); renderDrawCanvas(); }; img.src = savedBrushURL; } } if (state.prevEditDims.w !== dispW || state.prevEditDims.h !== dispH) { state.cropRect = { x: dispW * 0.025, y: dispH * 0.025, w: dispW * 0.95, h: dispH * 0.95 }; updateCropRectUI(); state.prevEditDims = { w: dispW, h: dispH }; } renderDrawCanvas(); }
+function resetCropRect() { var c = document.getElementById('editCanvas'); state.cropRect = { x: 0, y: 0, w: c.clientWidth, h: c.clientHeight }; updateCropRectUI(); }
+
+function applyEdit() { var slot = state.editContext; if (!slot || !slot.originalImage) return; var ec = document.getElementById('editCanvas'), dc = document.getElementById('drawCanvas'); var comp = document.createElement('canvas'); comp.width = ec.width; comp.height = ec.height; var ctx = comp.getContext('2d'); ctx.drawImage(ec, 0, 0); var hasDraw = false; var scaleX = ec.width / dc.clientWidth, scaleY = ec.height / dc.clientHeight; if (brushCanvas && brushCanvas.width > 0 && brushCanvas.height > 0) { var bctx = brushCanvas.getContext('2d'); var brushData = bctx.getImageData(0, 0, brushCanvas.width, brushCanvas.height); for (var i = 3; i < brushData.data.length; i += 4) { if (brushData.data[i] > 0) { hasDraw = true; break; } } if (hasDraw) ctx.drawImage(brushCanvas, 0, 0, comp.width, comp.height); } if (editShapes.length > 0) { hasDraw = true; editShapes.forEach(function(shape) { drawShapeObject(ctx, { type: shape.type, x1: shape.x1 * scaleX, y1: shape.y1 * scaleY, x2: shape.x2 * scaleX, y2: shape.y2 * scaleY, color: shape.color, lineWidth: shape.lineWidth * scaleX }); }); } if (hasDraw) { slot.drawData = comp.toDataURL('image/png'); var di = new Image(); di.onload = function() { slot.drawImage = di; updateSlotPreview(slot); }; di.src = slot.drawData; } else { slot.drawData = null; slot.drawImage = null; } var r = state.cropRect, dW = ec.clientWidth, dH = ec.clientHeight; var csX = ec.width / dW, csY = ec.height / dH; var sx = Math.max(0, Math.min(r.x, dW)), sy = Math.max(0, Math.min(r.y, dH)); var sx2 = Math.max(0, Math.min(r.x + r.w, dW)), sy2 = Math.max(0, Math.min(r.y + r.h, dH)); var sw = Math.max(10, sx2 - sx), sh = Math.max(10, sy2 - sy); var result = document.createElement('canvas'); result.width = Math.round(sw * csX); result.height = Math.round(sh * csY); result.getContext('2d').drawImage(comp, sx * csX, sy * csY, sw * csX, sh * csY, 0, 0, sw * csX, sh * csY); slot.croppedCanvas = result; slot.rotation = 0; slot.brightness = 100; slot.contrast = 100; slot.saturation = 100; updateSlotPreview(slot); closeEditModal(); showToast('Edit applied', 'success'); }
+function updateCropRectUI() { var r = state.cropRect, rect = document.getElementById('cropRect'); rect.style.left = r.x + 'px'; rect.style.top = r.y + 'px'; rect.style.width = r.w + 'px'; rect.style.height = r.h + 'px'; }
+function updateRotation(v) { var s = state.editContext; if (!s) return; s.rotation = parseInt(v); document.getElementById('rotVal').textContent = v + '\u00B0'; renderEditCanvas(); }
+function adjustRotation(d) { var s = state.editContext; if (!s) return; var v = Math.max(-45, Math.min(45, s.rotation + d)); document.getElementById('rotSlider').value = v; updateRotation(v); }
+function updateBrightness(v) { var s = state.editContext; if (!s) return; s.brightness = parseInt(v); document.getElementById('briVal').textContent = v + '%'; renderEditCanvas(); }
+function updateContrast(v) { var s = state.editContext; if (!s) return; s.contrast = parseInt(v); document.getElementById('conVal').textContent = v + '%'; renderEditCanvas(); }
+function updateSaturation(v) { var s = state.editContext; if (!s) return; s.saturation = parseInt(v); document.getElementById('satVal').textContent = v + '%'; renderEditCanvas(); }
+function resetAdjustments() { var s = state.editContext; if (!s) return; s.rotation = 0; s.brightness = 100; s.contrast = 100; s.saturation = 100; document.getElementById('rotSlider').value = 0; document.getElementById('rotVal').textContent = '0\u00B0'; document.getElementById('briSlider').value = 100; document.getElementById('briVal').textContent = '100%'; document.getElementById('conSlider').value = 100; document.getElementById('conVal').textContent = '100%'; document.getElementById('satSlider').value = 100; document.getElementById('satVal').textContent = '100%'; renderEditCanvas(); showToast('Reset', 'success'); }
+
+function setEditMode(mode) { state.editMode = mode; var dc = document.getElementById('drawCanvas'), cr = document.getElementById('cropRect'), dt = document.getElementById('drawTools'); document.getElementById('mode-crop').classList.toggle('active', mode === 'crop'); document.getElementById('mode-draw').classList.toggle('active', mode === 'draw'); if (mode === 'draw') { dc.classList.add('active'); cr.classList.add('hidden'); dt.classList.add('active'); } else { dc.classList.remove('active'); cr.classList.remove('hidden'); dt.classList.remove('active'); selectedShapeId = null; shapeInteraction = null; renderDrawCanvas(); } }
+function setDrawTool(tool) { drawState.tool = tool; document.querySelectorAll('.tool-btn').forEach(function(b) { b.classList.toggle('active', b.dataset.tool === tool); }); if (tool === 'brush') { selectedShapeId = null; shapeInteraction = null; renderDrawCanvas(); } }
+function setDrawColor(color) { drawState.color = color; document.querySelectorAll('.color-btn').forEach(function(b) { b.classList.toggle('active', b.dataset.color === color); }); }
+function setBrushSize(size) { drawState.brushSize = parseInt(size); document.getElementById('brushVal').textContent = size; }
+function saveUndoState() { if (!brushCanvas || brushCanvas.width === 0) return; var bctx = brushCanvas.getContext('2d'); var imageData = null; try { imageData = bctx.getImageData(0, 0, brushCanvas.width, brushCanvas.height); } catch (e) {} undoStack.push({ imageData: imageData, shapes: editShapes.map(function(s) { return Object.assign({}, s); }) }); if (undoStack.length > 30) undoStack.shift(); }
+function undoDrawing() { if (undoStack.length === 0) { showToast('Nothing to undo', 'info'); return; } var st = undoStack.pop(); var bctx = brushCanvas.getContext('2d'); bctx.clearRect(0, 0, brushCanvas.width, brushCanvas.height); if (st.imageData) bctx.putImageData(st.imageData, 0, 0); editShapes = st.shapes.map(function(s) { return Object.assign({}, s); }); selectedShapeId = null; shapeInteraction = null; renderDrawCanvas(); }
+function clearDrawing() { saveUndoState(); var bctx = brushCanvas.getContext('2d'); bctx.clearRect(0, 0, brushCanvas.width, brushCanvas.height); editShapes = []; selectedShapeId = null; shapeInteraction = null; renderDrawCanvas(); }
+
+(function setupDraw() { var dc = document.getElementById('drawCanvas'); function getPos(e) { var r = dc.getBoundingClientRect(); if (e.touches && e.touches[0]) e = e.touches[0]; return { x: e.clientX - r.left, y: e.clientY - r.top }; } function start(e) { if (state.editMode !== 'draw') return; e.preventDefault(); var p = getPos(e); var tool = drawState.tool; if (tool === 'brush') { drawState.isDrawing = true; drawState.lastX = p.x; drawState.lastY = p.y; saveUndoState(); var bctx = brushCanvas.getContext('2d'); bctx.fillStyle = drawState.color; bctx.beginPath(); bctx.arc(p.x, p.y, drawState.brushSize / 2, 0, Math.PI * 2); bctx.fill(); renderDrawCanvas(); } else { if (selectedShapeId !== null) { var selShape = editShapes.find(function(s) { return s.id === selectedShapeId; }); if (selShape) { var handle = hitTestHandle(selShape, p.x, p.y); if (handle) { saveUndoState(); shapeInteraction = 'resize-' + handle; shapeInteractionStart = { pos: p, shape: Object.assign({}, selShape) }; return; } } } for (var i = editShapes.length - 1; i >= 0; i--) { if (hitTestShape(editShapes[i], p.x, p.y)) { selectedShapeId = editShapes[i].id; saveUndoState(); shapeInteraction = 'move'; shapeInteractionStart = { pos: p, shape: Object.assign({}, editShapes[i]) }; renderDrawCanvas(); return; } } selectedShapeId = null; saveUndoState(); var ns = { id: ++shapeIdCounter, type: tool, x1: p.x, y1: p.y, x2: p.x, y2: p.y, color: drawState.color, lineWidth: drawState.brushSize }; editShapes.push(ns); selectedShapeId = ns.id; shapeInteraction = 'create'; shapeInteractionStart = { pos: p }; renderDrawCanvas(); } } function move(e) { if (state.editMode !== 'draw') return; var p = getPos(e); if (drawState.isDrawing && drawState.tool === 'brush') { e.preventDefault(); var bctx = brushCanvas.getContext('2d'); bctx.strokeStyle = drawState.color; bctx.lineWidth = drawState.brushSize; bctx.lineCap = 'round'; bctx.lineJoin = 'round'; bctx.beginPath(); bctx.moveTo(drawState.lastX, drawState.lastY); bctx.lineTo(p.x, p.y); bctx.stroke(); drawState.lastX = p.x; drawState.lastY = p.y; renderDrawCanvas(); } else if (shapeInteraction) { e.preventDefault(); var shape = editShapes.find(function(s) { return s.id === selectedShapeId; }); if (!shape) return; if (shapeInteraction === 'create') { shape.x2 = p.x; shape.y2 = p.y; } else if (shapeInteraction === 'move') { var dx = p.x - shapeInteractionStart.pos.x, dy = p.y - shapeInteractionStart.pos.y; shape.x1 = shapeInteractionStart.shape.x1 + dx; shape.y1 = shapeInteractionStart.shape.y1 + dy; shape.x2 = shapeInteractionStart.shape.x2 + dx; shape.y2 = shapeInteractionStart.shape.y2 + dy; } else if (shapeInteraction.indexOf('resize-') === 0) { resizeShape(shape, shapeInteraction.replace('resize-', ''), p.x, p.y, shapeInteractionStart.shape); } renderDrawCanvas(); } else if (drawState.tool !== 'brush') { var cursor = ''; if (selectedShapeId !== null) { var ss = editShapes.find(function(s) { return s.id === selectedShapeId; }); if (ss) { var h = hitTestHandle(ss, p.x, p.y); if (h) cursor = (h === 'tl' || h === 'br') ? 'nwse-resize' : 'nesw-resize'; else if (hitTestShape(ss, p.x, p.y)) cursor = 'move'; } } if (cursor === '') { for (var j = editShapes.length - 1; j >= 0; j--) { if (hitTestShape(editShapes[j], p.x, p.y)) { cursor = 'move'; break; } } } dc.style.cursor = cursor || ''; } } function end() { if (drawState.isDrawing) drawState.isDrawing = false; if (shapeInteraction === 'create') { var shape = editShapes.find(function(s) { return s.id === selectedShapeId; }); if (shape) { if (Math.abs(shape.x2 - shape.x1) < 5 && Math.abs(shape.y2 - shape.y1) < 5) { var idx = editShapes.indexOf(shape); editShapes.splice(idx, 1); selectedShapeId = null; if (undoStack.length > 0) undoStack.pop(); } } } shapeInteraction = null; shapeInteractionStart = null; dc.style.cursor = ''; renderDrawCanvas(); } dc.addEventListener('mousedown', start); dc.addEventListener('mousemove', move); dc.addEventListener('mouseup', end); dc.addEventListener('mouseleave', end); dc.addEventListener('touchstart', start, { passive: false }); dc.addEventListener('touchmove', move, { passive: false }); dc.addEventListener('touchend', end); })();
+
+(function setupCropDrag() { var wrap = document.getElementById('editWrap'); function getPos(e) { if (e.touches && e.touches[0]) e = e.touches[0]; var wr = wrap.getBoundingClientRect(); return { x: e.clientX - wr.left, y: e.clientY - wr.top }; } function onDown(e) { if (state.editMode !== 'crop' || !state.editContext) return; var handle = e.target.dataset.handle; if (handle) state.dragMode = 'resize-' + handle; else if (e.target.closest('.crop-rect')) state.dragMode = 'move'; else return; e.preventDefault(); e.stopPropagation(); state.dragStart = { pos: getPos(e), rect: Object.assign({}, state.cropRect) }; document.addEventListener('mousemove', onMove); document.addEventListener('mouseup', onUp); document.addEventListener('touchmove', onMove, { passive: false }); document.addEventListener('touchend', onUp); } function onMove(e) { if (!state.dragMode || !state.dragStart) return; e.preventDefault(); var p = getPos(e), dx = p.x - state.dragStart.pos.x, dy = p.y - state.dragStart.pos.y; var s = state.dragStart.rect; var canvas = document.getElementById('editCanvas'); var iW = canvas.clientWidth, iH = canvas.clientHeight, min = 30; var nr = Object.assign({}, s); if (state.dragMode === 'move') { nr.x = Math.max(0, Math.min(s.x + dx, iW - s.w)); nr.y = Math.max(0, Math.min(s.y + dy, iH - s.h)); } else { var h = state.dragMode.replace('resize-', ''); if (h.indexOf('l') >= 0) { var nx = Math.max(0, Math.min(s.x + dx, s.x + s.w - min)); nr.x = nx; nr.w = s.x + s.w - nx; } if (h.indexOf('r') >= 0) nr.w = Math.max(min, Math.min(s.w + dx, iW - s.x)); if (h.indexOf('t') >= 0) { var ny = Math.max(0, Math.min(s.y + dy, s.y + s.h - min)); nr.y = ny; nr.h = s.y + s.h - ny; } if (h.indexOf('b') >= 0) nr.h = Math.max(min, Math.min(s.h + dy, iH - s.y)); } state.cropRect = nr; updateCropRectUI(); } function onUp() { if (state.dragMode) { state.suppressModalClick = true; setTimeout(function() { state.suppressModalClick = false; }, 200); } state.dragMode = null; state.dragStart = null; document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); document.removeEventListener('touchmove', onMove); document.removeEventListener('touchend', onUp); } var rect = document.getElementById('cropRect'); rect.addEventListener('mousedown', onDown); rect.addEventListener('touchstart', onDown, { passive: false }); document.getElementById('editModal').addEventListener('click', function() {}); document.getElementById('viewModal').addEventListener('click', function(e) { if (e.target.id === 'viewModal') closeViewModal(); }); document.getElementById('saveModal').addEventListener('click', function(e) { if (e.target.id === 'saveModal') closeModal('saveModal'); }); document.querySelectorAll('.gen-modal').forEach(function(m) { m.addEventListener('click', function(e) { if (e.target === m) m.classList.remove('active'); }); }); document.addEventListener('keydown', function(e) { if (e.key === 'Escape') { if (document.getElementById('saveModal').classList.contains('active')) closeModal('saveModal'); else if (document.getElementById('viewModal').classList.contains('active')) closeViewModal(); else if (document.getElementById('editModal').classList.contains('active')) closeEditModal(); else document.querySelectorAll('.gen-modal.active').forEach(function(m) { m.classList.remove('active'); }); } if ((e.key === 'Delete' || e.key === 'Backspace') && document.getElementById('editModal').classList.contains('active') && state.editMode === 'draw' && selectedShapeId !== null) { e.preventDefault(); deleteSelectedShape(); } }); })();
+window.addEventListener('resize', function() { if (state.editContext && document.getElementById('editModal').classList.contains('active')) renderEditCanvas(); });
+
+/* ===== Photo compression + Job Save/Load (Firestore) ===== */
+function compressImageData(canvas) {
+  var maxDim = 1200; var w = canvas.width, h = canvas.height;
+  if (w > maxDim || h > maxDim) { var scale = maxDim / Math.max(w, h); var nw = Math.round(w * scale), nh = Math.round(h * scale); var tmp = document.createElement('canvas'); tmp.width = nw; tmp.height = nh; tmp.getContext('2d').drawImage(canvas, 0, 0, nw, nh); canvas = tmp; }
+  return canvas.toDataURL('image/jpeg', 0.6);
+}
+
+function serializeSlot(slot) {
+  if (!slot.originalImage) return null;
+  var source;
+  if (slot.croppedCanvas) { source = slot.croppedCanvas; } else { var w = slot.originalImage.naturalWidth, h = slot.originalImage.naturalHeight; source = document.createElement('canvas'); source.width = w; source.height = h; source.getContext('2d').drawImage(slot.originalImage, 0, 0); }
+  if (slot.drawImage) source.getContext('2d').drawImage(slot.drawImage, 0, 0, source.width, source.height);
+  return { type: slot.type, title: slot.title, icon: slot.icon, removable: slot.removable, labelText: slot.labelText, fontSize: slot.fontSize, showDate: slot.showDate, showLabel: slot.showLabel, customDate: slot.customDate ? slot.customDate.toISOString() : null, imageData: compressImageData(source) };
+}
+
+function saveJobToDB(silent) {
+  if (!state.currentJob) { showToast('No job open', 'error'); return; }
+  var slotData = state.slots.map(serializeSlot).filter(function(s) { return s !== null; });
+  var hasPhotos = slotData.length > 0;
+  if (state.currentJob.status === 'pending' && hasPhotos) state.currentJob.status = 'in_progress';
+  var btn = document.getElementById('saveJobBtn'); if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...'; }
+  var jobRef = fs.collection('jobs').doc(state.currentJob.id);
+  // Save job metadata
+  jobRef.set(state.currentJob, { merge: true }).then(function() {
+    // Delete old slots
+    return jobRef.collection('slots').get();
+  }).then(function(snapshot) {
+    var batch = fs.batch();
+    snapshot.docs.forEach(function(doc) { batch.delete(doc.ref); });
+    // Add new slots
+    slotData.forEach(function(sd) { batch.set(jobRef.collection('slots').doc(sd.type), sd); });
+    return batch.commit();
+  }).then(function() {
+    if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-save"></i> Save Job'; }
+    if (!silent) showToast('Job saved to cloud', 'success');
+  }).catch(function(error) {
+    if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-save"></i> Save Job'; }
+    showToast('Save failed: ' + error.message, 'error');
+  });
+}
+
+function openJob(jobId) {
+  DB.get('jobs', jobId).then(function(job) {
+    if (!job) { showToast('Job not found', 'error'); return; }
+    // Get slots from subcollection
+    fs.collection('jobs').doc(jobId).collection('slots').get().then(function(snapshot) {
+      var slots = snapshot.docs.map(function(d) { return d.data(); });
+      clearSlots(); state.currentJob = job;
+      document.getElementById('currentJobTitle').textContent = job.title + (job.status === 'completed' ? ' ✓' : '');
+      var completeBtn = document.getElementById('completeBtn');
+      if (completeBtn) completeBtn.style.display = job.status === 'completed' ? 'none' : 'flex';
+      var vg = document.getElementById('vehicleGrid'), dg = document.getElementById('defectGrid'), pg = document.getElementById('partsGrid');
+      vg.innerHTML = ''; dg.innerHTML = ''; pg.innerHTML = '';
+      if (slots.length > 0) {
+        slots.forEach(function(sd) {
+          var container = vg;
+          if (sd.type.indexOf('defect_') === 0) container = dg; else if (sd.type.indexOf('parts_') === 0) container = pg;
+          var slot = createSlot({ type: sd.type, title: sd.title, icon: sd.icon, removable: sd.removable, container: container, labelText: sd.labelText, fontSize: sd.fontSize, showDate: sd.showDate, showLabel: sd.showLabel });
+          if (sd.customDate) slot.customDate = new Date(sd.customDate);
+          if (sd.imageData) { var img = new Image(); img.onload = function() { slot.originalImage = img; slot.croppedCanvas = null; updateSlotPreview(slot); updateStats(); }; img.src = sd.imageData; }
+        });
+      } else { initDefaultSlots(); }
+      updateStats(); showView('inspection');
+    });
+  });
+}
+
+function clearSlots() { state.slots.forEach(function(s) { if (s.element) s.element.remove(); }); state.slots = []; state.currentJob = null; }
+function initDefaultSlots() { var vg = document.getElementById('vehicleGrid'); createSlot({ type: 'mileage', title: 'Mileage', icon: 'fas fa-tachometer-alt', container: vg }); createSlot({ type: 'rear_view', title: 'Rear View', icon: 'fas fa-car-side', container: vg }); createSlot({ type: 'front_view', title: 'Front View', icon: 'fas fa-car', container: vg }); createSlot({ type: 'vin_plate', title: 'VIN Plate', icon: 'fas fa-barcode', container: vg }); addDefectSlot(); addPartsSlot(); addPartsSlot(); }
+function addDefectSlot() { var g = document.getElementById('defectGrid'); if (!g) return; var n = g.children.length + 1; createSlot({ type: 'defect_' + n, title: 'Defect #' + n, icon: 'fas fa-exclamation-triangle', container: g, removable: true }); }
+function addPartsSlot() { var g = document.getElementById('partsGrid'); if (!g) return; var n = g.children.length + 1; createSlot({ type: 'parts_' + n, title: 'Parts #' + n, icon: 'fas fa-cogs', container: g, removable: true }); }
+
+/* ===== PDF Report ===== */
+function generatePDF() { if (!state.currentJob) { showToast('No job open', 'error'); return; } generateJobPDF(state.currentJob.id); }
+function generateJobPDF(jobId) {
+  DB.get('jobs', jobId).then(function(job) {
+    if (!job) { showToast('Job not found', 'error'); return; }
+    var custP = job.customerId ? DB.get('customers', job.customerId) : Promise.resolve(null);
+    custP.then(function(customer) {
+      // Get slots from subcollection
+      fs.collection('jobs').doc(jobId).collection('slots').get().then(function(snapshot) {
+        var slots = snapshot.docs.map(function(d) { return d.data(); });
+        var doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+        var pageW = 210, pageH = 297, margin = 15;
+        doc.setFillColor(10, 10, 10); doc.rect(0, 0, pageW, 38, 'F');
+        doc.setTextColor(255, 255, 255); doc.setFontSize(22); doc.setFont('helvetica', 'bold'); doc.text('VINDOC', margin, 20);
+        doc.setFontSize(8); doc.setFont('helvetica', 'normal'); doc.text('VEHICLE INSPECTION REPORT', margin, 28);
+        doc.text('Generated: ' + formatDateStamp(new Date()), pageW - margin, 28, { align: 'right' });
+        doc.setTextColor(0, 0, 0); var y = 48;
+        doc.setFontSize(14); doc.setFont('helvetica', 'bold'); doc.text(job.title, margin, y); y += 7;
+        doc.setFontSize(9); doc.setFont('helvetica', 'normal');
+        var stText = job.status === 'completed' ? 'Completed' : (job.status === 'in_progress' ? 'In Progress' : 'Pending');
+        doc.text('Status: ' + stText, margin, y); doc.text('Date: ' + (job.inspectionDate || '-'), margin + 70, y); y += 5;
+        doc.text('Inspector: ' + (job.createdByName || '-'), margin, y); y += 6;
+        if (job.notes) { var sn = doc.splitTextToSize('Notes: ' + job.notes, pageW - margin * 2); doc.text(sn, margin, y); y += sn.length * 4 + 2; }
+        y += 2; doc.setDrawColor(200, 200, 200); doc.line(margin, y, pageW - margin, y); y += 7;
+        if (customer) {
+          doc.setFontSize(11); doc.setFont('helvetica', 'bold'); doc.text('Customer & Vehicle', margin, y); y += 6;
+          doc.setFontSize(9); doc.setFont('helvetica', 'normal');
+          doc.text('Name: ' + esc(customer.name || '-'), margin, y); doc.text('Company: ' + esc(customer.company || '-'), margin + 100, y); y += 5;
+          doc.text('Phone: ' + (customer.phone || '-'), margin, y); doc.text('Email: ' + (customer.email || '-'), margin + 100, y); y += 5;
+          var veh = (customer.vehicleMake || '') + ' ' + (customer.vehicleModel || ''); if (customer.vehicleYear) veh += ' (' + customer.vehicleYear + ')';
+          doc.text('Vehicle: ' + esc(veh.trim() || '-'), margin, y); y += 5;
+          doc.text('Plate: ' + (customer.vehiclePlate || '-'), margin, y); doc.text('VIN: ' + (customer.vin || '-'), margin + 100, y); y += 7;
+          doc.setDrawColor(200, 200, 200); doc.line(margin, y, pageW - margin, y); y += 7;
+        }
+        doc.setFontSize(11); doc.setFont('helvetica', 'bold'); doc.text('Inspection Photos', margin, y); y += 8;
+        if (slots.length === 0) { doc.setFontSize(9); doc.setFont('helvetica', 'normal'); doc.text('No photos in this job.', margin, y); }
+        else {
+          var cols = 2; var cellW = (pageW - margin * 2 - 8) / cols; var cellH = cellW * 0.7; var labelH = 7;
+          slots.forEach(function(sd, i) {
+            var col = i % cols; var row = Math.floor(i / cols);
+            if (col === 0 && row > 0) y += cellH + labelH + 5;
+            if (y + cellH + labelH > pageH - 15) { doc.addPage(); y = 20; }
+            var x = margin + col * (cellW + 8);
+            if (!sd.imageData) return;
+            try {
+              var tmpImg = new Image(); tmpImg.src = sd.imageData;
+              var iw = tmpImg.width || 800, ih = tmpImg.height || 600; var ratio = iw / ih;
+              var dW = cellW, dH = cellW / ratio; if (dH > cellH) { dH = cellH; dW = cellH * ratio; }
+              var dx = x + (cellW - dW) / 2, dy = y + (cellH - dH) / 2;
+              doc.setDrawColor(220, 220, 220); doc.setLineWidth(0.3); doc.rect(x, y, cellW, cellH);
+              doc.addImage(sd.imageData, 'JPEG', dx, dy, dW, dH);
+            } catch (e) {}
+            doc.setFontSize(8); doc.setFont('helvetica', 'bold');
+            var lbl = sd.title || ''; if (sd.showLabel && sd.labelText) lbl += ' — ' + sd.labelText.toUpperCase();
+            doc.text(lbl, x, y + cellH + 4);
+          });
+        }
+        var pc = doc.internal.getNumberOfPages();
+        for (var p = 1; p <= pc; p++) { doc.setPage(p); doc.setFontSize(7); doc.setFont('helvetica', 'normal'); doc.setTextColor(150, 150, 150); doc.text('VINDOC — Page ' + p + ' of ' + pc, pageW / 2, pageH - 8, { align: 'center' }); doc.setTextColor(0, 0, 0); }
+        doc.save('VINDOC_' + job.title.replace(/\s+/g, '_') + '_' + formatDateStamp(new Date()).replace(/\./g, '-') + '.pdf');
+        showToast('PDF report generated', 'success');
+      });
+    });
+  });
+}
+
+/* ===== Utils ===== */
+function esc(s) { if (!s) return ''; return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+function updateStats() { var loaded = state.slots.filter(function(s) { return s.originalImage; }).length; var vSlots = state.slots.filter(function(s) { return s.type === 'mileage' || s.type === 'rear_view' || s.type === 'front_view' || s.type === 'vin_plate'; }); var dSlots = state.slots.filter(function(s) { return s.type.indexOf('defect_') === 0; }); var pSlots = state.slots.filter(function(s) { return s.type.indexOf('parts_') === 0; }); var vLoaded = vSlots.filter(function(s) { return s.originalImage; }).length; var dLoaded = dSlots.filter(function(s) { return s.originalImage; }).length; var pLoaded = pSlots.filter(function(s) { return s.originalImage; }).length; var el; if ((el = document.getElementById('count-vehicle'))) el.textContent = vLoaded + '/' + vSlots.length; if ((el = document.getElementById('count-defect'))) el.textContent = dLoaded + '/' + dSlots.length; if ((el = document.getElementById('count-parts'))) el.textContent = pLoaded + '/' + pSlots.length; }
+function showToast(msg, type) { type = type || 'info'; var c = document.getElementById('toastContainer'); var t = document.createElement('div'); t.className = 'toast ' + type; var ic = type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'; t.innerHTML = '<i class="fas fa-' + ic + '"></i><span>' + msg + '</span>'; c.appendChild(t); setTimeout(function() { t.classList.add('out'); setTimeout(function() { t.remove(); }, 250); }, 2600); }
+function updateClock() { var n = new Date(); var el = document.querySelector('#clockDisplay span'); if (el) el.textContent = String(n.getDate()).padStart(2, '0') + '.' + String(n.getMonth() + 1).padStart(2, '0') + '.' + n.getFullYear() + ' ' + String(n.getHours()).padStart(2, '0') + ':' + String(n.getMinutes()).padStart(2, '0') + ':' + String(n.getSeconds()).padStart(2, '0'); }
+setInterval(updateClock, 1000); updateClock();
+
+/* ===== Init ===== */
+// Check if Firebase config is placeholder
+if (firebaseConfig.apiKey === 'PASTE_API_KEY_HERE') {
+  document.getElementById('authScreen').innerHTML = '<div class="auth-box"><div class="auth-title">VINDOC</div><div class="auth-subtitle">Firebase Setup Required</div><div class="auth-config-note"><b>Follow these steps:</b><br><br>1. Go to <b>console.firebase.google.com</b><br>2. Create a new project<br>3. Add a <b>Web App</b> (</> icon)<br>4. Copy the config object<br>5. Paste it in the code where marked<br><br><b>Then enable:</b><br>• Authentication → Email/Password<br>• Firestore Database → Create<br><br>Reload this page after setup.</div></div>';
+} else {
+  checkSession();
+}
+</script>
+</body>
+</html>
