@@ -158,6 +158,12 @@ html,body{font-family:'Hanken Grotesk',sans-serif;background:var(--bg);color:var
 .gen-empty{text-align:center;padding:40px 20px;color:var(--muted)}
 .gen-empty i{font-size:32px;color:var(--muted-2);margin-bottom:10px}
 .gen-empty p{font-size:12px}
+.pptx-list{max-height:50vh;overflow-y:auto;display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:4px}
+.pptx-item{display:flex;align-items:center;gap:10px;border:1px solid var(--border-hi);padding:8px;cursor:pointer;transition:all 0.15s}
+.pptx-item:hover{border-color:var(--fg)}
+.pptx-item input{width:18px;height:18px;cursor:pointer;flex-shrink:0}
+.pptx-item img{width:60px;height:45px;object-fit:cover;border:1px solid var(--border)}
+.pptx-item span{font-size:11px;font-family:'Hanken Grotesk',sans-serif;font-weight:600;text-transform:uppercase}
 .save-modal{position:fixed;inset:0;background:rgba(255,255,255,0.97);backdrop-filter:blur(8px);z-index:2000;display:none;align-items:center;justify-content:center;padding:32px}
 .save-modal.active{display:flex}
 .save-box{background:var(--bg);border:1px solid var(--fg);padding:24px;max-width:380px;width:100%}
@@ -414,7 +420,7 @@ body.compact .act-btn span{display:none}
 <button class="insp-btn" style="background:var(--bg);border-color:var(--border-hi);color:var(--muted);" onclick="closeJob()"><i class="fas fa-times"></i> Close Job</button>
 <div class="insp-title" id="currentJobTitle">Untitled Job</div>
 <div class="header-right"><div class="stat"><div class="stat-val" id="photoCount">0</div><div class="stat-lbl">Photos</div></div><button class="btn-logout" id="compactToggle" onclick="toggleCompact()"><i class="fas fa-compress-alt"></i> Compact</button></div>
-<div class="insp-actions"><button class="insp-btn" id="saveJobBtn" onclick="saveJobToDB()"><i class="fas fa-save"></i> Save Job</button><button class="insp-btn" onclick="generatePDF()"><i class="fas fa-file-pdf"></i> PDF Report</button><button class="insp-btn" onclick="generatePPTX()"><i class="fas fa-file-powerpoint"></i> PPTX</button><button class="insp-btn primary" onclick="openSaveModal()"><i class="fas fa-download"></i> Save All</button><button class="insp-btn success" id="completeBtn" onclick="completeJob()"><i class="fas fa-check-circle"></i> Complete</button></div>
+<div class="insp-actions"><button class="insp-btn" id="saveJobBtn" onclick="saveJobToDB()"><i class="fas fa-save"></i> Save Job</button><button class="insp-btn" onclick="generatePDF()"><i class="fas fa-file-pdf"></i> PDF Report</button><button class="insp-btn" onclick="openPptxModal()"><i class="fas fa-file-powerpoint"></i> PPTX</button><button class="insp-btn primary" onclick="openSaveModal()"><i class="fas fa-download"></i> Save All</button><button class="insp-btn success" id="completeBtn" onclick="completeJob()"><i class="fas fa-check-circle"></i> Complete</button></div>
 </div>
 
 <div id="dashboardView" class="view active"><div class="view-pad"><div class="dash-grid">
@@ -461,6 +467,13 @@ body.compact .act-btn span{display:none}
 <div><label class="gen-label">Password</label><input type="password" class="gen-input" id="userPasswordInput" placeholder="Password"></div>
 <div><label class="gen-label">Role</label><select class="gen-select" id="userRoleInput"><option value="staff">Staff (Normal)</option><option value="manager">Manager (Moderator)</option><option value="admin">Admin (Owner)</option></select></div>
 </div><div class="gen-actions"><button class="gen-btn" onclick="closeModal('userModal')">Cancel</button><button class="gen-btn primary" onclick="saveUser()">Save User</button></div></div></div>
+
+<div class="gen-modal" id="pptxModal"><div class="gen-box wide"><div class="gen-box-title">SELECT PHOTOS FOR PPTX</div>
+<div id="pptxPhotoList" class="pptx-list"></div>
+<div class="gen-actions" style="margin-top:16px;">
+    <button class="gen-btn" onclick="closeModal('pptxModal')">Cancel</button>
+    <button class="gen-btn primary" onclick="generatePPTX()">Generate PPTX</button>
+</div></div></div>
 
 <div class="edit-modal" id="editModal"><div class="edit-header"><div class="modal-title">EDIT &amp; CROP<p>Crop, rotate 360, adjust, draw shapes &mdash; then Apply</p></div><button class="edit-close-btn" onclick="closeEditModal()"><i class="fas fa-times"></i></button></div><div class="edit-layout"><div class="edit-canvas-area"><div class="edit-container" onclick="event.stopPropagation()"><div class="edit-canvas-wrap" id="editWrap"><canvas class="edit-canvas" id="editCanvas"></canvas><canvas class="draw-canvas" id="drawCanvas"></canvas><div class="crop-rect" id="cropRect"><div class="crop-handle tl" data-handle="tl"></div><div class="crop-handle tr" data-handle="tr"></div><div class="crop-handle bl" data-handle="bl"></div><div class="crop-handle br" data-handle="br"></div></div></div></div></div><div class="edit-sidebar">
 <div class="sidebar-scroll">
@@ -609,7 +622,7 @@ function drawShapeObject(ctx,s){ctx.strokeStyle=s.color;ctx.lineWidth=s.lineWidt
 function drawSelectionUI(ctx,s){var x1=Math.min(s.x1,s.x2),y1=Math.min(s.y1,s.y2),x2=Math.max(s.x1,s.x2),y2=Math.max(s.y1,s.y2);var p=6;ctx.strokeStyle='rgba(10,10,10,0.5)';ctx.lineWidth=1;ctx.setLineDash([4,4]);ctx.strokeRect(x1-p,y1-p,x2-x1+p*2,y2-y1+p*2);ctx.setLineDash([]);var hs=8;ctx.fillStyle='#0a0a0a';ctx.strokeStyle='#fff';ctx.lineWidth=2;[{x:x1-p,y:y1-p},{x:x2+p,y:y1-p},{x:x1-p,y:y2+p},{x:x2+p,y:y2+p}].forEach(function(h){ctx.beginPath();ctx.rect(h.x-hs/2,h.y-hs/2,hs,hs);ctx.fill();ctx.stroke();});}
 function getShapeBounds(s){return{left:Math.min(s.x1,s.x2),top:Math.min(s.y1,s.y2),right:Math.max(s.x1,s.x2),bottom:Math.max(s.y1,s.y2)};}
 function ptLineDist(px,py,x1,y1,x2,y2){var dx=x2-x1,dy=y2-y1,ls=dx*dx+dy*dy;if(ls===0)return Math.hypot(px-x1,py-y1);var t=Math.max(0,Math.min(1,((px-x1)*dx+(py-y1)*dy)/ls));return Math.hypot(px-(x1+t*dx),py-(y1+t*dy));}
-function hitTestShape(s,x,y){var b=getShapeBounds(s);var p=Math.max(s.lineWidth/2+4,8);if(s.type==='rect')return x>=b.left-p&&x<=b.right+p&&y>=b.top-p&&y<=b.bottom+p;if(s.type==='oval'){var cx=(b.left+b.right)/2,cy=(b.top+b.bottom)/2;var rx=Math.max(1,(b.right-b.left)/2),ry=Math.max(1,(b.bottom-b-top)/2);var dx=(x-cx)/(rx+p),dy=(y-cy)/(ry+p);return dx*dx+dy*dy<=1;}if(s.type==='arrow')return ptLineDist(x,y,s.x1,s.y1,s.x2,s.y2)<=p;return false;}
+function hitTestShape(s,x,y){var b=getShapeBounds(s);var p=Math.max(s.lineWidth/2+4,8);if(s.type==='rect')return x>=b.left-p&&x<=b.right+p&&y>=b.top-p&&y<=b.bottom+p;if(s.type==='oval'){var cx=(b.left+b.right)/2,cy=(b.top+b.bottom)/2;var rx=Math.max(1,(b.right-b.left)/2),ry=Math.max(1,(b.bottom-b.top)/2);var dx=(x-cx)/(rx+p),dy=(y-cy)/(ry+p);return dx*dx+dy*dy<=1;}if(s.type==='arrow')return ptLineDist(x,y,s.x1,s.y1,s.x2,s.y2)<=p;return false;}
 function hitTestHandle(s,x,y){var b=getShapeBounds(s);var p=6,hs=12;var cs=[{n:'tl',x:b.left-p,y:b.top-p},{n:'tr',x:b.right+p,y:b.top-p},{n:'bl',x:b.left-p,y:b.bottom+p},{n:'br',x:b.right+p,y:b.bottom+p}];for(var i=0;i<cs.length;i++)if(Math.abs(x-cs[i].x)<=hs&&Math.abs(y-cs[i].y)<=hs)return cs[i].n;return null;}
 function resizeShape(s,h,mx,my,o){var b=getShapeBounds(o);var nL=b.left,nT=b.top,nR=b.right,nB=b.bottom,m=10;if(h.indexOf('l')>=0)nL=Math.min(mx,nR-m);if(h.indexOf('r')>=0)nR=Math.max(mx,nL+m);if(h.indexOf('t')>=0)nT=Math.min(my,nB-m);if(h.indexOf('b')>=0)nB=Math.max(my,nT+m);if(o.x1<=o.x2){s.x1=nL;s.x2=nR;}else{s.x1=nR;s.x2=nL;}if(o.y1<=o.y2){s.y1=nT;s.y2=nB;}else{s.y1=nB;s.y2=nT;}}
 function deleteSelectedShape(){if(selectedShapeId===null)return;saveUndoState();var i=editShapes.findIndex(function(s){return s.id===selectedShapeId;});if(i>=0)editShapes.splice(i,1);selectedShapeId=null;renderDrawCanvas();}
@@ -716,45 +729,57 @@ function generateJobPDF(jobId){
     if(!job){showToast('Job not found','error');return;}
     var cp=job.customerId?DB.get('customers',job.customerId):Promise.resolve(null);
     cp.then(function(cust){
-      // If we are currently viewing this job, use memory slots to capture real-time edits
       if(state.currentJob && state.currentJob.id === jobId){
         var slots = state.slots.map(serializeSlot);
-        buildAndDownloadPDF(job, cust, slots);
+        buildPDF(job, cust, slots);
       } else {
         fs.collection('jobs').doc(jobId).collection('slots').get().then(function(snap){
           var slots=snap.docs.map(function(d){return d.data();});
-          buildAndDownloadPDF(job, cust, slots);
+          buildPDF(job, cust, slots);
         });
       }
     });
   });
 }
-function buildAndDownloadPDF(job, cust, slots){
+function buildPDF(job, cust, slots){
   var J=window.jspdf?window.jspdf.jsPDF:window.jsPDF;
   if(!J){showToast('PDF library not loaded','error');return;}
   var doc=new J({orientation:'portrait',unit:'mm',format:'a4'});
   var pW=210,pH=297,m=15;
   
-  // First Page Cover
-  doc.setFillColor(10,10,10);doc.rect(0,0,pW,pH,'F');
-  doc.setTextColor(255,255,255);doc.setFontSize(42);doc.setFont('helvetica','bold');doc.text('VINDOC',pW/2,pH/2-20,{align:'center'});
-  doc.setFontSize(14);doc.setFont('helvetica','normal');doc.text('VEHICLE INSPECTION REPORT',pW/2,pH/2,{align:'center'});
-  doc.setFontSize(11);doc.text(job.title,pW/2,pH/2+15,{align:'center'});
-  if(cust){
-    var v=(cust.vehicleMake||'')+' '+(cust.vehicleModel||'');if(cust.vehicleYear)v+=' ('+cust.vehicleYear+')';
-    doc.setFontSize(10);doc.text(esc(v.trim()||'-'),pW/2,pH/2+25,{align:'center'});
-    doc.text('Plate: '+(cust.vehiclePlate||'-'),pW/2,pH/2+32,{align:'center'});
-  }
-  doc.text('Date: '+(job.inspectionDate||'-'),pW/2,pH-30,{align:'center'});
-  doc.addPage();
+  doc.setFillColor(10,10,10);doc.rect(0,0,pW,38,'F');
+  doc.setTextColor(255,255,255);doc.setFontSize(22);doc.setFont('helvetica','bold');doc.text('VINDOC',m,20);
+  doc.setFontSize(8);doc.setFont('helvetica','normal');doc.text('VEHICLE INSPECTION REPORT',m,28);
+  doc.text('Generated: '+formatDateStamp(new Date()),pW-m,28,{align:'right'});doc.setTextColor(0,0,0);
   
-  doc.setTextColor(0,0,0);
+  var y=48;doc.setFontSize(14);doc.setFont('helvetica','bold');doc.text(job.title,m,y);y+=7;
+  doc.setFontSize(9);doc.setFont('helvetica','normal');
+  var st=job.status==='completed'?'Completed':(job.status==='in_progress'?'In Progress':'Pending');
+  doc.text('Status: '+st,m,y);doc.text('Date: '+(job.inspectionDate||'-'),m+70,y);y+=5;
+  doc.text('Inspector: '+(job.createdByName||'-'),m,y);y+=6;
+  if(job.parts){doc.text('Parts Replaced: '+esc(job.parts),m,y);y+=5;}
+  if(job.notes){var sn=doc.splitTextToSize('Notes: '+job.notes,pW-m*2);doc.text(sn,m,y);y+=sn.length*4+2;}
+  y+=2;doc.setDrawColor(200,200,200);doc.line(m,y,pW-m,y);y+=7;
+  
+  if(cust){
+    doc.setFontSize(11);doc.setFont('helvetica','bold');doc.text('Customer & Vehicle',m,y);y+=6;
+    doc.setFontSize(9);doc.setFont('helvetica','normal');
+    doc.text('Name: '+esc(cust.name||'-'),m,y);doc.text('Company: '+esc(cust.company||'-'),m+100,y);y+=5;
+    doc.text('Phone: '+(cust.phone||'-'),m,y);doc.text('Email: '+(cust.email||'-'),m+100,y);y+=5;
+    var v=(cust.vehicleMake||'')+' '+(cust.vehicleModel||'');if(cust.vehicleYear)v+=' ('+cust.vehicleYear+')';
+    doc.text('Vehicle: '+esc(v.trim()||'-'),m,y);y+=5;
+    doc.text('Plate: '+(cust.vehiclePlate||'-'),m,y);doc.text('VIN: '+(cust.vin||'-'),m+100,y);y+=7;
+    doc.setDrawColor(200,200,200);doc.line(m,y,pW-m,y);y+=7;
+  }
+  
+  doc.setFontSize(11);doc.setFont('helvetica','bold');doc.text('Inspection Photos',m,y);y+=8;
+  
   var photoSlots=slots.filter(function(sd){return sd.imageData;});
   
   // Sort strictly by Vehicle, Defect, Parts
   photoSlots.sort(function(a,b){
     function getRank(s){
-      if(['mileage','rear_view','front_view','vin_plate'].includes(s.type)) return 1;
+      if(['mileage','rear_view','front_view','vin_plate'].indexOf(s.type) !== -1) return 1;
       if(s.type.indexOf('defect_')===0) return 2;
       if(s.type.indexOf('parts_')===0) return 3;
       return 4;
@@ -763,13 +788,12 @@ function buildAndDownloadPDF(job, cust, slots){
   });
   
   if(photoSlots.length===0){
-    doc.setFontSize(12);doc.text('No photos in this job.',m,20);
+    doc.setFontSize(9);doc.setFont('helvetica','normal');doc.text('No photos in this job.',m,y);
   } else {
     var cols=2,cW=(pW-m*2-8)/cols,cH=cW*0.7,lH=7;
-    var y=20;
     photoSlots.forEach(function(sd,i){
       var col=i%cols,row=Math.floor(i/cols);
-      if(col===0&&row>0)y+=cH+lH+10;
+      if(col===0&&row>0)y+=cH+lH+5;
       if(y+cH+lH>pH-15){doc.addPage();y=20;}
       var x=m+col*(cW+8);
       try{
@@ -779,44 +803,58 @@ function buildAndDownloadPDF(job, cust, slots){
         doc.setDrawColor(220,220,220);doc.setLineWidth(0.3);doc.rect(x,y,cW,cH);
         doc.addImage(sd.imageData,'JPEG',dx,dy,dW,dH);
       }catch(e){}
-      doc.setFontSize(10);doc.setFont('helvetica','bold');
-      doc.text('Pic '+(i+1),x,y+cH+5);
+      doc.setFontSize(8);doc.setFont('helvetica','bold');
+      doc.text('Pic '+(i+1),x,y+cH+4);
     });
   }
   
   var pc=doc.internal.getNumberOfPages();
   for(var p=1;p<=pc;p++){
-    if(p>1){
-      doc.setPage(p);
-      doc.setFontSize(7);doc.setFont('helvetica','normal');doc.setTextColor(150,150,150);
-      doc.text('VINDOC \u2014 Page '+(p-1)+' of '+(pc-1),pW/2,pH-8,{align:'center'});
-    }
+    doc.setPage(p);doc.setFontSize(7);doc.setFont('helvetica','normal');doc.setTextColor(150,150,150);
+    doc.text('VINDOC \u2014 Page '+p+' of '+pc,pW/2,pH-8,{align:'center'});doc.setTextColor(0,0,0);
   }
   doc.save('VINDOC_'+job.title.replace(/\s+/g,'_')+'_'+formatDateStamp(new Date()).replace(/\./g,'-')+'.pdf');
   showToast('PDF report generated','success');
 }
 
-function generatePPTX(){
+function openPptxModal(){
   if(!state.currentJob){showToast('No job open','error');return;}
+  var r=state.slots.filter(function(s){return s.originalImage;});
+  if(r.length===0){showToast('No media','error');return;}
+  var h='';
+  r.forEach(function(s){
+    var c = renderAnnotatedCanvas(s);
+    var url = c.toDataURL('image/jpeg', 0.5);
+    h+='<label class="pptx-item">';
+    h+='<input type="checkbox" checked data-pid="'+s.id+'">';
+    h+='<img src="'+url+'">';
+    h+='<span>'+s.title+'</span>';
+    h+='</label>';
+  });
+  document.getElementById('pptxPhotoList').innerHTML=h;
+  document.getElementById('pptxModal').classList.add('active');
+}
+
+function generatePPTX(){
   if(typeof PptxGenJS==='undefined'){showToast('PPTX library not loaded','error');return;}
+  var checked = document.querySelectorAll('#pptxPhotoList input[type="checkbox"]:checked');
+  var selectedIds = [];
+  for(var i=0; i<checked.length; i++){
+    selectedIds.push(parseInt(checked[i].dataset.pid));
+  }
+  var photoSlots = [];
+  selectedIds.forEach(function(id){
+    var s = state.slots.find(function(x){return x.id===id;});
+    if(s) photoSlots.push(serializeSlot(s));
+  });
   
-  var pptx = new PptxGenJS();
-  pptx.defineLayout({ name:'WIDE', width:13.33, height:7.5 });
-  pptx.layout = 'WIDE';
-  
-  var slide = pptx.addSlide();
-  slide.background = { color: '0A0A0A' };
-  slide.addText('VINDOC', { x:0, y:1.5, w:'100%', h:1.5, align:'center', fontSize:60, color:'FFFFFF', bold:true, fontFace:'Arial' });
-  slide.addText('VEHICLE INSPECTION REPORT', { x:0, y:3, w:'100%', h:1, align:'center', fontSize:24, color:'FFFFFF' });
-  slide.addText(state.currentJob.title, { x:0, y:4.2, w:'100%', h:1, align:'center', fontSize:18, color:'CCCCCC' });
-  
-  // Use memory slots directly to capture edits immediately
-  var photoSlots = state.slots.map(serializeSlot).filter(function(s){return s.imageData;});
+  if(photoSlots.length===0){showToast('No photos selected','error');return;}
+  closeModal('pptxModal');
   
   // Sort strictly by Vehicle, Defect, Parts
   photoSlots.sort(function(a,b){
     function getRank(s){
-      if(['mileage','rear_view','front_view','vin_plate'].includes(s.type)) return 1;
+      if(['mileage','rear_view','front_view','vin_plate'].indexOf(s.type) !== -1) return 1;
       if(s.type.indexOf('defect_')===0) return 2;
       if(s.type.indexOf('parts_')===0) return 3;
       return 4;
@@ -824,24 +862,32 @@ function generatePPTX(){
     return getRank(a)-getRank(b);
   });
   
+  var pptx = new PptxGenJS();
+  pptx.defineLayout({ name:'WIDE', width:13.33, height:7.5 });
+  pptx.layout = 'WIDE';
+  
+  // Slide 1: Title Only
+  var slide1 = pptx.addSlide();
+  slide1.background = { color: '0A0A0A' };
+  slide1.addText(state.currentJob.title || 'VEHICLE INSPECTION REPORT', { x:0, y:3, w:'100%', h:1.5, align:'center', fontSize:40, color:'FFFFFF', bold:true, fontFace:'Arial' });
+  
+  // Slides 2+: 2 Photos per slide, no labels
   for(var i=0; i<photoSlots.length; i+=2){
     var s = pptx.addSlide();
     s.background = { color: 'FFFFFF' };
     
     var img1 = photoSlots[i];
     if(img1){
-      s.addImage({ data: img1.imageData, x:0.5, y:0.5, w:5.9, h:5.5, sizing: { type: 'contain', w:5.9, h:5.5 } });
-      s.addText('Pic '+(i+1), { x:0.5, y:6.2, w:5.9, h:0.5, align:'center', fontSize:20, color:'000000', bold:true });
+      s.addImage({ data: img1.imageData, x:0.3, y:0.5, w:6.1, h:6.5, sizing: { type: 'contain', w:6.1, h:6.5 } });
     }
     
     if(photoSlots[i+1]){
       var img2 = photoSlots[i+1];
-      s.addImage({ data: img2.imageData, x:6.9, y:0.5, w:5.9, h:5.5, sizing: { type: 'contain', w:5.9, h:5.5 } });
-      s.addText('Pic '+(i+2), { x:6.9, y:6.2, w:5.9, h:0.5, align:'center', fontSize:20, color:'000000', bold:true });
+      s.addImage({ data: img2.imageData, x:6.9, y:0.5, w:6.1, h:6.5, sizing: { type: 'contain', w:6.1, h:6.5 } });
     }
   }
   
-  pptx.writeFile({ fileName: 'VINDOC_'+state.currentJob.title.replace(/\s+/g,'_')+'.pptx' });
+  pptx.writeFile({ fileName: 'VINDOC_'+(state.currentJob.title||'Report').replace(/\s+/g,'_')+'.pptx' });
   showToast('PPTX generated','success');
 }
 
