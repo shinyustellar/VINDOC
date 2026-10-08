@@ -87,7 +87,45 @@ html,body{font-family:'Hanken Grotesk',sans-serif;background:var(--bg);color:var
 .data-table th{text-align:left;font-family:'Archivo',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);padding:10px 12px;border-bottom:2px solid var(--fg);white-space:nowrap}
 .data-table td{padding:10px 12px;border-bottom:1px solid var(--border);font-size:12px}
 .data-table tr:hover td{background:var(--bg-2)}
-.table-wrap{overflow-x:auto;border:1px solid var(--border);background:var(--card)}
+
+/* Frame scrolling for all tables */
+.table-wrap{
+  overflow:auto;
+  border:1px solid var(--border);
+  background:var(--card);
+  max-height:65vh; /* Takes up 65% of screen height */
+}
+.dash-section .table-wrap{
+  max-height:400px; /* Dashboard recent jobs box height */
+}
+
+/* Sticky header so column names stay visible while scrolling */
+.data-table thead th{
+  position:sticky;
+  top:0;
+  background:var(--bg);
+  z-index:5;
+  border-bottom:2px solid var(--fg);
+}
+.data-table thead th:first-child{left:0}
+
+/* Custom modern scrollbar to match the black/white theme */
+.table-wrap::-webkit-scrollbar{
+  width:8px;
+  height:8px;
+}
+.table-wrap::-webkit-scrollbar-track{
+  background:var(--bg-2);
+  border-left:1px solid var(--border);
+}
+.table-wrap::-webkit-scrollbar-thumb{
+  background:var(--muted-2);
+  border-radius:4px;
+}
+.table-wrap::-webkit-scrollbar-thumb:hover{
+  background:var(--fg);
+}
+
 .status-pill{font-size:8px;padding:3px 8px;font-family:'Archivo',sans-serif;font-weight:700;letter-spacing:0.1em;text-transform:uppercase}
 .status-pill.pending{background:var(--bg-3);color:var(--muted)}
 .status-pill.in_progress{background:#fff3cd;color:#856404}
@@ -338,8 +376,8 @@ body.compact .act-btn span{display:none}
 <div id="inspHeader" class="insp-header">
 <button class="insp-btn" style="background:var(--bg);border-color:var(--border-hi);color:var(--muted);" onclick="closeJob()"><i class="fas fa-times"></i> Close Job</button>
 <div class="insp-title" id="currentJobTitle">Untitled Job</div>
-<div class="header-right"><div class="stat"><div class="stat-val" id="photoCount">0</div><div class="stat-lbl">Photos</div></div><div class="format-toggle"><button class="fmt-btn active" data-fmt="png" onclick="setFormat('png')">PNG</button><button class="fmt-btn" data-fmt="jpeg" onclick="setFormat('jpeg')">JPG</button></div><button class="btn-logout" id="compactToggle" onclick="toggleCompact()"><i class="fas fa-compress-alt"></i> Compact</button></div>
-<div class="insp-actions"><button class="insp-btn" id="saveJobBtn" onclick="saveJobToDB()"><i class="fas fa-save"></i> Save Job</button><button class="insp-btn" onclick="generatePDF()"><i class="fas fa-file-pdf"></i> PDF Report</button><button class="insp-btn primary" onclick="openSaveModal()"><i class="fas fa-download"></i> Save All (ZIP)</button><button class="insp-btn success" id="completeBtn" onclick="completeJob()"><i class="fas fa-check-circle"></i> Complete</button></div>
+<div class="header-right"><div class="stat"><div class="stat-val" id="photoCount">0</div><div class="stat-lbl">Photos</div></div><button class="btn-logout" id="compactToggle" onclick="toggleCompact()"><i class="fas fa-compress-alt"></i> Compact</button></div>
+<div class="insp-actions"><button class="insp-btn" id="saveJobBtn" onclick="saveJobToDB()"><i class="fas fa-save"></i> Save Job</button><button class="insp-btn" onclick="generatePDF()"><i class="fas fa-file-pdf"></i> PDF Report</button><button class="insp-btn primary" onclick="openSaveModal()"><i class="fas fa-download"></i> Save All</button><button class="insp-btn success" id="completeBtn" onclick="completeJob()"><i class="fas fa-check-circle"></i> Complete</button></div>
 </div>
 
 <div id="dashboardView" class="view active"><div class="view-pad"><div class="dash-grid">
@@ -347,7 +385,7 @@ body.compact .act-btn span{display:none}
 <div class="dash-card" onclick="showView('customers')"><div class="dash-card-icon"><i class="fas fa-users"></i></div><div class="dash-card-num" id="dashCustomers">0</div><div class="dash-card-lbl">Customers</div></div>
 <div class="dash-card" onclick="showView('jobs')"><div class="dash-card-icon"><i class="fas fa-spinner"></i></div><div class="dash-card-num" id="dashPending">0</div><div class="dash-card-lbl">In Progress</div></div>
 <div class="dash-card" onclick="showView('jobs')"><div class="dash-card-icon"><i class="fas fa-check-circle"></i></div><div class="dash-card-num" id="dashCompleted">0</div><div class="dash-card-lbl">Completed</div></div>
-</div><div class="dash-section"><div class="dash-section-head"><div class="dash-section-title">Recent Jobs</div><button class="btn-add primary" onclick="showView('jobs')"><i class="fas fa-plus"></i> New Job</button></div><div class="table-wrap" id="dashRecentJobs"></div></div></div></div>
+</div><div class="dash-section"><div class="dash-section-head"><div class="dash-section-title">Recent Jobs <span class="section-count" id="dashRecentCount" style="margin-left:8px">0</span></div><button class="btn-add primary" onclick="showView('jobs')"><i class="fas fa-list"></i> View All Jobs</button></div><div class="table-wrap" id="dashRecentJobs"></div></div></div></div>
 
 <div id="jobsView" class="view"><div class="view-pad"><div class="dash-section-head"><div class="dash-section-title">Inspection Jobs</div><button class="btn-add primary" onclick="openJobModal()"><i class="fas fa-plus"></i> New Job</button></div><div class="table-wrap" id="jobsTable"></div></div></div>
 <div id="customersView" class="view"><div class="view-pad"><div class="dash-section-head"><div class="dash-section-title">Customers</div><button class="btn-add primary" onclick="openCustomerModal()"><i class="fas fa-plus"></i> Add Customer</button></div><div class="table-wrap" id="customersTable"></div></div></div>
@@ -424,7 +462,7 @@ function showApp(){document.getElementById('authScreen').style.display='none';do
 function showView(n){document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active');});var v=document.getElementById(n+'View');if(v)v.classList.add('active');document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.toggle('active',b.dataset.nav===n);});var ih=document.getElementById('inspHeader');if(ih)ih.classList.toggle('active',n==='inspection');if(n==='dashboard')renderDashboard();else if(n==='jobs')renderJobs();else if(n==='customers')renderCustomers();else if(n==='users')renderUsers();}
 function closeModal(id){document.getElementById(id).classList.remove('active');}
 function esc(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-function renderDashboard(){DB.getAll('jobs').then(function(j){DB.getAll('customers').then(function(c){document.getElementById('dashJobs').textContent=j.length;document.getElementById('dashCustomers').textContent=c.length;document.getElementById('dashPending').textContent=j.filter(function(x){return x.status==='in_progress';}).length;document.getElementById('dashCompleted').textContent=j.filter(function(x){return x.status==='completed';}).length;var s=j.slice().sort(function(a,b){return new Date(b.createdAt)-new Date(a.createdAt);}).slice(0,5);var h='<table class="data-table"><thead><tr><th>Job</th><th>Status</th><th>Date</th><th>By</th><th>Action</th></tr></thead><tbody>';if(s.length===0)h+='<tr><td colspan="5"><div class="gen-empty"><i class="fas fa-clipboard"></i><p>No jobs yet</p></div></td></tr>';else s.forEach(function(j){var sc=j.status==='completed'?'completed':(j.status==='in_progress'?'in_progress':'pending');var sl=j.status==='completed'?'Completed':(j.status==='in_progress'?'In Progress':'Pending');h+='<tr><td><strong>'+esc(j.title)+'</strong></td><td><span class="status-pill '+sc+'">'+sl+'</span></td><td>'+(j.inspectionDate||'-')+'</td><td>'+esc(j.createdByName||'-')+'</td><td><button class="table-action primary" onclick="openJob(\''+j.id+'\')"><i class="fas fa-folder-open"></i> Open</button></td></tr>';});h+='</tbody></table>';document.getElementById('dashRecentJobs').innerHTML=h;});});}
+function renderDashboard(){DB.getAll('jobs').then(function(j){DB.getAll('customers').then(function(c){document.getElementById('dashJobs').textContent=j.length;document.getElementById('dashCustomers').textContent=c.length;document.getElementById('dashPending').textContent=j.filter(function(x){return x.status==='in_progress';}).length;document.getElementById('dashCompleted').textContent=j.filter(function(x){return x.status==='completed';}).length;var s=j.slice().sort(function(a,b){return new Date(b.createdAt)-new Date(a.createdAt);});var h='<table class="data-table"><thead><tr><th>Job</th><th>Status</th><th>Date</th><th>By</th><th>Action</th></tr></thead><tbody>';if(s.length===0)h+='<tr><td colspan="5"><div class="gen-empty"><i class="fas fa-clipboard"></i><p>No jobs yet</p></div></td></tr>';else s.forEach(function(j){var sc=j.status==='completed'?'completed':(j.status==='in_progress'?'in_progress':'pending');var sl=j.status==='completed'?'Completed':(j.status==='in_progress'?'In Progress':'Pending');h+='<tr><td><strong>'+esc(j.title)+'</strong></td><td><span class="status-pill '+sc+'">'+sl+'</span></td><td>'+(j.inspectionDate||'-')+'</td><td>'+esc(j.createdByName||'-')+'</td><td><button class="table-action primary" onclick="openJob(\''+j.id+'\')"><i class="fas fa-folder-open"></i> Open</button></td></tr>';});h+='</tbody></table>';document.getElementById('dashRecentJobs').innerHTML=h;var cnt=document.getElementById('dashRecentCount');if(cnt)cnt.textContent=j.length;});});}
 function renderJobs(){DB.getAll('jobs').then(function(j){DB.getAll('customers').then(function(c){var cm={};c.forEach(function(x){cm[x.id]=x;});var s=j.slice().sort(function(a,b){return new Date(b.createdAt)-new Date(a.createdAt);});var h='<table class="data-table"><thead><tr><th>Job</th><th>Parts</th><th>Customer</th><th>Vehicle</th><th>Status</th><th>Date</th><th>By</th><th>Actions</th></tr></thead><tbody>';if(s.length===0)h+='<tr><td colspan="8"><div class="gen-empty"><i class="fas fa-clipboard-list"></i><p>No jobs yet.<br><button class="btn-add primary" style="margin-top:12px" onclick="openJobModal()"><i class="fas fa-plus"></i> Create First Job</button></p></div></td></tr>';else s.forEach(function(j){var cu=cm[j.customerId]||{};var v=(cu.vehicleMake||'')+' '+(cu.vehicleModel||'');if(!v.trim())v='-';var sc=j.status==='completed'?'completed':(j.status==='in_progress'?'in_progress':'pending');var sl=j.status==='completed'?'Completed':(j.status==='in_progress'?'In Progress':'Pending');h+='<tr><td><strong>'+esc(j.title)+'</strong></td><td>'+(j.parts?esc(j.parts):'-')+'</td><td>'+esc(cu.name||'-')+'</td><td>'+esc(v)+'</td><td><span class="status-pill '+sc+'">'+sl+'</span></td><td>'+(j.inspectionDate||'-')+'</td><td>'+esc(j.createdByName||'-')+'</td><td><div class="table-actions"><button class="table-action primary" onclick="openJob(\''+j.id+'\')"><i class="fas fa-folder-open"></i> Open</button><button class="table-action" onclick="generateJobPDF(\''+j.id+'\')"><i class="fas fa-file-pdf"></i> PDF</button>';if(currentUser.role==='admin'||currentUser.role==='manager')h+='<button class="table-action" onclick="openJobModal(\''+j.id+'\')"><i class="fas fa-edit"></i> Edit</button>';if(currentUser.role==='admin'||currentUser.role==='manager'||j.createdBy===currentUser.id)h+='<button class="table-action danger" onclick="deleteJob(\''+j.id+'\')"><i class="fas fa-trash"></i></button>';h+='</div></td></tr>';});h+='</tbody></table>';document.getElementById('jobsTable').innerHTML=h;});});}
 var editingJobId=null;
 function openJobModal(id){editingJobId=id||null;DB.getAll('customers').then(function(c){var s=document.getElementById('jobCustomer');if(c.length===0){showToast('Add a customer first','error');showView('customers');return;}s.innerHTML=c.map(function(x){return'<option value="'+x.id+'">'+esc(x.name)+(x.vehiclePlate?' \u2014 '+x.vehiclePlate:'')+'</option>';}).join('');if(editingJobId){DB.get('jobs',editingJobId).then(function(j){if(!j)return;document.getElementById('jobCustomer').value=j.customerId;document.getElementById('jobTitleInput').value=j.title||'';document.getElementById('jobPartsInput').value=j.parts||'';document.getElementById('jobDateInput').value=j.inspectionDate||'';document.getElementById('jobNotesInput').value=j.notes||'';document.getElementById('jobModalTitle').textContent='EDIT JOB';document.getElementById('jobModalSave').textContent='Update Job';document.getElementById('jobModal').classList.add('active');});}else{document.getElementById('jobTitleInput').value='';document.getElementById('jobPartsInput').value='';document.getElementById('jobDateInput').value=formatDateStamp(new Date()).replace(/\./g,'-');document.getElementById('jobNotesInput').value='';document.getElementById('jobModalTitle').textContent='NEW INSPECTION JOB';document.getElementById('jobModalSave').textContent='Create & Open';document.getElementById('jobModal').classList.add('active');}});}
