@@ -279,7 +279,7 @@ body.compact .act-btn span{display:none}
 .edit-header .modal-title p{margin-top:2px}
 .modal-title{font-family:'Archivo',sans-serif;font-size:14px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;text-align:center}
 .modal-title p{font-size:12px;color:var(--muted);margin-top:4px;font-weight:400}
-.edit-close-btn{background:var(--bg);border:1px solid var(--border-hi);width:36px;height=36px;cursor:pointer;display:grid;place-items:center;font-size:14px;color:var(--muted);transition:all 0.15s}
+.edit-close-btn{background:var(--bg);border:1px solid var(--border-hi);width:36px;height:36px;cursor:pointer;display:grid;place-items:center;font-size:14px;color:var(--muted);transition:all 0.15s}
 .edit-close-btn:hover{border-color:var(--danger);color:var(--danger)}
 .edit-layout{display:flex;flex:1;overflow:hidden}
 .edit-canvas-area{flex:1;display:flex;align-items:center;justify-content:center;padding:28px;overflow:auto;background:var(--bg-2)}
@@ -562,7 +562,7 @@ function openJobModal(id){editingJobId=id||null;DB.getAll('customers').then(func
 function saveJob(){var ci=document.getElementById('jobCustomer').value,t=document.getElementById('jobTitleInput').value.trim(),pr=document.getElementById('jobPartsInput').value.trim(),d=document.getElementById('jobDateInput').value,n=document.getElementById('jobNotesInput').value.trim();if(!ci||!t){showToast('Customer and title required','error');return;}if(editingJobId){DB.get('jobs',editingJobId).then(function(j){j.customerId=ci;j.title=t;j.parts=pr;j.inspectionDate=d;j.notes=n;DB.put('jobs',j).then(function(){closeModal('jobModal');showToast('Job updated','success');renderJobs();});});}else{var j={id:'job_'+Date.now(),customerId:ci,title:t,parts:pr,inspectionDate:d,notes:n,status:'pending',createdBy:currentUser.id,createdByName:currentUser.name,createdAt:new Date().toISOString()};DB.add('jobs',j).then(function(){closeModal('jobModal');openJob(j.id);});}}
 function deleteJob(id){if(!confirm('Delete this job and all media?'))return;fs.collection('jobs').doc(id).collection('slots').get().then(function(s){var b=fs.batch();s.docs.forEach(function(d){b.delete(d.ref);});return b.commit();}).then(function(){return DB.del('jobs',id);}).then(function(){showToast('Job deleted','success');renderJobs();renderDashboard();});}
 function completeJob(){if(!state.currentJob)return;state.currentJob.status='completed';saveJobToDB(true);document.getElementById('currentJobTitle').textContent=state.currentJob.title+' \u2713';document.getElementById('completeBtn').style.display='none';showToast('Job completed','success');}
-function renderCustomers(){DB.getAll('customers').then(function(c){var s=c.slice().sort(function(a,b){return new Date(b.createdAt)-new Date(a.createdAt);});var h='<table class="data-table"><thead><tr><th>Name</th><th>Company</th><th>Phone</th><th>Vehicle</th><th>Plate</th><th>Actions</th></tr></thead><tbody>';if(s.length===0)h+='<tr><td colspan="6"><div class="gen-empty"><i class="fas fa-users"></i><p>No customers yet.<br><button class="btn-add primary" style="margin-top:12px" onclick="openCustomerModal()"><i class="fas fa-plus"></i> Add First Customer</button></p></div></td></tr>';else s.forEach(function(c){var v=(c.vehicleMake||'')+' '+(c.vehicleModel||'')+(c.vehicleYear?' ('+c.vehicleYear+')':'');if(!v.trim())v='-';h+='<tr><td><strong>'+esc(c.name)+'</strong></td><td>'+esc(c.company||'-')+'</td><td>'+esc(c.phone||'-')+'</td><td>'+esc(v)+'</td><td>'+esc(c.vehiclePlate||'-')+'</td><td><div class="table-actions"><button class="table-action" onclick="openCustomerModal(\''+c.id+'\')"><i class="fas fa-edit"></i> Edit</button>';if(currentUser.role==='admin'||currentUser.role==='manager')h+='<button class="table-action danger" onclick="deleteCustomer(\''+c.id+'\')"><i class="fas fa-trash"></i></button>';h+='</div></td></tr>';});h+='</tbody></table';document.getElementById('customersTable').innerHTML=h;});}
+function renderCustomers(){DB.getAll('customers').then(function(c){var s=c.slice().sort(function(a,b){return new Date(b.createdAt)-new Date(a.createdAt);});var h='<table class="data-table"><thead><tr><th>Name</th><th>Company</th><th>Phone</th><th>Vehicle</th><th>Plate</th><th>Actions</th></tr></thead><tbody>';if(s.length===0)h+='<tr><td colspan="6"><div class="gen-empty"><i class="fas fa-users"></i><p>No customers yet.<br><button class="btn-add primary" style="margin-top:12px" onclick="openCustomerModal()"><i class="fas fa-plus"></i> Add First Customer</button></p></div></td></tr>';else s.forEach(function(c){var v=(c.vehicleMake||'')+' '+(c.vehicleModel||'')+(c.vehicleYear?' ('+c.vehicleYear+')':'');if(!v.trim())v='-';h+='<tr><td><strong>'+esc(c.name)+'</strong></td><td>'+esc(c.company||'-')+'</td><td>'+esc(c.phone||'-')+'</td><td>'+esc(v)+'</td><td>'+esc(c.vehiclePlate||'-')+'</td><td><div class="table-actions"><button class="table-action" onclick="openCustomerModal(\''+c.id+'\')"><i class="fas fa-edit"></i> Edit</button>';if(currentUser.role==='admin'||currentUser.role==='manager')h+='<button class="table-action danger" onclick="deleteCustomer(\''+c.id+'\')"><i class="fas fa-trash"></i></button>';h+='</div></td></tr>';});h+='</tbody></table>';document.getElementById('customersTable').innerHTML=h;});}
 var editingCustomerId=null;
 function openCustomerModal(id){editingCustomerId=id||null;['custName','custCompany','custPhone','custEmail','custPlate','custMake','custModel','custYear','custVin'].forEach(function(f){document.getElementById(f).value='';});if(id){DB.get('customers',id).then(function(c){if(!c)return;document.getElementById('custName').value=c.name||'';document.getElementById('custCompany').value=c.company||'';document.getElementById('custPhone').value=c.phone||'';document.getElementById('custEmail').value=c.email||'';document.getElementById('custPlate').value=c.vehiclePlate||'';document.getElementById('custMake').value=c.vehicleMake||'';document.getElementById('custModel').value=c.vehicleModel||'';document.getElementById('custYear').value=c.vehicleYear||'';document.getElementById('custVin').value=c.vin||'';document.getElementById('customerModalTitle').textContent='EDIT CUSTOMER';document.getElementById('customerModal').classList.add('active');});}else{document.getElementById('customerModalTitle').textContent='ADD CUSTOMER';document.getElementById('customerModal').classList.add('active');}}
 function saveCustomer(){var n=document.getElementById('custName').value.trim();if(!n){showToast('Name required','error');return;}var d={id:editingCustomerId||('cust_'+Date.now()),name:n,company:document.getElementById('custCompany').value.trim(),phone:document.getElementById('custPhone').value.trim(),email:document.getElementById('custEmail').value.trim(),vehiclePlate:document.getElementById('custPlate').value.trim(),vehicleMake:document.getElementById('custMake').value.trim(),vehicleModel:document.getElementById('custModel').value.trim(),vehicleYear:document.getElementById('custYear').value.trim(),vin:document.getElementById('custVin').value.trim(),createdBy:currentUser.id,createdAt:new Date().toISOString()};DB.put('customers',d).then(function(){closeModal('customerModal');showToast('Customer saved','success');renderCustomers();});}
@@ -595,7 +595,7 @@ window.addEventListener('paste',function(e){if(document.getElementById('editModa
 function buildActionBar(s){var b=document.createElement('div');b.className='action-bar';b.innerHTML='<button class="act-btn" onclick="event.stopPropagation();openViewModal('+s.id+')"><i class="fas fa-eye"></i><span>View</span></button><button class="act-btn" onclick="event.stopPropagation();openEditModal('+s.id+')"><i class="fas fa-edit"></i><span>Edit</span></button><button class="act-btn" onclick="event.stopPropagation();resetSlot('+s.id+')"><i class="fas fa-undo"></i><span>Reset</span></button><button class="act-btn" onclick="event.stopPropagation();triggerUpload('+s.id+')"><i class="fas fa-sync"></i><span>Replace</span></button><button class="act-btn danger" onclick="event.stopPropagation();deleteImage('+s.id+')"><i class="fas fa-trash"></i><span>Delete</span></button>';return b;}
 function deleteImage(id){var s=state.slots.find(function(x){return x.id===id;});if(!s)return;if(!s.originalImage){showToast('No image','error');return;}s.originalImage=null;s.croppedCanvas=null;s.rotation=0;s.brightness=100;s.contrast=100;s.saturation=100;s.drawData=null;s.drawImage=null;s.customDate=null;var di=s.element.querySelector('.date-input');if(di)di.value='';updateSlotPreview(s);updateStats();showToast('Deleted','success');}
 function updateSlotPreview(s){var p=s.element.querySelector('.slot-preview');var hi=s.originalImage!==null;var st=s.element.querySelector('.slot-status');var dl=s.element.querySelector('.btn-download');if(hi){st.textContent='Ready';st.classList.add('ready');s.element.classList.add('has-image');dl.disabled=false;var c=renderAnnotatedCanvas(s);c.className='preview-canvas';c.onclick=function(){openViewModal(s.id);};p.innerHTML='';p.appendChild(c);p.appendChild(buildActionBar(s));}else{st.textContent='Empty';st.classList.remove('ready');s.element.classList.remove('has-image');dl.disabled=true;p.innerHTML='<div class="preview-empty" onclick="triggerUpload('+s.id+')"><div class="upload-icons"><i class="fas fa-cloud-upload-alt"></i><i class="fas fa-paste"></i></div><p>Click, Drop, or Paste</p><button class="paste-btn" onclick="event.stopPropagation();pasteFromClipboard('+s.id+')"><i class="fas fa-paste"></i> Paste</button><div class="paste-hint"><span>or</span> <span class="kbd">Ctrl</span>+<span class="kbd">V</span></div></div>';}}
-function renderAnnotatedCanvas(s){if(!s.originalImage)return null;var src=s.croppedCanvas||s.originalImage;var w=src instanceof HTMLCanvasElement?src.width:src.naturalWidth;var h=src instanceof HTMLCanvasElement?src.height:src.naturalHeight;var c=document.createElement('canvas');c.width=w;c.height=h;var ctx=c.getContext('2d');ctx.drawImage(src,0,0,w,h);var md=Math.min(w,h);var fp=Math.max(20,(s.fontSize/500)*md);ctx.font='800 '+fp+'px \'Hanken Grotesk\',sans-serif';ctx.shadowColor='rgba(0,0,0,0.8)';ctx.shadowBlur=fp*0.15;ctx.shadowOffsetY=fp*0.05;var px=fp*0.2,py=fp*0.2;if(s.showLabel&&s.labelText.trim()){ctx.textBaseline='top';ctx.fillStyle='#fff';ctx.fillText(s.labelText.trim().toUpperCase(),px,py);}if(s.showDate){var d=s.customDate||new Date();var ds=formatDateStamp(d);var m=ctx.measureText(ds);ctx.textBaseline='bottom';ctx.fillStyle='#fff';ctx.fillText(ds,w-m.width-px,h-py);}return c;}
+function renderAnnotatedCanvas(s){if(!s.originalImage)return null;var src=s.croppedCanvas||s.originalImage;var w=src instanceof HTMLCanvasElement?src.width:src.naturalWidth;var h=src instanceof HTMLCanvasElement?src.height:src.naturalHeight;var c=document.createElement('canvas');c.width=w;c.height=h;var ctx=c.getContext('2d');ctx.drawImage(src,0,0,w,h);if(s.drawImage)ctx.drawImage(s.drawImage,0,0,w,h);var md=Math.min(w,h);var fp=Math.max(20,(s.fontSize/500)*md);ctx.font='800 '+fp+'px \'Hanken Grotesk\',sans-serif';ctx.shadowColor='rgba(0,0,0,0.8)';ctx.shadowBlur=fp*0.15;ctx.shadowOffsetY=fp*0.05;var px=fp*0.2,py=fp*0.2;if(s.showLabel&&s.labelText.trim()){ctx.textBaseline='top';ctx.fillStyle='#fff';ctx.fillText(s.labelText.trim().toUpperCase(),px,py);}if(s.showDate){var d=s.customDate||new Date();var ds=formatDateStamp(d);var m=ctx.measureText(ds);ctx.textBaseline='bottom';ctx.fillStyle='#fff';ctx.fillText(ds,w-m.width-px,h-py);}return c;}
 function formatDateStamp(d){return String(d.getDate()).padStart(2,'0')+'.'+String(d.getMonth()+1).padStart(2,'0')+'.'+d.getFullYear();}
 function resetSlot(id){var s=state.slots.find(function(x){return x.id===id;});if(!s)return;if(!s.originalImage){showToast('No image','error');return;}s.croppedCanvas=null;s.rotation=0;s.brightness=100;s.contrast=100;s.saturation=100;s.drawData=null;s.drawImage=null;s.customDate=null;var di=s.element.querySelector('.date-input');if(di)di.value='';updateSlotPreview(s);showToast('Reset','success');}
 function setQuickLabel(id,v){var s=state.slots.find(function(x){return x.id===id;});if(!s)return;var a=s.labelText.trim().toUpperCase()===v&&s.showLabel;if(a){s.showLabel=false;document.getElementById('tl-'+id).classList.remove('active');}else{s.labelText=v;s.showLabel=true;s.element.querySelector('.label-input').value=v;document.getElementById('tl-'+id).classList.add('active');}updateChipStates(s);if(s.originalImage)updateSlotPreview(s);}
@@ -662,6 +662,46 @@ function serializeSlot(s){
     d.imageData=compressImageData(src);
   }
   return d;
+}
+// Helper to get annotated image data for PDF/PPTX
+function getAnnotatedImageData(sd) {
+  return new Promise(function(resolve) {
+    if (!sd.imageData) { resolve(null); return; }
+    var img = new Image();
+    img.onload = function() {
+      var c = document.createElement('canvas');
+      c.width = img.width;
+      c.height = img.height;
+      var ctx = c.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+      
+      var md = Math.min(c.width, c.height);
+      var fp = Math.max(20, ((sd.fontSize || 48) / 500) * md);
+      ctx.font = '800 ' + fp + 'px \'Hanken Grotesk\',sans-serif';
+      ctx.shadowColor = 'rgba(0,0,0,0.8)';
+      ctx.shadowBlur = fp * 0.15;
+      ctx.shadowOffsetY = fp * 0.05;
+      var px = fp * 0.2, py = fp * 0.2;
+      
+      if (sd.showLabel && sd.labelText) {
+        ctx.textBaseline = 'top';
+        ctx.fillStyle = '#fff';
+        ctx.fillText(sd.labelText.trim().toUpperCase(), px, py);
+      }
+      
+      if (sd.showDate) {
+        var d = sd.customDate ? new Date(sd.customDate) : new Date();
+        var ds = formatDateStamp(d);
+        var m = ctx.measureText(ds);
+        ctx.textBaseline = 'bottom';
+        ctx.fillStyle = '#fff';
+        ctx.fillText(ds, c.width - m.width - px, c.height - py);
+      }
+      
+      resolve(c.toDataURL('image/jpeg', 0.6));
+    };
+    img.src = sd.imageData;
+  });
 }
 function saveJobToDB(silent){
   if(!state.currentJob){showToast('No job open','error');return;}
@@ -789,50 +829,63 @@ function buildPDF(job, cust, slots){
   
   if(photoSlots.length===0){
     doc.setFontSize(9);doc.setFont('helvetica','normal');doc.text('No photos in this job.',m,y);
+    var pc=doc.internal.getNumberOfPages();
+    for(var p=1;p<=pc;p++){
+      doc.setPage(p);doc.setFontSize(7);doc.setFont('helvetica','normal');doc.setTextColor(150,150,150);
+      doc.text('VINDOC \u2014 Page '+p+' of '+pc,pW/2,pH-8,{align:'center'});doc.setTextColor(0,0,0);
+    }
+    doc.save('VINDOC_'+job.title.replace(/\s+/g,'_')+'_'+formatDateStamp(new Date()).replace(/\./g,'-')+'.pdf');
+    showToast('PDF report generated','success');
   } else {
-    var cols=2,cW=(pW-m*2-8)/cols,cH=cW*0.7,lH=7;
-    photoSlots.forEach(function(sd,i){
-      var col=i%cols,row=Math.floor(i/cols);
-      if(col===0&&row>0)y+=cH+lH+5;
-      if(y+cH+lH>pH-15){doc.addPage();y=20;}
-      var x=m+col*(cW+8);
-      try{
-        var tmp=new Image();tmp.src=sd.imageData;var iw=tmp.width||800,ih=tmp.height||600;var ra=iw/ih;
-        var dW=cW,dH=cW/ra;if(dH>cH){dH=cH;dW=cH*ra;}
-        var dx=x+(cW-dW)/2,dy=y+(cH-dH)/2;
-        doc.setDrawColor(220,220,220);doc.setLineWidth(0.3);doc.rect(x,y,cW,cH);
-        doc.addImage(sd.imageData,'JPEG',dx,dy,dW,dH);
-      }catch(e){}
+    Promise.all(photoSlots.map(function(sd) {
+      return getAnnotatedImageData(sd);
+    })).then(function(annotatedImages) {
+      var cols=2,cW=(pW-m*2-8)/cols,cH=cW*0.7,lH=7;
+      var photoY = y;
       
-      // Generate Category Label instead of Pic 1, Pic 2
-      var label = "";
-      var t = sd.type;
-      if (t === 'mileage') label = "VEHICLE MILEAGE";
-      else if (t === 'rear_view') label = "VEHICLE REAR VIEW";
-      else if (t === 'front_view') label = "VEHICLE FRONT VIEW";
-      else if (t === 'vin_plate') label = "VEHICLE VIN PLATE";
-      else if (t.indexOf('defect_') === 0) {
-          var n = t.replace('defect_', '');
-          label = "DEFECT PART " + n;
-      } else if (t.indexOf('parts_') === 0) {
-          var n = t.replace('parts_', '');
-          label = "PARTS REPLACEMENT " + n;
-      } else {
-          label = (sd.title || 'Photo ' + (i+1)).toUpperCase();
+      annotatedImages.forEach(function(imgData, i){
+        var col=i%cols,row=Math.floor(i/cols);
+        if(col===0&&row>0)photoY+=cH+lH+5;
+        if(photoY+cH+lH>pH-15){doc.addPage();photoY=20;}
+        var x=m+col*(cW+8);
+        try{
+          var tmp=new Image();tmp.src=imgData;var iw=tmp.width||800,ih=tmp.height||600;var ra=iw/ih;
+          var dW=cW,dH=cW/ra;if(dH>cH){dH=cH;dW=cH*ra;}
+          var dx=x+(cW-dW)/2,dy=photoY+(cH-dH)/2;
+          doc.setDrawColor(220,220,220);doc.setLineWidth(0.3);doc.rect(x,photoY,cW,cH);
+          doc.addImage(imgData,'JPEG',dx,dy,dW,dH);
+        }catch(e){}
+        
+        // Generate Category Label
+        var label = "";
+        var t = photoSlots[i].type;
+        if (t === 'mileage') label = "VEHICLE MILEAGE";
+        else if (t === 'rear_view') label = "VEHICLE REAR VIEW";
+        else if (t === 'front_view') label = "VEHICLE FRONT VIEW";
+        else if (t === 'vin_plate') label = "VEHICLE VIN PLATE";
+        else if (t.indexOf('defect_') === 0) {
+            var n = t.replace('defect_', '');
+            label = "DEFECT PART " + n;
+        } else if (t.indexOf('parts_') === 0) {
+            var n = t.replace('parts_', '');
+            label = "PARTS REPLACEMENT " + n;
+        } else {
+            label = (photoSlots[i].title || 'Photo ' + (i+1)).toUpperCase();
+        }
+        
+        doc.setFontSize(8);doc.setFont('helvetica','bold');
+        doc.text(label,x,photoY+cH+4);
+      });
+      
+      var pc=doc.internal.getNumberOfPages();
+      for(var p=1;p<=pc;p++){
+        doc.setPage(p);doc.setFontSize(7);doc.setFont('helvetica','normal');doc.setTextColor(150,150,150);
+        doc.text('VINDOC \u2014 Page '+p+' of '+pc,pW/2,pH-8,{align:'center'});doc.setTextColor(0,0,0);
       }
-      
-      doc.setFontSize(8);doc.setFont('helvetica','bold');
-      doc.text(label,x,y+cH+4);
+      doc.save('VINDOC_'+job.title.replace(/\s+/g,'_')+'_'+formatDateStamp(new Date()).replace(/\./g,'-')+'.pdf');
+      showToast('PDF report generated','success');
     });
   }
-  
-  var pc=doc.internal.getNumberOfPages();
-  for(var p=1;p<=pc;p++){
-    doc.setPage(p);doc.setFontSize(7);doc.setFont('helvetica','normal');doc.setTextColor(150,150,150);
-    doc.text('VINDOC \u2014 Page '+p+' of '+pc,pW/2,pH-8,{align:'center'});doc.setTextColor(0,0,0);
-  }
-  doc.save('VINDOC_'+job.title.replace(/\s+/g,'_')+'_'+formatDateStamp(new Date()).replace(/\./g,'-')+'.pdf');
-  showToast('PDF report generated','success');
 }
 
 function openPptxModal(){
@@ -880,33 +933,43 @@ function generatePPTX(){
     return getRank(a)-getRank(b);
   });
   
-  var pptx = new PptxGenJS();
-  pptx.defineLayout({ name:'WIDE', width:13.33, height:7.5 });
-  pptx.layout = 'WIDE';
-  
-  // Slide 1: Title Only
-  var slide1 = pptx.addSlide();
-  slide1.background = { color: '0A0A0A' };
-  slide1.addText(state.currentJob.title || 'VEHICLE INSPECTION REPORT', { x:0, y:3, w:'100%', h:1.5, align:'center', fontSize:40, color:'FFFFFF', bold:true, fontFace:'Arial' });
-  
-  // Slides 2+: 2 Photos per slide, no labels
-  for(var i=0; i<photoSlots.length; i+=2){
-    var s = pptx.addSlide();
-    s.background = { color: 'FFFFFF' };
+  Promise.all(photoSlots.map(function(sd) {
+    return getAnnotatedImageData(sd);
+  })).then(function(annotatedImages) {
+    var pptx = new PptxGenJS();
+    pptx.defineLayout({ name:'WIDE', width:13.33, height:7.5 });
+    pptx.layout = 'WIDE';
     
-    var img1 = photoSlots[i];
-    if(img1){
-      s.addImage({ data: img1.imageData, x:0.3, y:0.5, w:6.1, h:6.5, sizing: { type: 'contain', w:6.1, h:6.5 } });
+    var titleText = state.currentJob.title || 'VEHICLE INSPECTION REPORT';
+    
+    for(var i=0; i<annotatedImages.length; i+=2){
+        var s = pptx.addSlide();
+        s.background = { color: 'FFFFFF' };
+        
+        // If it's the first slide, add the title at the top
+        if (i === 0) {
+          s.addText(titleText, { x:0, y:0.2, w:'100%', h:0.8, align:'center', fontSize:28, color:'000000', bold:true, fontFace:'Arial' });
+          var imgY = 1.2;
+          var imgH = 5.5;
+        } else {
+          var imgY = 0.5;
+          var imgH = 6.5;
+        }
+        
+        var img1 = annotatedImages[i];
+        if(img1){
+          s.addImage({ data: img1, x:0.3, y:imgY, w:6.1, h:imgH, sizing: { type: 'contain', w:6.1, h:imgH } });
+        }
+        
+        if(annotatedImages[i+1]){
+          var img2 = annotatedImages[i+1];
+          s.addImage({ data: img2, x:6.9, y:imgY, w:6.1, h:imgH, sizing: { type: 'contain', w:6.1, h:imgH } });
+        }
     }
     
-    if(photoSlots[i+1]){
-      var img2 = photoSlots[i+1];
-      s.addImage({ data: img2.imageData, x:6.9, y:0.5, w:6.1, h:6.5, sizing: { type: 'contain', w:6.1, h:6.5 } });
-    }
-  }
-  
-  pptx.writeFile({ fileName: 'VINDOC_'+(state.currentJob.title||'Report').replace(/\s+/g,'_')+'.pptx' });
-  showToast('PPTX generated','success');
+    pptx.writeFile({ fileName: 'VINDOC_'+(state.currentJob.title||'Report').replace(/\s+/g,'_')+'.pptx' });
+    showToast('PPTX generated','success');
+  });
 }
 
 function updateStats(){var ld=state.slots.filter(function(s){return s.originalImage;}).length;var vS=state.slots.filter(function(s){return s.type==='mileage'||s.type==='rear_view'||s.type==='front_view'||s.type==='vin_plate';});var dS=state.slots.filter(function(s){return s.type.indexOf('defect_')===0;});var pS=state.slots.filter(function(s){return s.type.indexOf('parts_')===0;});var vL=vS.filter(function(s){return s.originalImage;}).length;var dL=dS.filter(function(s){return s.originalImage;}).length;var pL=pS.filter(function(s){return s.originalImage;}).length;var el;if((el=document.getElementById('count-vehicle')))el.textContent=vL+'/'+vS.length;if((el=document.getElementById('count-defect')))el.textContent=dL+'/'+dS.length;if((el=document.getElementById('count-parts')))el.textContent=pL+'/'+pS.length;if((el=document.getElementById('photoCount')))el.textContent=ld;if((el=document.getElementById('floatCount')))el.innerHTML=ld+' <small>loaded</small>';}
