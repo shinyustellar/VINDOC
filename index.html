@@ -279,7 +279,7 @@ body.compact .act-btn span{display:none}
 .edit-header .modal-title p{margin-top:2px}
 .modal-title{font-family:'Archivo',sans-serif;font-size:14px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;text-align:center}
 .modal-title p{font-size:12px;color:var(--muted);margin-top:4px;font-weight:400}
-.edit-close-btn{background:var(--bg);border:1px solid var(--border-hi);width:36px;height:36px;cursor:pointer;display:grid;place-items:center;font-size:14px;color:var(--muted);transition:all 0.15s}
+.edit-close-btn{background:var(--bg);border:1px solid var(--border-hi);width:36px;height=36px;cursor:pointer;display:grid;place-items:center;font-size:14px;color:var(--muted);transition:all 0.15s}
 .edit-close-btn:hover{border-color:var(--danger);color:var(--danger)}
 .edit-layout{display:flex;flex:1;overflow:hidden}
 .edit-canvas-area{flex:1;display:flex;align-items:center;justify-content:center;padding:28px;overflow:auto;background:var(--bg-2)}
@@ -562,7 +562,7 @@ function openJobModal(id){editingJobId=id||null;DB.getAll('customers').then(func
 function saveJob(){var ci=document.getElementById('jobCustomer').value,t=document.getElementById('jobTitleInput').value.trim(),pr=document.getElementById('jobPartsInput').value.trim(),d=document.getElementById('jobDateInput').value,n=document.getElementById('jobNotesInput').value.trim();if(!ci||!t){showToast('Customer and title required','error');return;}if(editingJobId){DB.get('jobs',editingJobId).then(function(j){j.customerId=ci;j.title=t;j.parts=pr;j.inspectionDate=d;j.notes=n;DB.put('jobs',j).then(function(){closeModal('jobModal');showToast('Job updated','success');renderJobs();});});}else{var j={id:'job_'+Date.now(),customerId:ci,title:t,parts:pr,inspectionDate:d,notes:n,status:'pending',createdBy:currentUser.id,createdByName:currentUser.name,createdAt:new Date().toISOString()};DB.add('jobs',j).then(function(){closeModal('jobModal');openJob(j.id);});}}
 function deleteJob(id){if(!confirm('Delete this job and all media?'))return;fs.collection('jobs').doc(id).collection('slots').get().then(function(s){var b=fs.batch();s.docs.forEach(function(d){b.delete(d.ref);});return b.commit();}).then(function(){return DB.del('jobs',id);}).then(function(){showToast('Job deleted','success');renderJobs();renderDashboard();});}
 function completeJob(){if(!state.currentJob)return;state.currentJob.status='completed';saveJobToDB(true);document.getElementById('currentJobTitle').textContent=state.currentJob.title+' \u2713';document.getElementById('completeBtn').style.display='none';showToast('Job completed','success');}
-function renderCustomers(){DB.getAll('customers').then(function(c){var s=c.slice().sort(function(a,b){return new Date(b.createdAt)-new Date(a.createdAt);});var h='<table class="data-table"><thead><tr><th>Name</th><th>Company</th><th>Phone</th><th>Vehicle</th><th>Plate</th><th>Actions</th></tr></thead><tbody>';if(s.length===0)h+='<tr><td colspan="6"><div class="gen-empty"><i class="fas fa-users"></i><p>No customers yet.<br><button class="btn-add primary" style="margin-top:12px" onclick="openCustomerModal()"><i class="fas fa-plus"></i> Add First Customer</button></p></div></td></tr>';else s.forEach(function(c){var v=(c.vehicleMake||'')+' '+(c.vehicleModel||'')+(c.vehicleYear?' ('+c.vehicleYear+')':'');if(!v.trim())v='-';h+='<tr><td><strong>'+esc(c.name)+'</strong></td><td>'+esc(c.company||'-')+'</td><td>'+esc(c.phone||'-')+'</td><td>'+esc(v)+'</td><td>'+esc(c.vehiclePlate||'-')+'</td><td><div class="table-actions"><button class="table-action" onclick="openCustomerModal(\''+c.id+'\')"><i class="fas fa-edit"></i> Edit</button>';if(currentUser.role==='admin'||currentUser.role==='manager')h+='<button class="table-action danger" onclick="deleteCustomer(\''+c.id+'\')"><i class="fas fa-trash"></i></button>';h+='</div></td></tr>';});h+='</tbody></table>';document.getElementById('customersTable').innerHTML=h;});}
+function renderCustomers(){DB.getAll('customers').then(function(c){var s=c.slice().sort(function(a,b){return new Date(b.createdAt)-new Date(a.createdAt);});var h='<table class="data-table"><thead><tr><th>Name</th><th>Company</th><th>Phone</th><th>Vehicle</th><th>Plate</th><th>Actions</th></tr></thead><tbody>';if(s.length===0)h+='<tr><td colspan="6"><div class="gen-empty"><i class="fas fa-users"></i><p>No customers yet.<br><button class="btn-add primary" style="margin-top:12px" onclick="openCustomerModal()"><i class="fas fa-plus"></i> Add First Customer</button></p></div></td></tr>';else s.forEach(function(c){var v=(c.vehicleMake||'')+' '+(c.vehicleModel||'')+(c.vehicleYear?' ('+c.vehicleYear+')':'');if(!v.trim())v='-';h+='<tr><td><strong>'+esc(c.name)+'</strong></td><td>'+esc(c.company||'-')+'</td><td>'+esc(c.phone||'-')+'</td><td>'+esc(v)+'</td><td>'+esc(c.vehiclePlate||'-')+'</td><td><div class="table-actions"><button class="table-action" onclick="openCustomerModal(\''+c.id+'\')"><i class="fas fa-edit"></i> Edit</button>';if(currentUser.role==='admin'||currentUser.role==='manager')h+='<button class="table-action danger" onclick="deleteCustomer(\''+c.id+'\')"><i class="fas fa-trash"></i></button>';h+='</div></td></tr>';});h+='</tbody></table';document.getElementById('customersTable').innerHTML=h;});}
 var editingCustomerId=null;
 function openCustomerModal(id){editingCustomerId=id||null;['custName','custCompany','custPhone','custEmail','custPlate','custMake','custModel','custYear','custVin'].forEach(function(f){document.getElementById(f).value='';});if(id){DB.get('customers',id).then(function(c){if(!c)return;document.getElementById('custName').value=c.name||'';document.getElementById('custCompany').value=c.company||'';document.getElementById('custPhone').value=c.phone||'';document.getElementById('custEmail').value=c.email||'';document.getElementById('custPlate').value=c.vehiclePlate||'';document.getElementById('custMake').value=c.vehicleMake||'';document.getElementById('custModel').value=c.vehicleModel||'';document.getElementById('custYear').value=c.vehicleYear||'';document.getElementById('custVin').value=c.vin||'';document.getElementById('customerModalTitle').textContent='EDIT CUSTOMER';document.getElementById('customerModal').classList.add('active');});}else{document.getElementById('customerModalTitle').textContent='ADD CUSTOMER';document.getElementById('customerModal').classList.add('active');}}
 function saveCustomer(){var n=document.getElementById('custName').value.trim();if(!n){showToast('Name required','error');return;}var d={id:editingCustomerId||('cust_'+Date.now()),name:n,company:document.getElementById('custCompany').value.trim(),phone:document.getElementById('custPhone').value.trim(),email:document.getElementById('custEmail').value.trim(),vehiclePlate:document.getElementById('custPlate').value.trim(),vehicleMake:document.getElementById('custMake').value.trim(),vehicleModel:document.getElementById('custModel').value.trim(),vehicleYear:document.getElementById('custYear').value.trim(),vin:document.getElementById('custVin').value.trim(),createdBy:currentUser.id,createdAt:new Date().toISOString()};DB.put('customers',d).then(function(){closeModal('customerModal');showToast('Customer saved','success');renderCustomers();});}
@@ -803,8 +803,26 @@ function buildPDF(job, cust, slots){
         doc.setDrawColor(220,220,220);doc.setLineWidth(0.3);doc.rect(x,y,cW,cH);
         doc.addImage(sd.imageData,'JPEG',dx,dy,dW,dH);
       }catch(e){}
+      
+      // Generate Category Label instead of Pic 1, Pic 2
+      var label = "";
+      var t = sd.type;
+      if (t === 'mileage') label = "VEHICLE MILEAGE";
+      else if (t === 'rear_view') label = "VEHICLE REAR VIEW";
+      else if (t === 'front_view') label = "VEHICLE FRONT VIEW";
+      else if (t === 'vin_plate') label = "VEHICLE VIN PLATE";
+      else if (t.indexOf('defect_') === 0) {
+          var n = t.replace('defect_', '');
+          label = "DEFECT PART " + n;
+      } else if (t.indexOf('parts_') === 0) {
+          var n = t.replace('parts_', '');
+          label = "PARTS REPLACEMENT " + n;
+      } else {
+          label = (sd.title || 'Photo ' + (i+1)).toUpperCase();
+      }
+      
       doc.setFontSize(8);doc.setFont('helvetica','bold');
-      doc.text('Pic '+(i+1),x,y+cH+4);
+      doc.text(label,x,y+cH+4);
     });
   }
   
