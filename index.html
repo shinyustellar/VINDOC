@@ -300,6 +300,8 @@ body.compact .act-btn span{display:none}
   -ms-overflow-style: none; /* IE and Edge */
 }
 .sidebar-scroll::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
   display: none; /* Chrome, Safari, Opera */
 }
 .sidebar-actions{
@@ -412,7 +414,7 @@ body.compact .act-btn span{display:none}
 <button class="insp-btn" style="background:var(--bg);border-color:var(--border-hi);color:var(--muted);" onclick="closeJob()"><i class="fas fa-times"></i> Close Job</button>
 <div class="insp-title" id="currentJobTitle">Untitled Job</div>
 <div class="header-right"><div class="stat"><div class="stat-val" id="photoCount">0</div><div class="stat-lbl">Photos</div></div><button class="btn-logout" id="compactToggle" onclick="toggleCompact()"><i class="fas fa-compress-alt"></i> Compact</button></div>
-<div class="insp-actions"><button class="insp-btn" id="saveJobBtn" onclick="saveJobToDB()"><i class="fas fa-save"></i> Save Job</button><button class="insp-btn" onclick="generatePDF()"><i class="fas fa-file-pdf"></i> PDF Report</button><button class="insp-btn primary" onclick="openSaveModal()"><i class="fas fa-download"></i> Save All</button><button class="insp-btn success" id="completeBtn" onclick="completeJob()"><i class="fas fa-check-circle"></i> Complete</button></div>
+<div class="insp-actions"><button class="insp-btn" id="saveJobBtn" onclick="saveJobToDB()"><i class="fas fa-save"></i> Save Job</button><button class="insp-btn" onclick="generatePDF()"><i class="fas fa-file-pdf"></i> PDF Report</button><button class="insp-btn" onclick="generatePPTX()"><i class="fas fa-file-powerpoint"></i> PPTX</button><button class="insp-btn primary" onclick="openSaveModal()"><i class="fas fa-download"></i> Save All</button><button class="insp-btn success" id="completeBtn" onclick="completeJob()"><i class="fas fa-check-circle"></i> Complete</button></div>
 </div>
 
 <div id="dashboardView" class="view active"><div class="view-pad"><div class="dash-grid">
@@ -521,6 +523,7 @@ body.compact .act-btn span{display:none}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pptxgenjs/3.12.0/pptxgen.bundle.js"></script>
 <script>
 var firebaseConfig={apiKey:"AIzaSyDleQO8_p5qKr2t1-GQgjw_tpD18EIi6CA",authDomain:"vindoc-2e37f.firebaseapp.com",projectId:"vindoc-2e37f",storageBucket:"vindoc-2e37f.firebasestorage.app",messagingSenderId:"767410297209",appId:"1:767410297209:web:9c7141b0beafbe43e137a8"};
 try{firebase.initializeApp(firebaseConfig);}catch(e){}
@@ -606,7 +609,7 @@ function drawShapeObject(ctx,s){ctx.strokeStyle=s.color;ctx.lineWidth=s.lineWidt
 function drawSelectionUI(ctx,s){var x1=Math.min(s.x1,s.x2),y1=Math.min(s.y1,s.y2),x2=Math.max(s.x1,s.x2),y2=Math.max(s.y1,s.y2);var p=6;ctx.strokeStyle='rgba(10,10,10,0.5)';ctx.lineWidth=1;ctx.setLineDash([4,4]);ctx.strokeRect(x1-p,y1-p,x2-x1+p*2,y2-y1+p*2);ctx.setLineDash([]);var hs=8;ctx.fillStyle='#0a0a0a';ctx.strokeStyle='#fff';ctx.lineWidth=2;[{x:x1-p,y:y1-p},{x:x2+p,y:y1-p},{x:x1-p,y:y2+p},{x:x2+p,y:y2+p}].forEach(function(h){ctx.beginPath();ctx.rect(h.x-hs/2,h.y-hs/2,hs,hs);ctx.fill();ctx.stroke();});}
 function getShapeBounds(s){return{left:Math.min(s.x1,s.x2),top:Math.min(s.y1,s.y2),right:Math.max(s.x1,s.x2),bottom:Math.max(s.y1,s.y2)};}
 function ptLineDist(px,py,x1,y1,x2,y2){var dx=x2-x1,dy=y2-y1,ls=dx*dx+dy*dy;if(ls===0)return Math.hypot(px-x1,py-y1);var t=Math.max(0,Math.min(1,((px-x1)*dx+(py-y1)*dy)/ls));return Math.hypot(px-(x1+t*dx),py-(y1+t*dy));}
-function hitTestShape(s,x,y){var b=getShapeBounds(s);var p=Math.max(s.lineWidth/2+4,8);if(s.type==='rect')return x>=b.left-p&&x<=b.right+p&&y>=b.top-p&&y<=b.bottom+p;if(s.type==='oval'){var cx=(b.left+b.right)/2,cy=(b.top+b.bottom)/2;var rx=Math.max(1,(b.right-b.left)/2),ry=Math.max(1,(b.bottom-b.top)/2);var dx=(x-cx)/(rx+p),dy=(y-cy)/(ry+p);return dx*dx+dy*dy<=1;}if(s.type==='arrow')return ptLineDist(x,y,s.x1,s.y1,s.x2,s.y2)<=p;return false;}
+function hitTestShape(s,x,y){var b=getShapeBounds(s);var p=Math.max(s.lineWidth/2+4,8);if(s.type==='rect')return x>=b.left-p&&x<=b.right+p&&y>=b.top-p&&y<=b.bottom+p;if(s.type==='oval'){var cx=(b.left+b.right)/2,cy=(b.top+b.bottom)/2;var rx=Math.max(1,(b.right-b.left)/2),ry=Math.max(1,(b.bottom-b-top)/2);var dx=(x-cx)/(rx+p),dy=(y-cy)/(ry+p);return dx*dx+dy*dy<=1;}if(s.type==='arrow')return ptLineDist(x,y,s.x1,s.y1,s.x2,s.y2)<=p;return false;}
 function hitTestHandle(s,x,y){var b=getShapeBounds(s);var p=6,hs=12;var cs=[{n:'tl',x:b.left-p,y:b.top-p},{n:'tr',x:b.right+p,y:b.top-p},{n:'bl',x:b.left-p,y:b.bottom+p},{n:'br',x:b.right+p,y:b.bottom+p}];for(var i=0;i<cs.length;i++)if(Math.abs(x-cs[i].x)<=hs&&Math.abs(y-cs[i].y)<=hs)return cs[i].n;return null;}
 function resizeShape(s,h,mx,my,o){var b=getShapeBounds(o);var nL=b.left,nT=b.top,nR=b.right,nB=b.bottom,m=10;if(h.indexOf('l')>=0)nL=Math.min(mx,nR-m);if(h.indexOf('r')>=0)nR=Math.max(mx,nL+m);if(h.indexOf('t')>=0)nT=Math.min(my,nB-m);if(h.indexOf('b')>=0)nB=Math.max(my,nT+m);if(o.x1<=o.x2){s.x1=nL;s.x2=nR;}else{s.x1=nR;s.x2=nL;}if(o.y1<=o.y2){s.y1=nT;s.y2=nB;}else{s.y1=nB;s.y2=nT;}}
 function deleteSelectedShape(){if(selectedShapeId===null)return;saveUndoState();var i=editShapes.findIndex(function(s){return s.id===selectedShapeId;});if(i>=0)editShapes.splice(i,1);selectedShapeId=null;renderDrawCanvas();}
@@ -706,61 +709,140 @@ function initDefaultSlots(){var g=document.getElementById('vehicleGrid');createS
 function addDefectSlot(){var g=document.getElementById('defectGrid');if(!g)return;var n=g.children.length+1;createSlot({type:'defect_'+n,title:'Defect #'+n,icon:'fas fa-exclamation-triangle',container:g,removable:true});}
 function addPartsSlot(){var g=document.getElementById('partsGrid');if(!g)return;var n=g.children.length+1;createSlot({type:'parts_'+n,title:'Parts #'+n,icon:'fas fa-cogs',container:g,removable:true});}
 
-/* ===== PDF FIX ===== */
+/* ===== PDF & PPTX GENERATION ===== */
 function generatePDF(){if(!state.currentJob){showToast('No job open','error');return;}generateJobPDF(state.currentJob.id);}
 function generateJobPDF(jobId){
   var J=window.jspdf?window.jspdf.jsPDF:window.jsPDF;
   if(!J){showToast('PDF library not loaded','error');return;}
-  DB.get('jobs',jobId).then(function(job){if(!job){showToast('Job not found','error');return;}
-  var cp=job.customerId?DB.get('customers',job.customerId):Promise.resolve(null);
-  cp.then(function(cust){fs.collection('jobs').doc(jobId).collection('slots').get().then(function(snap){
-    var slots=snap.docs.map(function(d){return d.data();});
-    var doc=new J({orientation:'portrait',unit:'mm',format:'a4'});
-    var pW=210,pH=297,m=15;
-    doc.setFillColor(10,10,10);doc.rect(0,0,pW,38,'F');
-    doc.setTextColor(255,255,255);doc.setFontSize(22);doc.setFont('helvetica','bold');doc.text('VINDOC',m,20);
-    doc.setFontSize(8);doc.setFont('helvetica','normal');doc.text('VEHICLE INSPECTION REPORT',m,28);
-    doc.text('Generated: '+formatDateStamp(new Date()),pW-m,28,{align:'right'});doc.setTextColor(0,0,0);
-    var y=48;doc.setFontSize(14);doc.setFont('helvetica','bold');doc.text(job.title,m,y);y+=7;
-    doc.setFontSize(9);doc.setFont('helvetica','normal');
-    var st=job.status==='completed'?'Completed':(job.status==='in_progress'?'In Progress':'Pending');
-    doc.text('Status: '+st,m,y);doc.text('Date: '+(job.inspectionDate||'-'),m+70,y);y+=5;
-    doc.text('Inspector: '+(job.createdByName||'-'),m,y);y+=6;
-    if(job.parts){doc.text('Parts Replaced: '+esc(job.parts),m,y);y+=5;}
-    if(job.notes){var sn=doc.splitTextToSize('Notes: '+job.notes,pW-m*2);doc.text(sn,m,y);y+=sn.length*4+2;}
-    y+=2;doc.setDrawColor(200,200,200);doc.line(m,y,pW-m,y);y+=7;
-    if(cust){doc.setFontSize(11);doc.setFont('helvetica','bold');doc.text('Customer & Vehicle',m,y);y+=6;
-      doc.setFontSize(9);doc.setFont('helvetica','normal');
-      doc.text('Name: '+esc(cust.name||'-'),m,y);doc.text('Company: '+esc(cust.company||'-'),m+100,y);y+=5;
-      doc.text('Phone: '+(cust.phone||'-'),m,y);doc.text('Email: '+(cust.email||'-'),m+100,y);y+=5;
-      var v=(cust.vehicleMake||'')+' '+(cust.vehicleModel||'');if(cust.vehicleYear)v+=' ('+cust.vehicleYear+')';
-      doc.text('Vehicle: '+esc(v.trim()||'-'),m,y);y+=5;
-      doc.text('Plate: '+(cust.vehiclePlate||'-'),m,y);doc.text('VIN: '+(cust.vin||'-'),m+100,y);y+=7;
-      doc.setDrawColor(200,200,200);doc.line(m,y,pW-m,y);y+=7;}
-    doc.setFontSize(11);doc.setFont('helvetica','bold');doc.text('Inspection Photos',m,y);y+=8;
-    var photoSlots=slots.filter(function(sd){return sd.imageData;});
-    if(photoSlots.length===0){doc.setFontSize(9);doc.setFont('helvetica','normal');doc.text('No photos in this job.',m,y);}
-    else{var cols=2,cW=(pW-m*2-8)/cols,cH=cW*0.7,lH=7;
-      photoSlots.forEach(function(sd,i){var col=i%cols,row=Math.floor(i/cols);
-        if(col===0&&row>0)y+=cH+lH+5;
-        if(y+cH+lH>pH-15){doc.addPage();y=20;}
-        var x=m+col*(cW+8);
-        try{var tmp=new Image();tmp.src=sd.imageData;var iw=tmp.width||800,ih=tmp.height||600;var ra=iw/ih;
-          var dW=cW,dH=cW/ra;if(dH>cH){dH=cH;dW=cH*ra;}
-          var dx=x+(cW-dW)/2,dy=y+(cH-dH)/2;
-          doc.setDrawColor(220,220,220);doc.setLineWidth(0.3);doc.rect(x,y,cW,cH);
-          doc.addImage(sd.imageData,'JPEG',dx,dy,dW,dH);
-        }catch(e){}
-        doc.setFontSize(8);doc.setFont('helvetica','bold');
-        var lb=sd.title||'';if(sd.showLabel&&sd.labelText)lb+=' \u2014 '+sd.labelText.toUpperCase();
-        doc.text(lb,x,y+cH+4);
-      });
+  DB.get('jobs',jobId).then(function(job){
+    if(!job){showToast('Job not found','error');return;}
+    var cp=job.customerId?DB.get('customers',job.customerId):Promise.resolve(null);
+    cp.then(function(cust){
+      // If we are currently viewing this job, use memory slots to capture real-time edits
+      if(state.currentJob && state.currentJob.id === jobId){
+        var slots = state.slots.map(serializeSlot);
+        buildAndDownloadPDF(job, cust, slots);
+      } else {
+        fs.collection('jobs').doc(jobId).collection('slots').get().then(function(snap){
+          var slots=snap.docs.map(function(d){return d.data();});
+          buildAndDownloadPDF(job, cust, slots);
+        });
+      }
+    });
+  });
+}
+function buildAndDownloadPDF(job, cust, slots){
+  var doc=new J({orientation:'portrait',unit:'mm',format:'a4'});
+  var pW=210,pH=297,m=15;
+  
+  // First Page Cover
+  doc.setFillColor(10,10,10);doc.rect(0,0,pW,pH,'F');
+  doc.setTextColor(255,255,255);doc.setFontSize(42);doc.setFont('helvetica','bold');doc.text('VINDOC',pW/2,pH/2-20,{align:'center'});
+  doc.setFontSize(14);doc.setFont('helvetica','normal');doc.text('VEHICLE INSPECTION REPORT',pW/2,pH/2,{align:'center'});
+  doc.setFontSize(11);doc.text(job.title,pW/2,pH/2+15,{align:'center'});
+  if(cust){
+    var v=(cust.vehicleMake||'')+' '+(cust.vehicleModel||'');if(cust.vehicleYear)v+=' ('+cust.vehicleYear+')';
+    doc.setFontSize(10);doc.text(esc(v.trim()||'-'),pW/2,pH/2+25,{align:'center'});
+    doc.text('Plate: '+(cust.vehiclePlate||'-'),pW/2,pH/2+32,{align:'center'});
+  }
+  doc.text('Date: '+(job.inspectionDate||'-'),pW/2,pH-30,{align:'center'});
+  doc.addPage();
+  
+  doc.setTextColor(0,0,0);
+  var photoSlots=slots.filter(function(sd){return sd.imageData;});
+  
+  // Sort strictly by Vehicle, Defect, Parts
+  photoSlots.sort(function(a,b){
+    function getRank(s){
+      if(['mileage','rear_view','front_view','vin_plate'].includes(s.type)) return 1;
+      if(s.type.indexOf('defect_')===0) return 2;
+      if(s.type.indexOf('parts_')===0) return 3;
+      return 4;
     }
-    var pc=doc.internal.getNumberOfPages();
-    for(var p=1;p<=pc;p++){doc.setPage(p);doc.setFontSize(7);doc.setFont('helvetica','normal');doc.setTextColor(150,150,150);doc.text('VINDOC \u2014 Page '+p+' of '+pc,pW/2,pH-8,{align:'center'});doc.setTextColor(0,0,0);}
-    doc.save('VINDOC_'+job.title.replace(/\s+/g,'_')+'_'+formatDateStamp(new Date()).replace(/\./g,'-')+'.pdf');
-    showToast('PDF report generated','success');
-  });});});
+    return getRank(a)-getRank(b);
+  });
+  
+  if(photoSlots.length===0){
+    doc.setFontSize(12);doc.text('No photos in this job.',m,20);
+  } else {
+    var cols=2,cW=(pW-m*2-8)/cols,cH=cW*0.7,lH=7;
+    var y=20;
+    photoSlots.forEach(function(sd,i){
+      var col=i%cols,row=Math.floor(i/cols);
+      if(col===0&&row>0)y+=cH+lH+10;
+      if(y+cH+lH>pH-15){doc.addPage();y=20;}
+      var x=m+col*(cW+8);
+      try{
+        var tmp=new Image();tmp.src=sd.imageData;var iw=tmp.width||800,ih=tmp.height||600;var ra=iw/ih;
+        var dW=cW,dH=cW/ra;if(dH>cH){dH=cH;dW=cH*ra;}
+        var dx=x+(cW-dW)/2,dy=y+(cH-dH)/2;
+        doc.setDrawColor(220,220,220);doc.setLineWidth(0.3);doc.rect(x,y,cW,cH);
+        doc.addImage(sd.imageData,'JPEG',dx,dy,dW,dH);
+      }catch(e){}
+      doc.setFontSize(10);doc.setFont('helvetica','bold');
+      doc.text('Pic '+(i+1),x,y+cH+5);
+    });
+  }
+  
+  var pc=doc.internal.getNumberOfPages();
+  for(var p=1;p<=pc;p++){
+    if(p>1){
+      doc.setPage(p);
+      doc.setFontSize(7);doc.setFont('helvetica','normal');doc.setTextColor(150,150,150);
+      doc.text('VINDOC \u2014 Page '+(p-1)+' of '+(pc-1),pW/2,pH-8,{align:'center'});
+    }
+  }
+  doc.save('VINDOC_'+job.title.replace(/\s+/g,'_')+'_'+formatDateStamp(new Date()).replace(/\./g,'-')+'.pdf');
+  showToast('PDF report generated','success');
+}
+
+function generatePPTX(){
+  if(!state.currentJob){showToast('No job open','error');return;}
+  if(typeof PptxGenJS==='undefined'){showToast('PPTX library not loaded','error');return;}
+  
+  var pptx = new PptxGenJS();
+  pptx.defineLayout({ name:'WIDE', width:13.33, height:7.5 });
+  pptx.layout = 'WIDE';
+  
+  var slide = pptx.addSlide();
+  slide.background = { color: '0A0A0A' };
+  slide.addText('VINDOC', { x:0, y:1.5, w:'100%', h:1.5, align:'center', fontSize:60, color:'FFFFFF', bold:true, fontFace:'Arial' });
+  slide.addText('VEHICLE INSPECTION REPORT', { x:0, y:3, w:'100%', h:1, align:'center', fontSize:24, color:'FFFFFF' });
+  slide.addText(state.currentJob.title, { x:0, y:4.2, w:'100%', h:1, align:'center', fontSize:18, color:'CCCCCC' });
+  
+  // Use memory slots directly to capture edits immediately
+  var photoSlots = state.slots.map(serializeSlot).filter(function(s){return s.imageData;});
+  
+  // Sort strictly by Vehicle, Defect, Parts
+  photoSlots.sort(function(a,b){
+    function getRank(s){
+      if(['mileage','rear_view','front_view','vin_plate'].includes(s.type)) return 1;
+      if(s.type.indexOf('defect_')===0) return 2;
+      if(s.type.indexOf('parts_')===0) return 3;
+      return 4;
+    }
+    return getRank(a)-getRank(b);
+  });
+  
+  for(var i=0; i<photoSlots.length; i+=2){
+    var s = pptx.addSlide();
+    s.background = { color: 'FFFFFF' };
+    
+    var img1 = photoSlots[i];
+    if(img1){
+      s.addImage({ data: img1.imageData, x:0.5, y:0.5, w:5.9, h:5.5, sizing: { type: 'contain', w:5.9, h:5.5 } });
+      s.addText('Pic '+(i+1), { x:0.5, y:6.2, w:5.9, h:0.5, align:'center', fontSize:20, color:'000000', bold:true });
+    }
+    
+    if(photoSlots[i+1]){
+      var img2 = photoSlots[i+1];
+      s.addImage({ data: img2.imageData, x:6.9, y:0.5, w:5.9, h:5.5, sizing: { type: 'contain', w:5.9, h:5.5 } });
+      s.addText('Pic '+(i+2), { x:6.9, y:6.2, w:5.9, h:0.5, align:'center', fontSize:20, color:'000000', bold:true });
+    }
+  }
+  
+  pptx.writeFile({ fileName: 'VINDOC_'+state.currentJob.title.replace(/\s+/g,'_')+'.pptx' });
+  showToast('PPTX generated','success');
 }
 
 function updateStats(){var ld=state.slots.filter(function(s){return s.originalImage;}).length;var vS=state.slots.filter(function(s){return s.type==='mileage'||s.type==='rear_view'||s.type==='front_view'||s.type==='vin_plate';});var dS=state.slots.filter(function(s){return s.type.indexOf('defect_')===0;});var pS=state.slots.filter(function(s){return s.type.indexOf('parts_')===0;});var vL=vS.filter(function(s){return s.originalImage;}).length;var dL=dS.filter(function(s){return s.originalImage;}).length;var pL=pS.filter(function(s){return s.originalImage;}).length;var el;if((el=document.getElementById('count-vehicle')))el.textContent=vL+'/'+vS.length;if((el=document.getElementById('count-defect')))el.textContent=dL+'/'+dS.length;if((el=document.getElementById('count-parts')))el.textContent=pL+'/'+pS.length;if((el=document.getElementById('photoCount')))el.textContent=ld;if((el=document.getElementById('floatCount')))el.innerHTML=ld+' <small>loaded</small>';}
