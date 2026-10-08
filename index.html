@@ -523,7 +523,7 @@ body.compact .act-btn span{display:none}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pptxgenjs/3.12.0/pptxgen.bundle.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.min.js"></script>
 <script>
 var firebaseConfig={apiKey:"AIzaSyDleQO8_p5qKr2t1-GQgjw_tpD18EIi6CA",authDomain:"vindoc-2e37f.firebaseapp.com",projectId:"vindoc-2e37f",storageBucket:"vindoc-2e37f.firebasestorage.app",messagingSenderId:"767410297209",appId:"1:767410297209:web:9c7141b0beafbe43e137a8"};
 try{firebase.initializeApp(firebaseConfig);}catch(e){}
@@ -712,8 +712,6 @@ function addPartsSlot(){var g=document.getElementById('partsGrid');if(!g)return;
 /* ===== PDF & PPTX GENERATION ===== */
 function generatePDF(){if(!state.currentJob){showToast('No job open','error');return;}generateJobPDF(state.currentJob.id);}
 function generateJobPDF(jobId){
-  var J=window.jspdf?window.jspdf.jsPDF:window.jsPDF;
-  if(!J){showToast('PDF library not loaded','error');return;}
   DB.get('jobs',jobId).then(function(job){
     if(!job){showToast('Job not found','error');return;}
     var cp=job.customerId?DB.get('customers',job.customerId):Promise.resolve(null);
@@ -732,6 +730,8 @@ function generateJobPDF(jobId){
   });
 }
 function buildAndDownloadPDF(job, cust, slots){
+  var J=window.jspdf?window.jspdf.jsPDF:window.jsPDF;
+  if(!J){showToast('PDF library not loaded','error');return;}
   var doc=new J({orientation:'portrait',unit:'mm',format:'a4'});
   var pW=210,pH=297,m=15;
   
