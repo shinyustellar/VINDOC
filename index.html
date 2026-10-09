@@ -95,9 +95,9 @@ html,body{font-family:'Hanken Grotesk',sans-serif;background:var(--bg);color:var
 .table-wrap::-webkit-scrollbar-track{background:var(--bg-2);border-left:1px solid var(--border)}
 .table-wrap::-webkit-scrollbar-thumb{background:var(--muted-2);border-radius:4px}
 .table-wrap::-webkit-scrollbar-thumb:hover{background:var(--fg)}
-.status-pill{font-size:8px;padding:3px 8px;font-family:'Archivo',sans-serif;font-weight:700;letter-spacing:0.1em;text-transform:uppercase}
-.status-pill.pending{background:var(--bg-3);color:var(--muted)}
-.status-pill.in_progress{background:#fff3cd;color:#856404}
+.status-pill{font-size:8px;padding:4px 10px;font-family:'Archivo',sans-serif;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;border:1px solid transparent;display:inline-flex;align-items:center;justify-content:center;white-space:nowrap;min-width:110px;text-align:center;line-height:1.2}
+.status-pill.pending{background:var(--bg-3);color:var(--muted);border:1px solid var(--border-hi)}
+.status-pill.in_progress{background:#fff3cd;color:#856404;border:1px solid #d4b004}
 .status-pill.completed{background:rgba(27,107,60,0.1);color:var(--success);border:1px solid var(--success)}
 .table-actions{display:flex;gap:4px}
 .table-action{background:transparent;border:1px solid var(--border-hi);color:var(--muted);padding:5px 8px;font-size:9px;font-family:'Archivo',sans-serif;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;gap:4px}
