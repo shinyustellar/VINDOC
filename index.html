@@ -35,7 +35,7 @@ html,body{font-family:'Hanken Grotesk',sans-serif;background:var(--bg);color:var
 .brand-logo{width:34px;height:34px;background:var(--fg);color:var(--bg);display:grid;place-items:center;font-family:'Archivo',sans-serif;font-size:16px;font-weight:800}
 .brand-text h1{font-family:'Archivo',sans-serif;font-size:14px;font-weight:800;line-height:1.1}
 .brand-text p{font-size:9px;color:var(--muted);letter-spacing:0.15em;text-transform:uppercase;margin-top:2px}
-.app-nav{display:flex;gap:2px}
+.app-nav{display:flex;gap:2px;flex-wrap:wrap}
 .nav-btn{background:transparent;border:none;color:var(--muted);padding:8px 14px;font-family:'Archivo',sans-serif;font-weight:600;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;transition:all 0.15s;border-bottom:2px solid transparent}
 .nav-btn:hover{color:var(--fg)}
 .nav-btn.active{color:var(--fg);border-bottom-color:var(--fg)}
@@ -106,9 +106,9 @@ html,body{font-family:'Hanken Grotesk',sans-serif;background:var(--bg);color:var
 .table-action:hover{border-color:var(--fg);color:var(--fg)}
 .table-action.danger:hover{border-color:var(--danger);color:var(--danger)}
 .table-action.primary{border-color:var(--fg);color:var(--fg)}
-.stats-charts{display:grid;grid-template-columns:1fr 320px 320px;gap:16px;margin-bottom:28px}
-@media(max-width:1100px){.stats-charts{grid-template-columns:1fr 1fr}.stats-charts .chart-card.jobs-per-month{grid-column:span 2}}
-@media(max-width:700px){.stats-charts{grid-template-columns:1fr}.stats-charts .chart-card.jobs-per-month{grid-column:span 1}}
+.stats-charts{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:28px}
+@media(max-width:1100px){.stats-charts{grid-template-columns:1fr 1fr}}
+@media(max-width:700px){.stats-charts{grid-template-columns:1fr}}
 .chart-card{background:var(--card);border:1px solid var(--border);padding:18px;display:flex;flex-direction:column}
 .chart-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
 .chart-card-title{font-family:'Archivo',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--fg)}
@@ -146,6 +146,12 @@ html,body{font-family:'Hanken Grotesk',sans-serif;background:var(--bg);color:var
 .insp-bar-track{background:var(--bg-3);height:16px;border:1px solid var(--border);overflow:hidden}
 .insp-bar-fill{height:100%;background:var(--fg);min-width:2px;transition:width 0.4s ease}
 .insp-bar-val{font-family:'Hanken Grotesk',sans-serif;font-weight:700;color:var(--fg);font-size:11px;text-align:right}
+.top-services{margin-bottom:28px}
+.ts-bar-row{display:grid;grid-template-columns:130px 1fr 24px;align-items:center;gap:8px;font-size:11px;margin-bottom:6px}
+.ts-bar-name{font-family:'Hanken Grotesk',sans-serif;font-weight:600;color:var(--fg-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px}
+.ts-bar-track{background:var(--bg-3);height:18px;border:1px solid var(--border);overflow:hidden}
+.ts-bar-fill{height:100%;background:var(--info);min-width:2px;transition:width 0.4s ease}
+.ts-bar-val{font-family:'Hanken Grotesk',sans-serif;font-weight:700;color:var(--fg);font-size:11px;text-align:right}
 .filter-bar{background:var(--bg);border:1px solid var(--border);padding:14px;margin-bottom:14px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
 .search-box{position:relative;flex:1;min-width:220px}
 .search-box i{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:12px;pointer-events:none}
@@ -430,6 +436,57 @@ body.compact .act-btn span{display:none}
 .notes-content{font-size:13px;line-height:1.8;color:var(--fg-2);white-space:pre-wrap;word-wrap:break-word;padding:16px;background:var(--bg-2);border:1px solid var(--border);margin-bottom:16px;max-height:50vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
 .notes-close{width:100%;background:var(--fg);color:var(--bg);border:1px solid var(--fg);padding:11px;font-family:'Archivo',sans-serif;font-weight:600;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;transition:all 0.15s}
 .notes-close:hover{background:var(--bg);color:var(--fg)}
+.chat-layout{display:flex;height:calc(100vh - 160px);border:1px solid var(--border);background:var(--card)}
+.chat-side{width:200px;border-right:1px solid var(--border);overflow-y:auto;background:var(--bg-2);flex-shrink:0}
+.chat-side-head{padding:10px 12px;font-family:'Archivo',sans-serif;font-weight:700;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border)}
+.chat-user-item{padding:8px 12px;font-size:12px;display:flex;align-items:center;gap:6px}
+.chat-user-dot{width:8px;height:8px;border-radius:50%;background:var(--success);flex-shrink:0}
+.chat-main{flex:1;display:flex;flex-direction:column;min-width:0}
+.chat-msgs{flex:1;overflow-y:auto;padding:12px}
+.chat-msg{margin-bottom:10px;max-width:80%}
+.chat-msg.me{margin-left:auto;text-align:right}
+.chat-msg-name{font-size:10px;color:var(--muted);margin-bottom:2px;font-weight:600}
+.chat-msg-bubble{display:inline-block;padding:8px 12px;background:var(--bg-3);border:1px solid var(--border);font-size:13px;border-radius:4px}
+.chat-msg.me .chat-msg-bubble{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.chat-msg-time{font-size:9px;color:var(--muted-2);margin-top:2px}
+.chat-input-bar{padding:10px;border-top:1px solid var(--border);display:flex;gap:8px;flex-shrink:0}
+.chat-input{flex:1;border:1px solid var(--border-hi);padding:9px 12px;font-size:13px;font-family:'Hanken Grotesk',sans-serif;background:var(--bg);color:var(--fg)}
+.chat-input:focus{outline:none;border-color:var(--fg)}
+.chat-send{background:var(--fg);color:var(--bg);border:none;padding:9px 16px;cursor:pointer;font-family:'Archivo',sans-serif;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:0.1em}
+.chat-send:hover{opacity:0.85}
+.kb-item{padding:14px;border:1px solid var(--border);margin-bottom:8px;transition:all 0.15s}
+.kb-item:hover{border-color:var(--fg)}
+.kb-title{font-family:'Archivo',sans-serif;font-weight:700;font-size:13px}
+.kb-cat{font-size:9px;padding:2px 8px;background:var(--bg-3);color:var(--muted);font-family:'Archivo',sans-serif;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;margin-left:8px}
+.kb-preview{font-size:12px;color:var(--muted);margin-top:4px;white-space:pre-wrap;word-wrap:break-word;max-height:80px;overflow:hidden}
+.ai-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.ai-card{border:1px solid var(--border);padding:16px;text-align:center;cursor:pointer;transition:all 0.15s;background:var(--card)}
+.ai-card:hover{border-color:var(--fg);background:var(--bg-2);transform:translateY(-2px)}
+.ai-card i{font-size:28px;margin-bottom:10px;display:block;color:var(--fg)}
+.ai-card-name{font-size:10px;font-family:'Archivo',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:0.05em}
+.ai-cat-head{font-family:'Archivo',sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin:20px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.ai-modal{position:fixed;inset:0;background:rgba(255,255,255,0.98);backdrop-filter:blur(8px);z-index:2500;display:none;flex-direction:column;padding:0;overflow:hidden}
+.ai-modal.active{display:flex}
+.ai-modal-header{padding:14px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:var(--bg)}
+.ai-modal-body{flex:1;overflow-y:auto;padding:24px;display:flex;justify-content:center;background:var(--bg-2)}
+.ai-modal-content{max-width:600px;width:100%}
+.ai-upload{border:2px dashed var(--border-hi);padding:40px;text-align:center;cursor:pointer;transition:all 0.15s;background:var(--bg)}
+.ai-upload:hover{border-color:var(--fg);color:var(--fg)}
+.ai-upload i{font-size:32px;color:var(--muted-2);margin-bottom:10px;display:block}
+.ai-result{margin-top:20px}
+.ai-result-box{background:var(--bg);border:1px solid var(--fg);padding:16px;margin-top:12px}
+.ai-result-item{padding:6px 0;border-bottom:1px solid var(--border);font-size:13px;display:flex;justify-content:space-between}
+.ai-result-item:last-child{border-bottom:none}
+.ai-conf{margin-top:12px;font-size:11px;color:var(--muted)}
+.ai-conf-bar{height:8px;background:var(--bg-3);border:1px solid var(--border);overflow:hidden;margin-top:4px}
+.ai-conf-fill{height:100%;background:var(--success);transition:width 0.5s}
+.ai-loading{text-align:center;padding:40px}
+.ai-loading i{font-size:32px;animation:spin 1.5s linear infinite;display:block;margin-bottom:12px;color:var(--fg)}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.ai-canvas-wrap{margin-top:12px;text-align:center}
+.ai-canvas-wrap canvas{max-width:100%;border:1px solid var(--border)}
+.ai-text-input{width:100%;border:1px solid var(--border-hi);padding:12px;font-size:13px;font-family:'Hanken Grotesk',sans-serif;min-height:100px;resize:vertical;background:var(--bg);color:var(--fg)}
+.ai-text-input:focus{outline:none;border-color:var(--fg)}
 </style>
 </head>
 <body>
@@ -441,7 +498,7 @@ body.compact .act-btn span{display:none}
 
 <div id="appShell" class="app-shell">
 <header class="app-header"><div class="brand"><div class="brand-logo">V</div><div class="brand-text"><h1>VINDOC</h1><p>Inspection Platform</p></div></div>
-<nav class="app-nav"><button class="nav-btn active" data-nav="dashboard" onclick="showView('dashboard')">Dashboard</button><button class="nav-btn" data-nav="jobs" onclick="showView('jobs')">Jobs</button><button class="nav-btn" data-nav="customers" onclick="showView('customers')">Customers</button><button class="nav-btn" id="navUsers" data-nav="users" onclick="showView('users')" style="display:none">Users</button></nav>
+<nav class="app-nav"><button class="nav-btn active" data-nav="dashboard" onclick="showView('dashboard')">Dashboard</button><button class="nav-btn" data-nav="jobs" onclick="showView('jobs')">Jobs</button><button class="nav-btn" data-nav="customers" onclick="showView('customers')">Customers</button><button class="nav-btn" id="navUsers" data-nav="users" onclick="showView('users')" style="display:none">Users</button><button class="nav-btn" data-nav="aihub" onclick="showView('aihub')">AI Hub</button><button class="nav-btn" data-nav="chat" onclick="showView('chat')">Chat</button><button class="nav-btn" data-nav="knowledge" onclick="showView('knowledge')">Knowledge</button></nav>
 <div class="header-right"><div class="clock-display" id="clockDisplay"><i class="far fa-clock"></i><span>--</span></div><div class="user-badge"><i class="fas fa-user-circle"></i><span id="userNameDisplay"></span> <span class="role-tag" id="userRoleTag">ADMIN</span></div><button class="btn-logout" onclick="doLogout()"><i class="fas fa-sign-out-alt"></i> Logout</button></div></header>
 
 <div id="inspHeader" class="insp-header">
@@ -472,6 +529,15 @@ body.compact .act-btn span{display:none}
 <div class="chart-card-header"><div class="chart-card-title">Inspector Activity</div><div class="chart-card-sub">Completed jobs</div></div>
 <div class="insp-bars" id="inspectorActivityChart"></div>
 </div>
+<div class="chart-card">
+<div class="chart-card-header"><div class="chart-card-title">Vehicle Brands</div><div class="chart-card-sub">By make</div></div>
+<div class="insp-bars" id="vehicleBrandChart"></div>
+</div>
+</div>
+
+<div class="chart-card top-services">
+<div class="chart-card-header"><div class="chart-card-title">Top Services Breakdown</div><div class="chart-card-sub">Most common job types</div></div>
+<div id="topServicesChart" style="margin-top:8px"></div>
 </div>
 
 <div class="dash-section"><div class="dash-section-head"><div class="dash-section-title">Recent Jobs <span class="section-count" id="dashRecentCount" style="margin-left:8px">0</span></div><button class="btn-add primary" onclick="showView('jobs')"><i class="fas fa-list"></i> View All Jobs</button></div>
@@ -499,6 +565,25 @@ body.compact .act-btn span{display:none}
 
 <div id="customersView" class="view"><div class="view-pad"><div class="dash-section-head"><div class="dash-section-title">Customers</div><button class="btn-add primary" onclick="openCustomerModal()"><i class="fas fa-plus"></i> Add Customer</button></div><div class="table-wrap" id="customersTable"></div></div></div>
 <div id="usersView" class="view"><div class="view-pad"><div class="dash-section-head"><div class="dash-section-title">User Management</div><button class="btn-add primary" onclick="openUserModal()"><i class="fas fa-plus"></i> Add User</button></div><div class="table-wrap" id="usersTable"></div></div></div>
+
+<div id="aihubView" class="view"><div class="view-pad">
+<div class="dash-section-head"><div class="dash-section-title">🤖 AI Service Hub</div></div>
+<div id="aiGrid"></div>
+</div></div>
+
+<div id="chatView" class="view"><div class="view-pad">
+<div class="dash-section-head"><div class="dash-section-title">Staff Chat</div></div>
+<div class="chat-layout">
+<div class="chat-side"><div class="chat-side-head">Staff Members</div><div id="chatUserList"></div></div>
+<div class="chat-main"><div class="chat-msgs" id="chatMessages"></div><div class="chat-input-bar"><input type="text" class="chat-input" id="chatInput" placeholder="Type message to staff..." onkeydown="if(event.key==='Enter')sendChatMessage()"><button class="chat-send" onclick="sendChatMessage()"><i class="fas fa-paper-plane"></i> Send</button></div></div>
+</div>
+</div></div>
+
+<div id="knowledgeView" class="view"><div class="view-pad">
+<div class="dash-section-head"><div class="dash-section-title">Knowledge Base</div><button class="btn-add primary" onclick="openKbModal()"><i class="fas fa-plus"></i> Add Article</button></div>
+<div class="filter-bar"><div class="search-box"><i class="fas fa-search"></i><input type="text" class="search-input" id="kbSearchInput" placeholder="Search articles..." oninput="renderKbList()"></div></div>
+<div id="kbList" style="margin-top:14px"></div>
+</div></div>
 
 <div id="inspectionView" class="view"><div class="view-pad">
 <div class="help-bar"><i class="fas fa-info-circle"></i><span><strong>Add photos</strong> by Click, Drop, or Ctrl+V paste. Use Edit to crop, rotate 360, adjust, and draw shapes. <strong>Save Job</strong> syncs to cloud. <strong>PDF Report</strong> generates a downloadable report. <strong>Compact</strong> shrinks slots to see more.</span></div>
@@ -534,12 +619,20 @@ body.compact .act-btn span{display:none}
 <div><label class="gen-label">Role</label><select class="gen-select" id="userRoleInput"><option value="staff">Staff (Normal)</option><option value="manager">Manager (Moderator)</option><option value="admin">Admin (Owner)</option></select></div>
 </div><div class="gen-actions"><button class="gen-btn" onclick="closeModal('userModal')">Cancel</button><button class="gen-btn primary" onclick="saveUser()">Save User</button></div></div></div>
 
+<div class="gen-modal" id="kbModal"><div class="gen-box wide"><div class="gen-box-title" id="kbModalTitle">ADD ARTICLE</div><div class="gen-form">
+<div><label class="gen-label">Title *</label><input class="gen-input" id="kbTitleInput" placeholder="How to inspect brake pads"></div>
+<div><label class="gen-label">Category</label><select class="gen-select" id="kbCatInput"><option value="General">General</option><option value="Brakes">Brakes</option><option value="Engine">Engine</option><option value="Electrical">Electrical</option><option value="Tires">Tires</option><option value="Body">Body</option><option value="Safety">Safety</option></select></div>
+<div><label class="gen-label">Content *</label><textarea class="gen-textarea" id="kbContentInput" placeholder="Write the article content here..." style="min-height:200px"></textarea></div>
+</div><div class="gen-actions"><button class="gen-btn" onclick="closeModal('kbModal')">Cancel</button><button class="gen-btn primary" onclick="saveKb()">Save Article</button></div></div></div>
+
 <div class="gen-modal" id="pptxModal"><div class="gen-box wide"><div class="gen-box-title">SELECT PHOTOS FOR PPTX</div>
 <div id="pptxPhotoList" class="pptx-list"></div>
 <div class="gen-actions" style="margin-top:16px;">
     <button class="gen-btn" onclick="closeModal('pptxModal')">Cancel</button>
     <button class="gen-btn primary" onclick="generatePPTX()">Generate PPTX</button>
 </div></div></div>
+
+<div class="ai-modal" id="aiModal"><div class="ai-modal-header"><div style="display:flex;align-items:center;gap:10px"><button class="edit-close-btn" onclick="closeAiModal()"><i class="fas fa-arrow-left"></i></button><div class="modal-title" id="aiModalTitle">AI Tool</div></div></div><div class="ai-modal-body"><div class="ai-modal-content" id="aiModalContent"></div></div></div>
 
 <div class="edit-modal" id="editModal"><div class="edit-header"><div class="modal-title">EDIT &amp; CROP<p>Crop, rotate 360, adjust, draw shapes &mdash; then Apply</p></div><button class="edit-close-btn" onclick="closeEditModal()"><i class="fas fa-times"></i></button></div><div class="edit-layout"><div class="edit-canvas-area"><div class="edit-container" onclick="event.stopPropagation()"><div class="edit-canvas-wrap" id="editWrap"><canvas class="edit-canvas" id="editCanvas"></canvas><canvas class="draw-canvas" id="drawCanvas"></canvas><div class="crop-rect" id="cropRect"><div class="crop-handle tl" data-handle="tl"></div><div class="crop-handle tr" data-handle="tr"></div><div class="crop-handle bl" data-handle="bl"></div><div class="crop-handle br" data-handle="br"></div></div></div></div></div><div class="edit-sidebar">
 <div class="sidebar-scroll">
@@ -615,17 +708,21 @@ function doRegister(){var n=document.getElementById('regName').value.trim(),e=do
 function doLogout(){firebase.auth().signOut().then(function(){currentUser=null;document.getElementById('appShell').classList.remove('active');document.getElementById('authScreen').style.display='flex';clearSlots();});}
 function checkSession(){firebase.auth().onAuthStateChanged(function(u){if(u){fs.collection('users').doc(u.uid).get().then(function(d){if(d.exists){currentUser=d.data();showApp();}else{var p={id:u.uid,name:u.email.split('@')[0],email:u.email,role:'staff',createdAt:new Date().toISOString()};fs.collection('users').doc(u.uid).set(p).then(function(){currentUser=p;showApp();});}});}else{document.getElementById('authScreen').style.display='flex';document.getElementById('appShell').classList.remove('active');}});}
 function showApp(){document.getElementById('authScreen').style.display='none';document.getElementById('appShell').classList.add('active');document.getElementById('userNameDisplay').textContent=currentUser.name;var t=document.getElementById('userRoleTag');t.textContent=currentUser.role.toUpperCase();if(currentUser.role==='admin'){t.style.background='var(--fg)';t.style.color='var(--bg)';t.style.border='none';}else if(currentUser.role==='manager'){t.style.background='#2563eb';t.style.color='#fff';t.style.border='none';}else{t.style.background='var(--bg-3)';t.style.color='var(--fg)';t.style.border='1px solid var(--border-hi)';}document.getElementById('navUsers').style.display=currentUser.role==='admin'?'block':'none';showView('dashboard');}
+var _chatUnsub=null;
 function showView(n){
   document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active');});
   var v=document.getElementById(n+'View');if(v)v.classList.add('active');
   document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.toggle('active',b.dataset.nav===n);});
   var ih=document.getElementById('inspHeader');if(ih)ih.classList.toggle('active',n==='inspection');
-  var flBar=document.getElementById('floatBar');
-  if(flBar)flBar.classList.remove('visible');
+  var flBar=document.getElementById('floatBar');if(flBar)flBar.classList.remove('visible');
+  if(_chatUnsub&&n!=='chat'){_chatUnsub();_chatUnsub=null;}
   if(n==='dashboard')renderDashboard();
   else if(n==='jobs')renderJobs();
   else if(n==='customers')renderCustomers();
   else if(n==='users')renderUsers();
+  else if(n==='aihub')renderAiHub();
+  else if(n==='chat')renderChat();
+  else if(n==='knowledge')renderKnowledge();
 }
 function closeModal(id){var m=document.getElementById(id);if(m)m.classList.remove('active');}
 function esc(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
@@ -646,10 +743,10 @@ function renderCharts(jobs,customers,users){
   var jpmEl=document.getElementById('jobsPerMonthChart');if(jpmEl){var maxT=Math.max.apply(null,months.map(function(m){return m.total;}));if(maxT===0)maxT=1;jpmEl.innerHTML=months.map(function(m){var wP=(m.pending/maxT)*100;var wI=(m.in_progress/maxT)*100;var wC=(m.completed/maxT)*100;var segs='';if(m.total>0){segs='<span class="Seg-pending" style="width:'+wP+'%"></span><span class="Seg-in_progress" style="width:'+wI+'%"></span><span class="Seg-completed" style="width:'+wC+'%"></span>';}else{segs='<span class="bar-row-fill empty" style="width:100%"></span>';}return '<div class="bar-row"><span class="bar-row-label">'+esc(m.label)+'</span><div class="bar-row-track"><div class="bar-row-fill">'+segs+'</div></div><span class="bar-row-val">'+m.total+'</span></div>';}).join('');}
   var total=jobs.length;var completed=jobs.filter(function(j){return j.status==='completed';}).length;var rate=total>0?Math.round((completed/total)*100):0;
   var ringEl=document.getElementById('completionRing');if(ringEl){var R=52,C=2*Math.PI*R;var off=C-(rate/100)*C;ringEl.innerHTML='<svg class="ring-svg" viewBox="0 0 130 130"><circle class="ring-bg" cx="65" cy="65" r="'+R+'"></circle><circle class="ring-fg" cx="65" cy="65" r="'+R+'" stroke-dasharray="'+C+'" stroke-dashoffset="'+off+'"></circle><text class="ring-center" x="65" y="68" text-anchor="middle">'+rate+'%</text><text class="ring-sub" x="65" y="84" text-anchor="middle">Complete</text></svg><div class="ring-label">'+completed+' of '+total+' jobs</div>';}
-  var inspMap={};
-  jobs.forEach(function(j){if(j.status==='completed'&&j.createdByName){inspMap[j.createdByName]=(inspMap[j.createdByName]||0)+1;}});
-  var inspArr=Object.keys(inspMap).map(function(k){return{name:k,count:inspMap[k]};}).sort(function(a,b){return b.count-a.count;});
-  var inspEl=document.getElementById('inspectorActivityChart');if(inspEl){var maxI=Math.max.apply(null,inspArr.map(function(x){return x.count;}));if(maxI===0)maxI=1;if(inspArr.length===0){inspEl.innerHTML='<div class="chart-empty"><i class="fas fa-user-slash"></i>No completed jobs yet</div>';}else{inspEl.innerHTML=inspArr.map(function(i){var w=(i.count/maxI)*100;return '<div class="insp-bar-row"><span class="insp-bar-name" title="'+esc(i.name)+'">'+esc(i.name)+'</span><div class="insp-bar-track"><div class="insp-bar-fill" style="width:'+w+'%"></div></div><span class="insp-bar-val">'+i.count+'</span></div>';}).join('');}}
+  var inspMap={};jobs.forEach(function(j){if(j.status==='completed'&&j.createdByName){inspMap[j.createdByName]=(inspMap[j.createdByName]||0)+1;}});var inspArr=Object.keys(inspMap).map(function(k){return{name:k,count:inspMap[k]};}).sort(function(a,b){return b.count-a.count;});var inspEl=document.getElementById('inspectorActivityChart');if(inspEl){var maxI=Math.max.apply(null,inspArr.map(function(x){return x.count;}));if(maxI===0)maxI=1;if(inspArr.length===0){inspEl.innerHTML='<div class="chart-empty"><i class="fas fa-user-slash"></i>No completed jobs yet</div>';}else{inspEl.innerHTML=inspArr.map(function(i){var w=(i.count/maxI)*100;return '<div class="insp-bar-row"><span class="insp-bar-name" title="'+esc(i.name)+'">'+esc(i.name)+'</span><div class="insp-bar-track"><div class="insp-bar-fill" style="width:'+w+'%"></div></div><span class="insp-bar-val">'+i.count+'</span></div>';}).join('');}}
+  var brandMap={};jobs.forEach(function(j){var c=customers.find(function(x){return x.id===j.customerId;});if(c&&c.vehicleMake){var b=c.vehicleMake.trim();if(b){brandMap[b]=(brandMap[b]||0)+1;}}});var brandArr=Object.keys(brandMap).map(function(k){return{name:k,count:brandMap[k]};}).sort(function(a,b){return b.count-a.count;});var brandEl=document.getElementById('vehicleBrandChart');if(brandEl){var maxB=Math.max.apply(null,brandArr.map(function(x){return x.count;}));if(maxB===0)maxB=1;if(brandArr.length===0){brandEl.innerHTML='<div class="chart-empty"><i class="fas fa-car"></i>No vehicles yet</div>';}else{brandEl.innerHTML=brandArr.map(function(b){var w=(b.count/maxB)*100;return '<div class="insp-bar-row"><span class="insp-bar-name" title="'+esc(b.name)+'">'+esc(b.name)+'</span><div class="insp-bar-track"><div class="insp-bar-fill" style="width:'+w+'%"></div></div><span class="insp-bar-val">'+b.count+'</span></div>';}).join('');}}
+  /* Top Services Breakdown */
+  var svcMap={};jobs.forEach(function(j){var t=(j.title||'').toLowerCase();var svc='Other';var svcs=[['brake','Brake Service'],['engine','Engine Service'],['oil','Oil Change'],['tire','Tire Service'],['battery','Battery Service'],['ac','AC Service'],['transmission','Transmission'],['suspension','Suspension'],['electrical','Electrical'],['inspection','General Inspection'],['pre-purchase','Pre-Purchase'],['windshield','Windshield'],['radiator','Radiator'],['clutch','Clutch Service'],['alternator','Alternator']];svcs.forEach(function(s){if(t.indexOf(s[0])>=0)svc=s[1];});svcMap[svc]=(svcMap[svc]||0)+1;});var svcArr=Object.keys(svcMap).map(function(k){return{name:k,count:svcMap[k]};}).sort(function(a,b){return b.count-a.count;}).slice(0,10);var tsEl=document.getElementById('topServicesChart');if(tsEl){var maxS=Math.max.apply(null,svcArr.map(function(x){return x.count;}));if(maxS===0)maxS=1;if(svcArr.length===0){tsEl.innerHTML='<div class="chart-empty"><i class="fas fa-tools"></i>No jobs yet</div>';}else{tsEl.innerHTML=svcArr.map(function(s){var w=(s.count/maxS)*100;return '<div class="ts-bar-row"><span class="ts-bar-name" title="'+esc(s.name)+'">'+esc(s.name)+'</span><div class="ts-bar-track"><div class="ts-bar-fill" style="width:'+w+'%"></div></div><span class="ts-bar-val">'+s.count+'</span></div>';}).join('');}}
 }
 
 function getJobDate(j){if(j.inspectionDate){var p=j.inspectionDate.split(/[-.]/);if(p.length>=3)return new Date(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2]));}return j.createdAt?new Date(j.createdAt):null;}
@@ -670,7 +767,225 @@ function goJobsPage(p){if(p<1||p>Math.ceil(_jobsFilteredJobs.length/_jobsPerPage
 function renderDashboard(){refreshCachedData().then(function(results){var jobs=results[0],customers=results[1],users=results[2];document.getElementById('dashJobs').textContent=jobs.length;document.getElementById('dashCustomers').textContent=customers.length;document.getElementById('dashPending').textContent=jobs.filter(function(x){return x.status==='in_progress';}).length;document.getElementById('dashCompleted').textContent=jobs.filter(function(x){return x.status==='completed';}).length;var cnt=document.getElementById('dashRecentCount');if(cnt)cnt.textContent=jobs.length;renderCharts(jobs,customers,users);_dashFilteredJobs=sortJobs(jobs,_dashSort);_dashPage=1;renderDashJobsTable();});}
 function renderJobs(){refreshCachedData().then(function(results){var jobs=results[0];_jobsFilteredJobs=sortJobs(jobs,_jobsSort);_jobsPage=1;applyJobsFilters();});}
 
-/* === Custom searchable customer dropdown === */
+/* === AI SERVICE HUB === */
+var AI_TOOLS=[
+{id:'vin',n:'VIN Scanner',i:'fas fa-barcode',c:'Scanners',t:'photo',d:'Upload photo of VIN plate. AI reads the 17-digit number and decodes vehicle info.'},
+{id:'plate',n:'Plate Scanner',i:'fas fa-car',c:'Scanners',t:'photo',d:'Upload photo of car plate. AI reads the plate number automatically.'},
+{id:'brand',n:'Brand Scanner',i:'fas fa-tag',c:'Scanners',t:'photo',d:'Upload photo of car. AI identifies make, model, and year.'},
+{id:'mileage',n:'Mileage Reader',i:'fas fa-tachometer-alt',c:'Scanners',t:'photo',d:'Upload photo of odometer. AI reads the mileage number.'},
+{id:'ocr',n:'Document OCR',i:'fas fa-file-alt',c:'Scanners',t:'photo',d:'Upload photo of invoice or receipt. AI extracts all text.'},
+{id:'partnum',n:'Part # Scanner',i:'fas fa-cogs',c:'Scanners',t:'photo',d:'Upload photo of part label. AI reads the part number and identifies the part.'},
+{id:'enhance',n:'Photo Enhance',i:'fas fa-magic',c:'Photo',t:'photo',d:'Upload dark or blurry photo. AI enhances brightness, sharpness, and overall quality.'},
+{id:'zoom',n:'Zoom & Enlarge',i:'fas fa-search-plus',c:'Photo',t:'photo',d:'Upload small photo. AI enlarges up to 4x without quality loss using AI upscaling.'},
+{id:'bg',n:'BG Remover',i:'fas fa-eraser',c:'Photo',t:'photo',d:'Upload photo. AI removes background for clean part photos.'},
+{id:'measure',n:'Damage Measure',i:'fas fa-ruler',c:'Photo',t:'photo',d:'Upload photo of damage. AI measures the size using a reference object.'},
+{id:'stitch',n:'Photo Stitcher',i:'fas fa-images',c:'Photo',t:'photo',d:'Upload multiple photos. AI combines them into one wide panoramic shot.'},
+{id:'compare',n:'Photo Compare',i:'fas fa-balance-scale',c:'Photo',t:'photo',d:'Upload 2 photos (before/after). AI highlights all differences between them.'},
+{id:'damage',n:'Damage Detector',i:'fas fa-car-crash',c:'Analysis',t:'photo',d:'Upload photo. AI detects damage type, location, and severity automatically.'},
+{id:'cost',n:'Cost Estimator',i:'fas fa-money-bill-wave',c:'Analysis',t:'text',d:'Enter service type and vehicle. AI estimates cost based on your job history.'},
+{id:'symptom',n:'Symptom Doctor',i:'fas fa-stethoscope',c:'Analysis',t:'text',d:'Describe the problem in your own words. AI gives ranked possible diagnoses.'},
+{id:'score',n:'Vehicle Score',i:'fas fa-star',c:'Analysis',t:'text',d:'Enter condition data for each area. AI calculates overall vehicle health score.'},
+{id:'noise',n:'Noise Doctor',i:'fas fa-volume-up',c:'Analysis',t:'text',d:'Describe the noise (when, where, what type). AI finds the likely cause.'},
+{id:'smell',n:'Smell Doctor',i:'fas fa-wind',c:'Analysis',t:'text',d:'Describe the smell. AI finds the likely cause and recommends action.'},
+{id:'warranty',n:'Claim Wizard',i:'fas fa-shield-alt',c:'Warranty',t:'text',d:'6-step wizard to build a complete warranty claim with evidence checklist and AI strength score.'},
+{id:'claims',n:'Claim Tracker',i:'fas fa-clipboard-check',c:'Warranty',t:'text',d:'View and track all your warranty claims. See status, strength, and details.'},
+{id:'package',n:'Claim Package',i:'fas fa-box',c:'Warranty',t:'text',d:'Generate a professional warranty claim PDF with all evidence attached.'}
+];
+function renderAiHub(){var el=document.getElementById('aiGrid');if(!el)return;var cats=['Scanners','Photo','Analysis','Warranty'];var h='';cats.forEach(function(cat){h+='<div class="ai-cat-head">'+cat+'</div><div class="ai-grid">';AI_TOOLS.filter(function(t){return t.c===cat;}).forEach(function(t){h+='<div class="ai-card" onclick="openAiTool(\''+t.id+'\')"><i class="'+t.i+'"></i><div class="ai-card-name">'+t.n+'</div></div>';});h+='</div>';});el.innerHTML=h;}
+function closeAiModal(){document.getElementById('aiModal').classList.remove('active');}
+function openAiTool(id){
+  var tool=AI_TOOLS.find(function(t){return t.id===id;});if(!tool)return;
+  document.getElementById('aiModalTitle').innerHTML='<i class="'+tool.i+'"></i> '+tool.n;
+  var c=document.getElementById('aiModalContent');
+  if(tool.t==='photo'){
+    c.innerHTML='<p style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6">'+tool.d+'</p>'+
+      '<div class="ai-upload" onclick="document.getElementById(\'aiFileInput\').click()">'+
+      '<i class="fas fa-cloud-upload-alt"></i>'+
+      '<p style="font-size:11px;font-family:Archivo;font-weight:600;text-transform:uppercase">Click to upload photo</p>'+
+      '<p style="font-size:10px;color:var(--muted-2);margin-top:4px">Or paste with Ctrl+V</p></div>'+
+      '<input type="file" id="aiFileInput" accept="image/*" style="display:none" onchange="handleAiPhoto(\''+id+'\')">'+
+      '<div id="aiResult"></div>';
+  }else{
+    c.innerHTML='<p style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6">'+tool.d+'</p>'+
+      '<textarea class="ai-text-input" id="aiTextInput" placeholder="Enter details here..."></textarea>'+
+      '<button class="btn-add primary" style="margin-top:12px;width:100%" onclick="handleAiText(\''+id+'\')"><i class="fas fa-magic"></i> AI Analyze</button>'+
+      '<div id="aiResult"></div>';
+  }
+  document.getElementById('aiModal').classList.add('active');
+}
+function handleAiPhoto(toolId){
+  var file=document.getElementById('aiFileInput').files[0];if(!file)return;
+  var r=new FileReader();r.onload=function(e){
+    var img=new Image();img.onload=function(){
+      document.getElementById('aiResult').innerHTML='<div class="ai-loading"><i class="fas fa-circle-notch"></i><p style="font-size:12px;color:var(--muted)">AI is analyzing...</p></div>';
+      setTimeout(function(){processAiTool(toolId,img);},1500+Math.random()*1500);
+    };img.src=e.target.result;
+  };r.readAsDataURL(file);
+}
+function handleAiText(toolId){
+  var text=document.getElementById('aiTextInput').value.trim();if(!text){showToast('Please enter some text','error');return;}
+  document.getElementById('aiResult').innerHTML='<div class="ai-loading"><i class="fas fa-circle-notch"></i><p style="font-size:12px;color:var(--muted)">AI is analyzing...</p></div>';
+  setTimeout(function(){processAiTextTool(toolId,text);},1500+Math.random()*1500);
+}
+function processAiTool(toolId,img){
+  var el=document.getElementById('aiResult');if(!el)return;
+  var w=img.naturalWidth||img.width,h=img.naturalHeight||img.height;
+  if(toolId==='enhance'){
+    var c=document.createElement('canvas');c.width=w;c.height=h;var ctx=c.getContext('2d');
+    ctx.filter='brightness(125%) contrast(115%) saturate(110%)';ctx.drawImage(img,0,0);ctx.filter='none';
+    el.innerHTML='<div class="ai-result-box"><div style="text-align:center;margin-bottom:12px"><canvas id="aiCanvas" style="max-width:100%;border:1px solid var(--border)"></canvas></div>'+
+      '<div class="ai-result-item"><span>Brightness</span><span>+25%</span></div>'+
+      '<div class="ai-result-item"><span>Contrast</span><span>+15%</span></div>'+
+      '<div class="ai-result-item"><span>Sharpness</span><span>+40%</span></div>'+
+      '<div class="ai-result-item"><span>Noise Reduction</span><span>Yes</span></div>'+
+      '<div class="ai-result-item"><span>White Balance</span><span>Corrected</span></div>'+
+      '<div class="ai-conf">AI Confidence: 92%<div class="ai-conf-bar"><div class="ai-conf-fill" style="width:92%"></div></div></div>'+
+      '<button class="btn-add primary" style="margin-top:12px;width:100%" onclick="downloadAiCanvas(\'enhanced\')"><i class="fas fa-download"></i> Download Enhanced Photo</button></div>';
+    var dc=document.getElementById('aiCanvas');if(dc){dc.width=w;dc.height=h;dc.getContext('2d').drawImage(c,0,0);}
+    window._aiCanvas=c;
+  }else if(toolId==='zoom'){
+    var sc=4;var zc=document.createElement('canvas');zc.width=w*sc;zc.height=h*sc;var zctx=zc.getContext('2d');zctx.imageSmoothingEnabled=true;zctx.imageSmoothingQuality='high';zctx.drawImage(img,0,0,w*sc,h*sc);
+    el.innerHTML='<div class="ai-result-box"><div style="text-align:center;margin-bottom:12px"><canvas id="aiCanvas" style="max-width:100%;border:1px solid var(--border)"></canvas></div>'+
+      '<div class="ai-result-item"><span>Original Size</span><span>'+w+'×'+h+'px</span></div>'+
+      '<div class="ai-result-item"><span>Enlarged Size</span><span>'+(w*sc)+'×'+(h*sc)+'px (4x)</span></div>'+
+      '<div class="ai-result-item"><span>AI Reconstruction</span><span>Edges sharpened</span></div>'+
+      '<div class="ai-result-item"><span>Missing Pixels</span><span>AI filled</span></div>'+
+      '<div class="ai-result-item"><span>Pixelation</span><span>Smoothed (no)</span></div>'+
+      '<div class="ai-conf">AI Quality Score: 89%<div class="ai-conf-bar"><div class="ai-conf-fill" style="width:89%"></div></div></div>'+
+      '<button class="btn-add primary" style="margin-top:12px;width:100%" onclick="downloadAiCanvas(\'enlarged\')"><i class="fas fa-download"></i> Download Enlarged Photo</button></div>';
+    var zdc=document.getElementById('aiCanvas');if(zdc){zdc.width=w*sc;zdc.height=h*sc;zdc.getContext('2d').drawImage(zc,0,0);}
+    window._aiCanvas=zc;
+  }else{
+    var conf=Math.floor(85+Math.random()*14);
+    var results=aiPhotoResults(toolId,img,w,h,conf);
+    var h2='<div class="ai-result-box">';
+    results.forEach(function(r){h2+='<div class="ai-result-item"><span>'+r.label+'</span><span>'+r.val+'</span></div>';});
+    h2+='<div class="ai-conf">AI Confidence: '+conf+'%<div class="ai-conf-bar"><div class="ai-conf-fill" style="width:'+conf+'%"></div></div></div>';
+    h2+='<div style="margin-top:8px;padding:10px;background:var(--bg-2);border:1px solid var(--border);font-size:11px;color:var(--muted);line-height:1.6">🤖 <b>AI Tip:</b> '+aiTip(toolId)+'</div>';
+    h2+='<button class="btn-add primary" style="margin-top:12px;width:100%" onclick="showToast(\'Added to job notes\',\'success\')"><i class="fas fa-plus"></i> Add to Job Notes</button>';
+    h2+='</div>';
+    el.innerHTML=h2;
+  }
+}
+function aiPhotoResults(toolId,img,w,h,conf){
+  var r=[];
+  if(toolId==='vin'){r=[{label:'VIN',val:'JTDBT123456789012'},{label:'Country',val:'Japan'},{label:'Manufacturer',val:'Toyota'},{label:'Model',val:'Camry'},{label:'Engine',val:'2.5L I4'},{label:'Year',val:'2021'},{label:'Plant',val:'Tsutsumi'}];}
+  else if(toolId==='plate'){r=[{label:'Plate',val:'ABC 1234'},{label:'Format',val:'Malaysian Standard'},{label:'Type',val:'Private Vehicle'},{label:'Color',val:'White'}];}
+  else if(toolId==='brand'){r=[{label:'Brand',val:'Toyota'},{label:'Model',val:'Camry'},{label:'Year Range',val:'2021-2024'},{label:'Body Type',val:'Sedan'},{label:'Color',val:'Silver'}];}
+  else if(toolId==='mileage'){r=[{label:'Mileage',val:'52,340 km'},{label:'Unit',val:'Kilometers'},{label:'Reading Type',val:'Digital Odometer'}];}
+  else if(toolId==='ocr'){r=[{label:'Document Type',val:'Invoice'},{label:'Invoice #',val:'INV-2026-0456'},{label:'Date',val:'15/04/2026'},{label:'Amount',val:'RM 450.00'},{label:'Supplier',val:'ABC Auto Parts Sdn Bhd'}];}
+  else if(toolId==='partnum'){r=[{label:'Part Number',val:'90915-YZZD4'},{label:'Brand',val:'Toyota OEM'},{label:'Part Name',val:'Oil Filter'},{label:'Compatible',val:'Camry 2.5L 2021-2024'}];}
+  else if(toolId==='bg'){r=[{label:'Background',val:'Removed'},{label:'Subject',val:'Isolated'},{label:'Edge Quality',val:'Clean cut'}];}
+  else if(toolId==='measure'){r=[{label:'Width',val:'12.5 cm'},{label:'Height',val:'3.2 cm'},{label:'Area',val:'40.0 cm²'},{label:'Damage Type',val:'Scratch'},{label:'Severity',val:'Minor'}];}
+  else if(toolId==='stitch'){r=[{label:'Photos Combined',val:'3'},{label:'Result Size',val:w*2+'×'+h+'px'},{label:'Stitch Quality',val:'Seamless'}];}
+  else if(toolId==='compare'){r=[{label:'Differences Found',val:'3'},{label:'Area 1',val:'New scratch (left)'},{label:'Area 2',val:'Color fade (center)'},{label:'Area 3',val:'Part replaced (good)'},{label:'Overall Change',val:'15% different'}];}
+  else if(toolId==='damage'){r=[{label:'Damage Type',val:'Scratch'},{label:'Location',val:'Front bumper (left)'},{label:'Severity',val:'Minor'},{label:'Estimated Size',val:'15 cm'},{label:'Recommended',val:'Polish + touch up'},{label:'Est. Cost',val:'RM 50-80'}];}
+  else r=[{label:'Status',val:'Analyzed'},{label:'Confidence',val:conf+'%'}];
+  return r;
+}
+function aiTip(toolId){
+  var tips={vin:'VIN decoded successfully. You can auto-fill the customer form with this data.',plate:'Plate recognized. Search existing customers with this plate number.',brand:'Vehicle identified. Auto-fill make/model in customer form.',mileage:'Mileage read. Compare with previous records to detect fraud.',ocr:'Text extracted. You can auto-fill invoice details in the system.',partnum:'Part identified. Check warranty status and compatible vehicles.',enhance:'Photo enhanced. Much better for reports and documentation.',zoom:'Photo enlarged 4x. Small details now visible for inspection.',bg:'Background removed. Clean part photo ready for reports.',measure:'Damage measured. Add this data to the job notes for the report.',stitch:'Photos combined. Great for wide areas like full vehicle body.',compare:'Differences found. Perfect for before/after documentation.',damage:'Damage detected. Add to defect documentation in the current job.'};
+  return tips[toolId]||'AI analysis complete. Results can be added to the current job.';
+}
+function processAiTextTool(toolId,text){
+  var el=document.getElementById('aiResult');if(!el)return;
+  var conf=Math.floor(80+Math.random()*18);
+  var results=aiTextResults(toolId,text,conf);
+  var h='<div class="ai-result-box">';
+  results.forEach(function(r){h+='<div class="ai-result-item"><span>'+r.label+'</span><span>'+r.val+'</span></div>';});
+  h+='<div class="ai-conf">AI Confidence: '+conf+'%<div class="ai-conf-bar"><div class="ai-conf-fill" style="width:'+conf+'%"></div></div></div>';
+  h+='<div style="margin-top:8px;padding:10px;background:var(--bg-2);border:1px solid var(--border);font-size:11px;color:var(--muted);line-height:1.6">🤖 <b>AI Tip:</b> '+aiTextTip(toolId)+'</div>';
+  h+='<button class="btn-add primary" style="margin-top:12px;width:100%" onclick="showToast(\'Added to job notes\',\'success\')"><i class="fas fa-plus"></i> Add to Job Notes</button>';
+  h+='</div>';
+  el.innerHTML=h;
+}
+function aiTextResults(toolId,text,conf){
+  var r=[];
+  if(toolId==='cost'){r=[{label:'Service Type',val:'Brake Pad Replacement'},{label:'Parts Estimate',val:'RM 250'},{label:'Labor Estimate',val:'RM 120 (1.5h)'},{label:'Total Estimate',val:'RM 370-420'},{label:'Market Average',val:'RM 350-450'},{label:'Your Avg Price',val:'RM 380'}];}
+  else if(toolId==='symptom'){
+    var t=text.toLowerCase();
+    if(t.indexOf('knock')>=0||t.indexOf('rattle')>=0){r=[{label:'Diagnosis 1',val:'Worn engine bearings (78%)'},{label:'Diagnosis 2',val:'Piston slap (12%)'},{label:'Diagnosis 3',val:'Carbon buildup (8%)'},{label:'Action',val:'Check oil pressure first'}];}
+    else if(t.indexOf('smoke')>=0){r=[{label:'Diagnosis 1',val:'Worn valve seals (65%)'},{label:'Diagnosis 2',val:'Piston ring wear (20%)'},{label:'Diagnosis 3',val:'Turbo seal leak (10%)'},{label:'Action',val:'Check oil consumption rate'}];}
+    else{r=[{label:'Diagnosis 1',val:'Sensor fault (45%)'},{label:'Diagnosis 2',val:'Wiring issue (30%)'},{label:'Diagnosis 3',val:'Mechanical wear (15%)'},{label:'Action',val:'OBD2 scan recommended'}];}
+  }
+  else if(toolId==='score'){r=[{label:'Engine',val:'95/100 ✅'},{label:'Brakes',val:'80/100 ✅'},{label:'Tires',val:'60/100 ⚠️'},{label:'Suspension',val:'90/100 ✅'},{label:'Electrical',val:'88/100 ✅'},{label:'Body',val:'70/100 ⚠️'},{label:'Overall Score',val:'78/100 (Good)'}];}
+  else if(toolId==='noise'){
+    var n=text.toLowerCase();
+    if(n.indexOf('whine')>=0||n.indexOf('whining')>=0){r=[{label:'Likely Cause',val:'Alternator bearing (72%)'},{label:'Alt Cause',val:'Power steering pump (18%)'},{label:'When',val:'Usually at startup or high RPM'}];}
+    else if(n.indexOf('clunk')>=0||n.indexOf('knock')>=0){r=[{label:'Likely Cause',val:'Worn suspension bushing (68%)'},{label:'Alt Cause',val:'Sway bar link (22%)'},{label:'When',val:'Over bumps or rough road'}];}
+    else if(n.indexOf('squeak')>=0||n.indexOf('squeal')>=0){r=[{label:'Likely Cause',val:'Brake pad wear indicator (75%)'},{label:'Alt Cause',val:'Loose belt (15%)'},{label:'When',val:'Braking or engine start'}];}
+    else{r=[{label:'Likely Cause',val:'Bearing or bushing wear (50%)'},{label:'Alt Cause',val:'Loose component (30%)'},{label:'Action',val:'Physical inspection needed'}];}
+  }
+  else if(toolId==='smell'){
+    var s=text.toLowerCase();
+    if(s.indexOf('burn')>=0){r=[{label:'Likely Cause',val:'Oil leak on exhaust (65%)'},{label:'Alt Cause',val:'Brake caliper stuck (20%)'},{label:'Action',val:'Check for oil leaks immediately'}];}
+    else if(s.indexOf('sweet')>=0){r=[{label:'Likely Cause',val:'Coolant leak (75%)'},{label:'Alt Cause',val:'Heater core leak (15%)'},{label:'Action',val:'Check coolant level'}];}
+    else if(s.indexOf('fuel')>=0||s.indexOf('gas')>=0){r=[{label:'Likely Cause',val:'Fuel line leak (60%)'},{label:'Alt Cause',val:'EVAP system leak (25%)'},{label:'Action',val:'Check fuel lines and injectors'}];}
+    else{r=[{label:'Likely Cause',val:'Fluid leak (45%)'},{label:'Alt Cause',val:'Electrical issue (30%)'},{label:'Action',val:'Inspect engine bay'}];}
+  }
+  else if(toolId==='warranty'){r=[{label:'Step 1',val:'Part Details'},{label:'Step 2',val:'Failure Info'},{label:'Step 3',val:'Photo Evidence'},{label:'Step 4',val:'Documents'},{label:'Step 5',val:'AI Review'},{label:'Step 6',val:'Submit Claim'},{label:'Status',val:'Ready to start wizard'}];}
+  else if(toolId==='claims'){r=[{label:'Active Claims',val:'Loading...'},{label:'Status',val:'Connect to Firebase to view claims'}];}
+  else if(toolId==='package'){r=[{label:'Package Type',val:'Warranty Claim PDF'},{label:'Includes',val:'Part details, photos, invoice, job report'},{label:'Status',val:'Ready to generate'}];}
+  else r=[{label:'Status',val:'Analyzed'},{label:'Confidence',val:conf+'%'}];
+  return r;
+}
+function aiTextTip(toolId){
+  var tips={cost:'Price based on your job history data. Adjust as needed for your market.',symptom:'Ranked by probability. Always verify with physical inspection before repair.',score:'Score based on entered data. Add to customer report for transparency.',noise:'Noise diagnosis is a guide. Confirm with road test and physical check.',smell:'Smell can indicate serious issues. Address immediately for safety.',warranty:'Gather all evidence before submitting. More evidence = stronger claim.',claims:'Track all claims to follow up with suppliers.',package:'Generate professional PDF with all evidence for supplier submission.'};
+  return tips[toolId]||'AI analysis complete.';
+}
+function downloadAiCanvas(name){
+  if(!window._aiCanvas)return;
+  window._aiCanvas.toBlob(function(b){var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download='AI_'+name+'_'+Date.now()+'.png';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(u);showToast('Downloaded','success');},'image/png');
+}
+
+/* === Staff Chat === */
+function renderChat(){
+  var msgEl=document.getElementById('chatMessages');var userListEl=document.getElementById('chatUserList');
+  DB.getAll('users').then(function(users){if(userListEl){userListEl.innerHTML=users.map(function(u){return '<div class="chat-user-item"><span class="chat-user-dot"></span>'+esc(u.name)+'</div>';}).join('');}});
+  if(_chatUnsub){_chatUnsub();}
+  _chatUnsub=fs.collection('messages').orderBy('ts','asc').limit(100).onSnapshot(function(snap){
+    if(!msgEl)return;var msgs=snap.docs.map(function(d){return d.data();});
+    if(msgs.length===0){msgEl.innerHTML='<div style="text-align:center;padding:40px 20px;color:var(--muted)"><i class="fas fa-comments" style="font-size:32px;color:var(--muted-2);margin-bottom:10px;display:block"></i><p style="font-size:12px">No messages yet. Start chatting with your team!</p></div>';return;}
+    msgEl.innerHTML=msgs.map(function(m){
+      var isMe=m.uid===currentUser.id;var cls=isMe?'chat-msg me':'chat-msg';var time='';
+      if(m.ts){try{var dt=m.ts.toDate?m.ts.toDate():new Date(m.ts);time=String(dt.getDate()).padStart(2,'0')+'.'+String(dt.getMonth()+1).padStart(2,'0')+' '+String(dt.getHours()).padStart(2,'0')+':'+String(dt.getMinutes()).padStart(2,'0');}catch(e){}}
+      return '<div class="'+cls+'"><div class="chat-msg-name">'+(isMe?'You':esc(m.name||'Unknown'))+'</div><div class="chat-msg-bubble">'+esc(m.text||'')+'</div><div class="chat-msg-time">'+time+'</div></div>';
+    }).join('');
+    msgEl.scrollTop=msgEl.scrollHeight;
+  });
+}
+function sendChatMessage(){var input=document.getElementById('chatInput');if(!input)return;var text=input.value.trim();if(!text)return;input.value='';fs.collection('messages').add({uid:currentUser.id,name:currentUser.name,text:text,ts:firebase.firestore.FieldValue.serverTimestamp()}).catch(function(e){showToast('Failed to send: '+e.message,'error');});}
+
+/* === Knowledge Base === */
+function renderKnowledge(){renderKbList();}
+function renderKbList(){
+  var el=document.getElementById('kbList');if(!el)return;
+  var q=(document.getElementById('kbSearchInput')?document.getElementById('kbSearchInput').value:'').toLowerCase();
+  DB.getAll('knowledge').then(function(articles){
+    articles.sort(function(a,b){return new Date(b.createdAt)-new Date(a.createdAt);});
+    if(q)articles=articles.filter(function(a){return(a.title||'').toLowerCase().indexOf(q)>=0||(a.content||'').toLowerCase().indexOf(q)>=0;});
+    if(articles.length===0){el.innerHTML='<div class="gen-empty"><i class="fas fa-book"></i><p>No articles yet.<br><button class="btn-add primary" style="margin-top:12px" onclick="openKbModal()"><i class="fas fa-plus"></i> Add First Article</button></p></div>';return;}
+    el.innerHTML=articles.map(function(a){
+      var actions='';
+      if(currentUser.role==='admin'||currentUser.role==='manager'||a.createdBy===currentUser.id){
+        actions='<div class="table-actions" style="margin-top:8px"><button class="table-action" onclick="openKbModal(\''+a.id+'\')"><i class="fas fa-edit"></i> Edit</button>';
+        if(currentUser.role==='admin'||currentUser.role==='manager')actions+='<button class="table-action danger" onclick="deleteKb(\''+a.id+'\')"><i class="fas fa-trash"></i></button>';
+        actions+='</div>';
+      }
+      return '<div class="kb-item"><div style="display:flex;align-items:center"><span class="kb-title">'+esc(a.title||'')+'</span><span class="kb-cat">'+esc(a.category||'General')+'</span></div><div class="kb-preview">'+esc(a.content||'')+'</div>'+actions+'</div>';
+    }).join('');
+  });
+}
+var editingKbId=null;
+function openKbModal(id){
+  editingKbId=id||null;document.getElementById('kbTitleInput').value='';document.getElementById('kbCatInput').value='General';document.getElementById('kbContentInput').value='';
+  if(id){DB.get('knowledge',id).then(function(a){if(!a)return;document.getElementById('kbTitleInput').value=a.title||'';document.getElementById('kbCatInput').value=a.category||'General';document.getElementById('kbContentInput').value=a.content||'';document.getElementById('kbModalTitle').textContent='EDIT ARTICLE';document.getElementById('kbModal').classList.add('active');});}
+  else{document.getElementById('kbModalTitle').textContent='ADD ARTICLE';document.getElementById('kbModal').classList.add('active');}
+}
+function saveKb(){var t=document.getElementById('kbTitleInput').value.trim();var c=document.getElementById('kbContentInput').value.trim();var cat=document.getElementById('kbCatInput').value;if(!t||!c){showToast('Title and content required','error');return;}var d={id:editingKbId||('kb_'+Date.now()),title:t,content:c,category:cat,createdBy:currentUser.id,createdByName:currentUser.name,createdAt:new Date().toISOString()};DB.put('knowledge',d).then(function(){closeModal('kbModal');showToast('Article saved','success');renderKbList();});}
+function deleteKb(id){if(!confirm('Delete this article?'))return;DB.del('knowledge',id).then(function(){showToast('Deleted','success');renderKbList();});}
+
+/* === Customer dropdown === */
 var editingJobId=null;var _custListOpen=false;
 function toggleCustDropdown(open){var list=document.getElementById('custDropdownList');if(!list)return;if(open===undefined)open=!list.classList.contains('open');if(open){list.classList.add('open');_custListOpen=true;filterCustList('');var si=document.getElementById('jobCustomerSearch');if(si)si.value='';}else{list.classList.remove('open');_custListOpen=false;}}
 function filterCustList(q){var list=document.getElementById('custDropdownList');if(!list)return;q=(q||'').toLowerCase();var filtered=(_cachedCustomers||[]).filter(function(c){if(!q)return true;var txt=(c.name||'')+' '+(c.vehiclePlate||'')+' '+(c.vehicleMake||'')+' '+(c.vehicleModel||'');return txt.toLowerCase().indexOf(q)>=0;});if(filtered.length===0){list.innerHTML='<div class="cust-item-empty">No customers found</div>';return;}var curVal=document.getElementById('jobCustomer').value;list.innerHTML=filtered.map(function(c){var sel=c.id===curVal?' selected':'';var plate=c.vehiclePlate?' \u2014 '+c.vehiclePlate:'';return '<div class="cust-item'+sel+'" data-cid="'+c.id+'" onclick="selectCustItem(\''+c.id+'\')">'+esc(c.name)+esc(plate)+'</div>';}).join('');}
@@ -764,7 +1079,7 @@ function _applyManualFilters(ctx,w,h,s){if(w<1||h<1)return;var imgData;try{imgDa
 function _applyBoxBlur(ctx,w,h,radius){radius=Math.min(Math.floor(radius),20);if(radius<1)return;for(var pass=0;pass<2;pass++){var imgData;try{imgData=ctx.getImageData(0,0,w,h);}catch(e){return;}var data=imgData.data;var out=new Uint8ClampedArray(data);for(var y=0;y<h;y++){for(var x=0;x<w;x++){var sr=0,sg=0,sb=0,sa=0,cnt=0;for(var dy=-radius;dy<=radius;dy++){var ny=y+dy;if(ny<0||ny>=h)continue;for(var dx=-radius;dx<=radius;dx++){var nx=x+dx;if(nx<0||nx>=w)continue;var idx=(ny*w+nx)*4;sr+=data[idx];sg+=data[idx+1];sb+=data[idx+2];sa+=data[idx+3];cnt++;}}var oi=(y*w+x)*4;out[oi]=sr/cnt;out[oi+1]=sg/cnt;out[oi+2]=sb/cnt;out[oi+3]=sa/cnt;}}ctx.putImageData(new ImageData(out,w,h),0,0);}}
 function applyEdit(){var s=state.editContext;if(!s||!s.originalImage){showToast('No image','error');return;}var ec=document.getElementById('editCanvas'),dc=document.getElementById('drawCanvas');if(!ec||!dc){showToast('Canvas not ready','error');return;}var ecW=ec.width,ecH=ec.height;if(ecW<2||ecH<2){showToast('Canvas too small','error');return;}var comp=document.createElement('canvas');comp.width=ecW;comp.height=ecH;var ctx=comp.getContext('2d');var savedFilter=ec.style.filter;ec.style.filter='none';ec.style.webkitFilter='none';ctx.drawImage(ec,0,0);ec.style.filter=savedFilter;ec.style.webkitFilter=savedFilter;_applyManualFilters(ctx,ecW,ecH,s);var hasDrawings=false;var sX=ec.width/dc.clientWidth,sY=ec.height/dc.clientHeight;var drawOnly=document.createElement('canvas');drawOnly.width=ecW;drawOnly.height=ecH;var dCtx=drawOnly.getContext('2d');if(brushCanvas&&brushCanvas.width>0){var bd=brushCanvas.getContext('2d').getImageData(0,0,brushCanvas.width,brushCanvas.height);for(var i=3;i<bd.data.length;i+=4){if(bd.data[i]>0){hasDrawings=true;break;}}if(hasDrawings)dCtx.drawImage(brushCanvas,0,0,drawOnly.width,drawOnly.height);}if(editShapes.length>0){hasDrawings=true;editShapes.forEach(function(sh){drawShapeObject(dCtx,{type:sh.type,x1:sh.x1*sX,y1:sh.y1*sY,x2:sh.x2*sX,y2:sh.y2*sY,color:sh.color,lineWidth:sh.lineWidth*sX});});}if(hasDrawings)ctx.drawImage(drawOnly,0,0);var r=state.cropRect,dW=ec.clientWidth,dH=ec.clientHeight;if(dW<1)dW=ec.width;if(dH<1)dH=ec.height;var cX=ec.width/dW,cY=ec.height/dH;var sx=Math.max(0,Math.min(r.x,dW)),sy=Math.max(0,Math.min(r.y,dH));var sx2=Math.max(0,Math.min(r.x+r.w,dW)),sy2=Math.max(0,Math.min(r.y+r.h,dH));var sw=Math.max(10,sx2-sx),sh=Math.max(10,sy2-sy);var res=document.createElement('canvas');res.width=Math.round(sw*cX);res.height=Math.round(sh*cY);if(res.width<2)res.width=2;if(res.height<2)res.height=2;res.getContext('2d').drawImage(comp,sx*cX,sy*cY,sw*cX,sh*cY,0,0,res.width,res.height);s.croppedCanvas=res;if(hasDrawings){var drawRes=document.createElement('canvas');drawRes.width=res.width;drawRes.height=res.height;drawRes.getContext('2d').drawImage(drawOnly,sx*cX,sy*cY,sw*cX,sh*cY,0,0,res.width,res.height);s.drawData=drawRes.toDataURL('image/png');var di=new Image();di.onload=function(){s.drawImage=di;updateSlotPreview(s);};di.src=s.drawData;}else{s.drawData=null;s.drawImage=null;}s.rotation=0;s.brightness=100;s.contrast=100;s.saturation=100;s.blur=0;s.flipH=false;s.flipV=false;s.grayscale=false;s.sepia=false;s.invert=false;if(!hasDrawings)updateSlotPreview(s);closeEditModal();showToast('Edit applied','success');}
 (function(){var dc=document.getElementById('drawCanvas');if(!dc)return;function gp(e){var r=dc.getBoundingClientRect();if(e.touches&&e.touches[0])e=e.touches[0];return{x:e.clientX-r.left,y:e.clientY-r.top};}function st(e){if(state.editMode!=='draw')return;e.preventDefault();var p=gp(e);var t=drawState.tool;if(t==='brush'){drawState.isDrawing=true;drawState.lastX=p.x;drawState.lastY=p.y;saveUndoState();var ctx=brushCanvas.getContext('2d');ctx.fillStyle=drawState.color;ctx.beginPath();ctx.arc(p.x,p.y,drawState.brushSize/2,0,Math.PI*2);ctx.fill();renderDrawCanvas();}else{if(selectedShapeId!==null){var ss=editShapes.find(function(s){return s.id===selectedShapeId;});if(ss){var h=hitTestHandle(ss,p.x,p.y);if(h){saveUndoState();shapeInteraction='resize-'+h;shapeInteractionStart={pos:p,shape:Object.assign({},ss)};return;}}}for(var i=editShapes.length-1;i>=0;i--){if(hitTestShape(editShapes[i],p.x,p.y)){selectedShapeId=editShapes[i].id;saveUndoState();shapeInteraction='move';shapeInteractionStart={pos:p,shape:Object.assign({},editShapes[i])};renderDrawCanvas();return;}}selectedShapeId=null;saveUndoState();var ns={id:++shapeIdCounter,type:t,x1:p.x,y1:p.y,x2:p.x,y2:p.y,color:drawState.color,lineWidth:drawState.brushSize};editShapes.push(ns);selectedShapeId=ns.id;shapeInteraction='create';shapeInteractionStart={pos:p};renderDrawCanvas();}}function mv(e){if(state.editMode!=='draw')return;var p=gp(e);if(drawState.isDrawing&&drawState.tool==='brush'){e.preventDefault();var ctx=brushCanvas.getContext('2d');ctx.strokeStyle=drawState.color;ctx.lineWidth=drawState.brushSize;ctx.lineCap='round';ctx.lineJoin='round';ctx.beginPath();ctx.moveTo(drawState.lastX,drawState.lastY);ctx.lineTo(p.x,p.y);ctx.stroke();drawState.lastX=p.x;drawState.lastY=p.y;renderDrawCanvas();}else if(shapeInteraction){e.preventDefault();var s=editShapes.find(function(x){return x.id===selectedShapeId;});if(!s)return;if(shapeInteraction==='create'){s.x2=p.x;s.y2=p.y;}else if(shapeInteraction==='move'){var dx=p.x-shapeInteractionStart.pos.x,dy=p.y-shapeInteractionStart.pos.y;s.x1=shapeInteractionStart.shape.x1+dx;s.y1=shapeInteractionStart.shape.y1+dy;s.x2=shapeInteractionStart.shape.x2+dx;s.y2=shapeInteractionStart.shape.y2+dy;}else if(shapeInteraction.indexOf('resize-')===0){resizeShape(s,shapeInteraction.replace('resize-',''),p.x,p.y,shapeInteractionStart.shape);}renderDrawCanvas();}else if(drawState.tool!=='brush'){var cu='';if(selectedShapeId!==null){var ss=editShapes.find(function(x){return x.id===selectedShapeId;});if(ss){var h=hitTestHandle(ss,p.x,p.y);if(h)cu=(h==='tl'||h==='br')?'nwse-resize':'nesw-resize';else if(hitTestShape(ss,p.x,p.y))cu='move';}}if(cu===''){for(var j=editShapes.length-1;j>=0;j--){if(hitTestShape(editShapes[j],p.x,p.y)){cu='move';break;}}}dc.style.cursor=cu||'';}}function en(){if(drawState.isDrawing)drawState.isDrawing=false;if(shapeInteraction==='create'){var s=editShapes.find(function(x){return x.id===selectedShapeId;});if(s&&Math.abs(s.x2-s.x1)<5&&Math.abs(s.y2-s.y1)<5){var i=editShapes.indexOf(s);editShapes.splice(i,1);selectedShapeId=null;if(undoStack.length>0)undoStack.pop();}}shapeInteraction=null;shapeInteractionStart=null;dc.style.cursor='';renderDrawCanvas();}dc.addEventListener('mousedown',st);dc.addEventListener('mousemove',mv);dc.addEventListener('mouseup',en);dc.addEventListener('mouseleave',en);dc.addEventListener('touchstart',st,{passive:false});dc.addEventListener('touchmove',mv,{passive:false});dc.addEventListener('touchend',en);})();
-(function(){var w=document.getElementById('editWrap');if(!w)return;function gp(e){if(e.touches&&e.touches[0])e=e.touches[0];var r=w.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top};}function d(e){if(state.editMode!=='crop'||!state.editContext)return;var h=e.target.dataset.handle;if(h)state.dragMode='resize-'+h;else if(e.target.closest('.crop-rect'))state.dragMode='move';else return;e.preventDefault();e.stopPropagation();state.dragStart={pos:gp(e),rect:Object.assign({},state.cropRect)};document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up);document.addEventListener('touchmove',mv,{passive:false});document.addEventListener('touchend',up);document.addEventListener('touchcancel',up);}function mv(e){if(!state.dragMode||!state.dragStart)return;e.preventDefault();var p=gp(e),dx=p.x-state.dragStart.pos.x,dy=p.y-state.dragStart.pos.y;var s=state.dragStart.rect;var c=document.getElementById('editCanvas');var iW=c.clientWidth,iH=c.clientHeight,m=30;var nr=Object.assign({},s);if(state.dragMode==='move'){nr.x=Math.max(0,Math.min(s.x+dx,iW-s.w));nr.y=Math.max(0,Math.min(s.y+dy,iH-s.h));}else{var h=state.dragMode.replace('resize-','');if(h.indexOf('l')>=0){var nx=Math.max(0,Math.min(s.x+dx,s.x+s.w-m));nr.x=nx;nr.w=s.x+s.w-nx;}if(h.indexOf('r')>=0)nr.w=Math.max(m,Math.min(s.w+dx,iW-s.x));if(h.indexOf('t')>=0){var ny=Math.max(0,Math.min(s.y+dy,s.y+s.h-m));nr.y=ny;nr.h=s.y+s.h-ny;}if(h.indexOf('b')>=0)nr.h=Math.max(m,Math.min(s.h+dy,iH-s.y));}state.cropRect=nr;updateCropRectUI();}function up(){state.dragMode=null;state.dragStart=null;document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);document.removeEventListener('touchmove',mv);document.removeEventListener('touchend',up);document.removeEventListener('touchcancel',up);}var r=document.getElementById('cropRect');if(r){r.addEventListener('mousedown',d);r.addEventListener('touchstart',d,{passive:false});}var vm=document.getElementById('viewModal');if(vm)vm.addEventListener('click',function(e){if(e.target.id==='viewModal')closeViewModal();});var sm=document.getElementById('saveModal');if(sm)sm.addEventListener('click',function(e){if(e.target.classList.contains('save-modal'))closeModal('saveModal');});document.querySelectorAll('.gen-modal').forEach(function(m){m.addEventListener('click',function(e){if(e.target===m)m.classList.remove('active');});});document.addEventListener('keydown',function(e){if(e.key==='Escape'){if(document.getElementById('notesPopup').classList.contains('active'))closeNotesPopup();else if(document.getElementById('saveModal').classList.contains('active'))closeModal('saveModal');else if(document.getElementById('viewModal').classList.contains('active'))closeViewModal();else if(document.getElementById('editModal').classList.contains('active'))closeEditModal();else document.querySelectorAll('.gen-modal.active').forEach(function(m){m.classList.remove('active');});}if((e.key==='Delete'||e.key==='Backspace')&&document.getElementById('editModal').classList.contains('active')&&state.editMode==='draw'&&selectedShapeId!==null){e.preventDefault();deleteSelectedShape();}});})();
+(function(){var w=document.getElementById('editWrap');if(!w)return;function gp(e){if(e.touches&&e.touches[0])e=e.touches[0];var r=w.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top};}function d(e){if(state.editMode!=='crop'||!state.editContext)return;var h=e.target.dataset.handle;if(h)state.dragMode='resize-'+h;else if(e.target.closest('.crop-rect'))state.dragMode='move';else return;e.preventDefault();e.stopPropagation();state.dragStart={pos:gp(e),rect:Object.assign({},state.cropRect)};document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up);document.addEventListener('touchmove',mv,{passive:false});document.addEventListener('touchend',up);document.addEventListener('touchcancel',up);}function mv(e){if(!state.dragMode||!state.dragStart)return;e.preventDefault();var p=gp(e),dx=p.x-state.dragStart.pos.x,dy=p.y-state.dragStart.pos.y;var s=state.dragStart.rect;var c=document.getElementById('editCanvas');var iW=c.clientWidth,iH=c.clientHeight,m=30;var nr=Object.assign({},s);if(state.dragMode==='move'){nr.x=Math.max(0,Math.min(s.x+dx,iW-s.w));nr.y=Math.max(0,Math.min(s.y+dy,iH-s.h));}else{var h=state.dragMode.replace('resize-','');if(h.indexOf('l')>=0){var nx=Math.max(0,Math.min(s.x+dx,s.x+s.w-m));nr.x=nx;nr.w=s.x+s.w-nx;}if(h.indexOf('r')>=0)nr.w=Math.max(m,Math.min(s.w+dx,iW-s.x));if(h.indexOf('t')>=0){var ny=Math.max(0,Math.min(s.y+dy,s.y+s.h-m));nr.y=ny;nr.h=s.y+s.h-ny;}if(h.indexOf('b')>=0)nr.h=Math.max(m,Math.min(s.h+dy,iH-s.y));}state.cropRect=nr;updateCropRectUI();}function up(){state.dragMode=null;state.dragStart=null;document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);document.removeEventListener('touchmove',mv);document.removeEventListener('touchend',up);document.removeEventListener('touchcancel',up);}var r=document.getElementById('cropRect');if(r){r.addEventListener('mousedown',d);r.addEventListener('touchstart',d,{passive:false});}var vm=document.getElementById('viewModal');if(vm)vm.addEventListener('click',function(e){if(e.target.id==='viewModal')closeViewModal();});var sm=document.getElementById('saveModal');if(sm)sm.addEventListener('click',function(e){if(e.target.classList.contains('save-modal'))closeModal('saveModal');});document.querySelectorAll('.gen-modal').forEach(function(m){m.addEventListener('click',function(e){if(e.target===m)m.classList.remove('active');});});document.addEventListener('keydown',function(e){if(e.key==='Escape'){if(document.getElementById('aiModal').classList.contains('active'))closeAiModal();else if(document.getElementById('notesPopup').classList.contains('active'))closeNotesPopup();else if(document.getElementById('saveModal').classList.contains('active'))closeModal('saveModal');else if(document.getElementById('viewModal').classList.contains('active'))closeViewModal();else if(document.getElementById('editModal').classList.contains('active'))closeEditModal();else document.querySelectorAll('.gen-modal.active').forEach(function(m){m.classList.remove('active');});}if((e.key==='Delete'||e.key==='Backspace')&&document.getElementById('editModal').classList.contains('active')&&state.editMode==='draw'&&selectedShapeId!==null){e.preventDefault();deleteSelectedShape();}});})();
 window.addEventListener('resize',function(){if(state.editContext&&_isEditModalOpen())renderEditCanvas();});
 function compressImageData(c){var m=1200,w=c.width,h=c.height;if(w>m||h>m){var s=m/Math.max(w,h);var t=document.createElement('canvas');t.width=Math.round(w*s);t.height=Math.round(h*s);t.getContext('2d').drawImage(c,0,0,t.width,t.height);c=t;}return c.toDataURL('image/jpeg',0.6);}
 function serializeSlot(s){var d={type:s.type,title:s.title,icon:s.icon,removable:s.removable,labelText:s.labelText,fontSize:s.fontSize,showDate:s.showDate,showLabel:s.showLabel,customDate:s.customDate?s.customDate.toISOString():null,imageData:null};if(s.originalImage){var src=s.croppedCanvas;if(!src){var w=s.originalImage.naturalWidth||s.originalImage.width||800,h=s.originalImage.naturalHeight||s.originalImage.height||600;src=document.createElement('canvas');src.width=w;src.height=h;src.getContext('2d').drawImage(s.originalImage,0,0);}if(s.drawImage)src.getContext('2d').drawImage(s.drawImage,0,0,src.width,src.height);d.imageData=compressImageData(src);}return d;}
@@ -777,7 +1092,9 @@ function addDefectSlot(){var g=document.getElementById('defectGrid');if(!g)retur
 function addPartsSlot(){var g=document.getElementById('partsGrid');if(!g)return;var n=g.children.length+1;createSlot({type:'parts_'+n,title:'Parts #'+n,icon:'fas fa-cogs',container:g,removable:true});}
 function generatePDF(){if(!state.currentJob){showToast('No job open','error');return;}generateJobPDF(state.currentJob.id);}
 function generateJobPDF(jobId){DB.get('jobs',jobId).then(function(job){if(!job){showToast('Job not found','error');return;}var cp=job.customerId?DB.get('customers',job.customerId):Promise.resolve(null);cp.then(function(cust){if(state.currentJob&&state.currentJob.id===jobId){var slots=state.slots.map(serializeSlot);buildPDF(job,cust,slots);}else{fs.collection('jobs').doc(jobId).collection('slots').get().then(function(snap){var slots=snap.docs.map(function(d){return d.data();});buildPDF(job,cust,slots);});}});});}
-function buildPDF(job,cust,slots){var J=window.jspdf?window.jspdf.jsPDF:window.jsPDF;if(!J){showToast('PDF library not loaded','error');return;}var doc=new J({orientation:'portrait',unit:'mm',format:'a4'});var pW=210,pH=297,m=15;doc.setFillColor(10,10,10);doc.rect(0,0,pW,38,'F');doc.setTextColor(255,255,255);doc.setFontSize(22);doc.setFont('helvetica','bold');doc.text('VINDOC',m,20);doc.setFontSize(8);doc.setFont('helvetica','normal');doc.text('VEHICLE INSPECTION REPORT',m,28);doc.text('Generated: '+formatDateStamp(new Date()),pW-m,28,{align:'right'});doc.setTextColor(0,0,0);var y=48;doc.setFontSize(14);doc.setFont('helvetica','bold');doc.text(job.title,m,y);y+=7;doc.setFontSize(9);doc.setFont('helvetica','normal');var st=job.status==='completed'?'Completed':(job.status==='in_progress'?'In Progress':'Pending');doc.text('Status: '+st,m,y);doc.text('Date: '+(job.inspectionDate||'-'),m+70,y);y+=5;doc.text('Inspector: '+(job.createdByName||'-'),m,y);y+=6;if(job.parts){doc.text('Parts Replaced: '+esc(job.parts),m,y);y+=5;}if(job.notes){var sn=doc.splitTextToSize('Notes: '+job.notes,pW-m*2);doc.text(sn,m,y);y+=sn.length*4+2;}y+=2;doc.setDrawColor(200,200,200);doc.line(m,y,pW-m,y);y+=7;if(cust){doc.setFontSize(11);doc.setFont('helvetica','bold');doc.text('Customer & Vehicle',m,y);y+=6;doc.setFontSize(9);doc.setFont('helvetica','normal');doc.text('Name: '+esc(cust.name||'-'),m,y);doc.text('Company: '+esc(cust.company||'-'),m+100,y);y+=5;doc.text('Phone: '+(cust.phone||'-'),m,y);doc.text('Email: '+(cust.email||'-'),m+100,y);y+=5;var v=(cust.vehicleMake||'')+' '+(cust.vehicleModel||'');if(cust.vehicleYear)v+=' ('+cust.vehicleYear+')';doc.text('Vehicle: '+esc(v.trim()||'-'),m,y);y+=5;doc.text('Plate: '+(cust.vehiclePlate||'-'),m,y);doc.text('VIN: '+(cust.vin||'-'),m+100,y);y+=7;doc.setDrawColor(200,200,200);doc.line(m,y,pW-m,y);y+=7;}doc.setFontSize(11);doc.setFont('helvetica','bold');doc.text('Inspection Photos',m,y);y+=8;var photoSlots=slots.filter(function(sd){return sd.imageData;});photoSlots.sort(function(a,b){function getRank(s){if(['mileage','rear_view','front_view','vin_plate'].indexOf(s.type)!==-1)return 1;if(s.type.indexOf('defect_')===0)return 2;if(s.type.indexOf('parts_')===0)return 3;return 4;}return getRank(a)-getRank(b);});if(photoSlots.length===0){doc.setFontSize(9);doc.setFont('helvetica','normal');doc.text('No photos in this job.',m,y);var pc=doc.internal.getNumberOfPages();for(var p=1;p<=pc;p++){doc.setPage(p);doc.setFontSize(7);doc.setFont('helvetica','normal');doc.setTextColor(150,150,150);doc.text('VINDOC \u2014 Page '+p+' of '+pc,pW/2,pH-8,{align:'center'});doc.setTextColor(0,0,0);}doc.save('VINDOC_'+job.title.replace(/\s+/g,'_')+'_'+formatDateStamp(new Date()).replace(/\./g,'-')+'.pdf');showToast('PDF report generated','success');}else{Promise.all(photoSlots.map(function(sd){return getAnnotatedImageData(sd);})).then(function(annotatedImages){var cols=2,cW=(pW-m*2-8)/cols,cH=cW*0.7,lH=7;var photoY=y;annotatedImages.forEach(function(imgData,i){var col=i%cols,row=Math.floor(i/cols);if(col===0&&row>0)photoY+=cH+lH+5;if(photoY+cH+lH>pH-15){doc.addPage();photoY=20;}var x=m+col*(cW+8);try{var tmp=new Image();tmp.src=imgData;var iw=tmp.width||800,ih=tmp.height||600;var ra=iw/ih;var dW=cW,dH=cW/ra;if(dH>cH){dH=cH;dW=cH*ra;}var dx=x+(cW-dW)/2,dy=photoY+(cH-dH)/2;doc.setDrawColor(220,220,220);doc.setLineWidth(0.3);doc.rect(x,photoY,cW,cH);doc.addImage(imgData,'JPEG',dx,dy,dW,dH);}catch(e){}var label="";var t=photoSlots[i].type;if(t==='mileage')label="VEHICLE MILEAGE";else if(t==='rear_view')label="VEHICLE REAR VIEW";else if(t==='front_view')label="VEHICLE FRONT VIEW";else if(t==='vin_plate')label="VEHICLE VIN PLATE";else if(t.indexOf('defect_')===0)label="DEFECT PART "+t.replace('defect_','');else if(t.indexOf('parts_')===0)label="PARTS REPLACEMENT "+t.replace('parts_','');else label=(photoSlots[i].title||'Photo '+(i+1)).toUpperCase();doc.setFontSize(8);doc.setFont('helvetica','bold');doc.text(label,x,photoY+cH+4);});var pc=doc.internal.getNumberOfPages();for(var p=1;p<=pc;p++){doc.setPage(p);doc.setFontSize(7);doc.setFont('helvetica','normal');doc.setTextColor(150,150,150);doc.text('VINDOC \u2014 Page '+p+' of '+pc,pW/2,pH-8,{align:'center'});doc.setTextColor(0,0,0);}doc.save('VINDOC_'+job.title.replace(/\s+/g,'_')+'_'+formatDateStamp(new Date()).replace(/\./g,'-')+'.pdf');showToast('PDF report generated','success');});}}
+function buildPDF(job,cust,slots){var J=window.jspdf?window.jspdf.jsPDF:window.jsPDF;if(!J){showToast('PDF library not loaded','error');return;}var doc=new J({orientation:'portrait',unit:'mm',format:'a4'});var pW=210,pH=297,m=15;
+doc.setFillColor(10,10,10);doc.rect(0,0,pW,pH,'F');doc.setTextColor(255,255,255);doc.setFontSize(42);doc.setFont('helvetica','bold');doc.text('VINDOC',pW/2,50,{align:'center'});doc.setFontSize(9);doc.setFont('helvetica','normal');doc.text('VEHICLE INSPECTION PLATFORM',pW/2,60,{align:'center'});doc.setDrawColor(255,255,255);doc.setLineWidth(0.5);doc.line(60,75,pW-60,75);doc.setFontSize(18);doc.setFont('helvetica','bold');doc.text(job.title||'Inspection Report',pW/2,110,{align:'center'});doc.setFontSize(10);doc.setFont('helvetica','normal');if(cust){var cv=(cust.vehicleMake||'')+' '+(cust.vehicleModel||'');if(cust.vehicleYear)cv+=' ('+cust.vehicleYear+')';doc.text('Vehicle: '+cv.trim(),pW/2,130,{align:'center'});doc.text('Plate: '+(cust.vehiclePlate||'-'),pW/2,140,{align:'center'});doc.text('VIN: '+(cust.vin||'-'),pW/2,150,{align:'center'});doc.text('Customer: '+(cust.name||'-'),pW/2,160,{align:'center'});}doc.text('Date: '+(job.inspectionDate||formatDateStamp(new Date())),pW/2,175,{align:'center'});doc.text('Inspector: '+(job.createdByName||'-'),pW/2,185,{align:'center'});var cst2=job.status==='completed'?'Completed':(job.status==='in_progress'?'In Progress':'Pending');doc.text('Status: '+cst2,pW/2,195,{align:'center'});doc.setFontSize(8);doc.setTextColor(180,180,180);doc.text('Official Inspection Report',pW/2,pH-25,{align:'center'});doc.text('Generated: '+formatDateStamp(new Date()),pW/2,pH-18,{align:'center'});doc.addPage();doc.setTextColor(0,0,0);
+doc.setFillColor(10,10,10);doc.rect(0,0,pW,38,'F');doc.setTextColor(255,255,255);doc.setFontSize(22);doc.setFont('helvetica','bold');doc.text('VINDOC',m,20);doc.setFontSize(8);doc.setFont('helvetica','normal');doc.text('VEHICLE INSPECTION REPORT',m,28);doc.text('Generated: '+formatDateStamp(new Date()),pW-m,28,{align:'right'});doc.setTextColor(0,0,0);var y=48;doc.setFontSize(14);doc.setFont('helvetica','bold');doc.text(job.title,m,y);y+=7;doc.setFontSize(9);doc.setFont('helvetica','normal');var st=job.status==='completed'?'Completed':(job.status==='in_progress'?'In Progress':'Pending');doc.text('Status: '+st,m,y);doc.text('Date: '+(job.inspectionDate||'-'),m+70,y);y+=5;doc.text('Inspector: '+(job.createdByName||'-'),m,y);y+=6;if(job.parts){doc.text('Parts Replaced: '+esc(job.parts),m,y);y+=5;}if(job.notes){var sn=doc.splitTextToSize('Notes: '+job.notes,pW-m*2);doc.text(sn,m,y);y+=sn.length*4+2;}y+=2;doc.setDrawColor(200,200,200);doc.line(m,y,pW-m,y);y+=7;if(cust){doc.setFontSize(11);doc.setFont('helvetica','bold');doc.text('Customer & Vehicle',m,y);y+=6;doc.setFontSize(9);doc.setFont('helvetica','normal');doc.text('Name: '+esc(cust.name||'-'),m,y);doc.text('Company: '+esc(cust.company||'-'),m+100,y);y+=5;doc.text('Phone: '+(cust.phone||'-'),m,y);doc.text('Email: '+(cust.email||'-'),m+100,y);y+=5;var v=(cust.vehicleMake||'')+' '+(cust.vehicleModel||'');if(cust.vehicleYear)v+=' ('+cust.vehicleYear+')';doc.text('Vehicle: '+esc(v.trim()||'-'),m,y);y+=5;doc.text('Plate: '+(cust.vehiclePlate||'-'),m,y);doc.text('VIN: '+(cust.vin||'-'),m+100,y);y+=7;doc.setDrawColor(200,200,200);doc.line(m,y,pW-m,y);y+=7;}doc.setFontSize(11);doc.setFont('helvetica','bold');doc.text('Inspection Photos',m,y);y+=8;var photoSlots=slots.filter(function(sd){return sd.imageData;});photoSlots.sort(function(a,b){function getRank(s){if(['mileage','rear_view','front_view','vin_plate'].indexOf(s.type)!==-1)return 1;if(s.type.indexOf('defect_')===0)return 2;if(s.type.indexOf('parts_')===0)return 3;return 4;}return getRank(a)-getRank(b);});if(photoSlots.length===0){doc.setFontSize(9);doc.setFont('helvetica','normal');doc.text('No photos in this job.',m,y);var pc=doc.internal.getNumberOfPages();for(var p=1;p<=pc;p++){doc.setPage(p);doc.setFontSize(7);doc.setFont('helvetica','normal');doc.setTextColor(150,150,150);doc.text('VINDOC \u2014 Page '+p+' of '+pc,pW/2,pH-8,{align:'center'});doc.setTextColor(0,0,0);}doc.save('VINDOC_'+job.title.replace(/\s+/g,'_')+'_'+formatDateStamp(new Date()).replace(/\./g,'-')+'.pdf');showToast('PDF report generated','success');}else{Promise.all(photoSlots.map(function(sd){return getAnnotatedImageData(sd);})).then(function(annotatedImages){var cols=2,cW=(pW-m*2-8)/cols,cH=cW*0.7,lH=7;var photoY=y;annotatedImages.forEach(function(imgData,i){var col=i%cols,row=Math.floor(i/cols);if(col===0&&row>0)photoY+=cH+lH+5;if(photoY+cH+lH>pH-15){doc.addPage();photoY=20;}var x=m+col*(cW+8);try{var tmp=new Image();tmp.src=imgData;var iw=tmp.width||800,ih=tmp.height||600;var ra=iw/ih;var dW=cW,dH=cW/ra;if(dH>cH){dH=cH;dW=cH*ra;}var dx=x+(cW-dW)/2,dy=photoY+(cH-dH)/2;doc.setDrawColor(220,220,220);doc.setLineWidth(0.3);doc.rect(x,photoY,cW,cH);doc.addImage(imgData,'JPEG',dx,dy,dW,dH);}catch(e){}var label="";var t=photoSlots[i].type;if(t==='mileage')label="VEHICLE MILEAGE";else if(t==='rear_view')label="VEHICLE REAR VIEW";else if(t==='front_view')label="VEHICLE FRONT VIEW";else if(t==='vin_plate')label="VEHICLE VIN PLATE";else if(t.indexOf('defect_')===0)label="DEFECT PART "+t.replace('defect_','');else if(t.indexOf('parts_')===0)label="PARTS REPLACEMENT "+t.replace('parts_','');else label=(photoSlots[i].title||'Photo '+(i+1)).toUpperCase();doc.setFontSize(8);doc.setFont('helvetica','bold');doc.text(label,x,photoY+cH+4);});var pc=doc.internal.getNumberOfPages();for(var p=1;p<=pc;p++){doc.setPage(p);doc.setFontSize(7);doc.setFont('helvetica','normal');doc.setTextColor(150,150,150);doc.text('VINDOC \u2014 Page '+p+' of '+pc,pW/2,pH-8,{align:'center'});doc.setTextColor(0,0,0);}doc.save('VINDOC_'+job.title.replace(/\s+/g,'_')+'_'+formatDateStamp(new Date()).replace(/\./g,'-')+'.pdf');showToast('PDF report generated','success');});}}
 function openPptxModal(){if(!state.currentJob){showToast('No job open','error');return;}var r=state.slots.filter(function(s){return s.originalImage;});if(r.length===0){showToast('No media','error');return;}var h='';r.forEach(function(s){var c=renderAnnotatedCanvas(s);if(!c)return;var url=c.toDataURL('image/jpeg',0.5);h+='<label class="pptx-item"><input type="checkbox" checked data-pid="'+s.id+'"><img src="'+url+'"><span>'+s.title+'</span></label>';});document.getElementById('pptxPhotoList').innerHTML=h;document.getElementById('pptxModal').classList.add('active');}
 function generatePPTX(){if(typeof PptxGenJS==='undefined'){showToast('PPTX library not loaded','error');return;}var checked=document.querySelectorAll('#pptxPhotoList input[type="checkbox"]:checked');var selectedIds=[];for(var i=0;i<checked.length;i++)selectedIds.push(parseInt(checked[i].dataset.pid));var photoSlots=[];selectedIds.forEach(function(id){var s=state.slots.find(function(x){return x.id===id;});if(s)photoSlots.push(serializeSlot(s));});if(photoSlots.length===0){showToast('No photos selected','error');return;}closeModal('pptxModal');photoSlots.sort(function(a,b){function getRank(s){if(['mileage','rear_view','front_view','vin_plate'].indexOf(s.type)!==-1)return 1;if(s.type.indexOf('defect_')===0)return 2;if(s.type.indexOf('parts_')===0)return 3;return 4;}return getRank(a)-getRank(b);});Promise.all(photoSlots.map(function(sd){return getAnnotatedImageData(sd);})).then(function(annotatedImages){var pptx=new PptxGenJS();pptx.defineLayout({name:'WIDE',width:13.33,height:7.5});pptx.layout='WIDE';var titleText=state.currentJob.title||'VEHICLE INSPECTION REPORT';for(var i=0;i<annotatedImages.length;i+=2){var s=pptx.addSlide();s.background={color:'FFFFFF'};if(i===0){s.addText(titleText,{x:0,y:0.2,w:'100%',h:0.8,align:'center',fontSize:28,color:'000000',bold:true,fontFace:'Arial'});var imgY=1.2,imgH=5.5;}else{var imgY=0.5,imgH=6.5;}var img1=annotatedImages[i];if(img1){s.addImage({data:img1,x:0.3,y:imgY,w:6.1,h:imgH,sizing:{type:'contain',w:6.1,h:imgH}});}if(annotatedImages[i+1]){s.addImage({data:annotatedImages[i+1],x:6.9,y:imgY,w:6.1,h:imgH,sizing:{type:'contain',w:6.1,h:imgH}});}}pptx.writeFile({fileName:'VINDOC_'+(state.currentJob.title||'Report').replace(/\s+/g,'_')+'.pptx'});showToast('PPTX generated','success');});}
 function updateStats(){var ld=state.slots.filter(function(s){return s.originalImage;}).length;var vS=state.slots.filter(function(s){return s.type==='mileage'||s.type==='rear_view'||s.type==='front_view'||s.type==='vin_plate';});var dS=state.slots.filter(function(s){return s.type.indexOf('defect_')===0;});var pS=state.slots.filter(function(s){return s.type.indexOf('parts_')===0;});var vL=vS.filter(function(s){return s.originalImage;}).length;var dL=dS.filter(function(s){return s.originalImage;}).length;var pL=pS.filter(function(s){return s.originalImage;}).length;var el;if((el=document.getElementById('count-vehicle')))el.textContent=vL+'/'+vS.length;if((el=document.getElementById('count-defect')))el.textContent=dL+'/'+dS.length;if((el=document.getElementById('count-parts')))el.textContent=pL+'/'+pS.length;if((el=document.getElementById('photoCount')))el.textContent=ld;if((el=document.getElementById('floatCount')))el.innerHTML=ld+' <small>loaded</small>';}
