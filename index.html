@@ -113,7 +113,7 @@ html,body{font-family:'Hanken Grotesk',sans-serif;background:var(--bg);color:var
 .chart-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
 .chart-card-title{font-family:'Archivo',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--fg)}
 .chart-card-sub{font-size:9px;color:var(--muted);letter-spacing:0.06em;text-transform:uppercase;font-weight:600}
-.bars-chart{display:flex;flex-direction:column;gap:8px;flex:1;justify-content:center}
+.bars-chart{display:flex;flex-direction:column;gap:8px;flex:1;justify-content:flex-start}
 .bar-row{display:grid;grid-template-columns:36px 1fr 28px;align-items:center;gap:10px;font-size:11px}
 .bar-row-label{font-family:'Hanken Grotesk',sans-serif;font-weight:600;color:var(--fg-2);text-align:right}
 .bar-row-track{background:var(--bg-3);height:18px;position:relative;overflow:hidden;border:1px solid var(--border)}
@@ -136,7 +136,11 @@ html,body{font-family:'Hanken Grotesk',sans-serif;background:var(--bg);color:var
 .ring-center{font-family:'Archivo',sans-serif;font-weight:800;font-size:26px;fill:var(--fg)}
 .ring-sub{font-family:'Archivo',sans-serif;font-size:8px;fill:var(--muted);letter-spacing:0.15em;text-transform:uppercase;font-weight:600}
 .ring-label{font-size:9px;color:var(--muted);letter-spacing:0.12em;text-transform:uppercase;font-family:'Archivo',sans-serif;font-weight:600}
-.insp-bars{display:flex;flex-direction:column;gap:10px;flex:1;justify-content:center}
+.insp-bars{display:flex;flex-direction:column;gap:10px;flex:1;justify-content:flex-start;overflow-y:auto;max-height:220px;padding-right:4px}
+.insp-bars::-webkit-scrollbar{width:6px}
+.insp-bars::-webkit-scrollbar-track{background:var(--bg-2)}
+.insp-bars::-webkit-scrollbar-thumb{background:var(--muted-2);border-radius:3px}
+.insp-bars::-webkit-scrollbar-thumb:hover{background:var(--fg)}
 .insp-bar-row{display:grid;grid-template-columns:70px 1fr 24px;align-items:center;gap:8px;font-size:11px}
 .insp-bar-name{font-family:'Hanken Grotesk',sans-serif;font-weight:600;color:var(--fg-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px}
 .insp-bar-track{background:var(--bg-3);height:16px;border:1px solid var(--border);overflow:hidden}
@@ -620,18 +624,25 @@ var _dashSort={col:'date',dir:'desc'};
 var _jobsSort={col:'date',dir:'desc'};
 function showNotesPopup(idx,src){var data=(src==='jobs'?_jobsNotes:_dashNotes)[idx];if(!data||!data.notes||!data.notes.trim()){showToast('No notes for this job','info');return;}var titleEl=document.getElementById('notesPopupTitle');if(titleEl)titleEl.innerHTML='<i class="fas fa-sticky-note"></i> '+esc(data.title);var contentEl=document.getElementById('notesPopupContent');if(contentEl)contentEl.textContent=data.notes;var popup=document.getElementById('notesPopup');if(popup)popup.classList.add('active');}
 function closeNotesPopup(){var p=document.getElementById('notesPopup');if(p)p.classList.remove('active');}
+
 function renderCharts(jobs,customers,users){
+  /* Jobs Per Month - rolling last 6 months from today */
   var months=[];var now=new Date();
   for(var i=5;i>=0;i--){var d=new Date(now.getFullYear(),now.getMonth()-i,1);months.push({key:d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'),label:d.toLocaleDateString('en',{month:'short'}),year:d.getFullYear(),month:d.getMonth(),pending:0,in_progress:0,completed:0,total:0});}
   jobs.forEach(function(j){var cd=j.createdAt?new Date(j.createdAt):null;var id=j.inspectionDate?new Date(j.inspectionDate):null;var useD=id||cd;if(!useD)return;var key=useD.getFullYear()+'-'+String(useD.getMonth()+1).padStart(2,'0');var m=months.find(function(x){return x.key===key;});if(m){var st=j.status||'pending';if(st==='completed')m.completed++;else if(st==='in_progress')m.in_progress++;else m.pending++;m.total++;}});
   var jpmEl=document.getElementById('jobsPerMonthChart');if(jpmEl){var maxT=Math.max.apply(null,months.map(function(m){return m.total;}));if(maxT===0)maxT=1;jpmEl.innerHTML=months.map(function(m){var wP=(m.pending/maxT)*100;var wI=(m.in_progress/maxT)*100;var wC=(m.completed/maxT)*100;var segs='';if(m.total>0){segs='<span class="Seg-pending" style="width:'+wP+'%"></span><span class="Seg-in_progress" style="width:'+wI+'%"></span><span class="Seg-completed" style="width:'+wC+'%"></span>';}else{segs='<span class="bar-row-fill empty" style="width:100%"></span>';}return '<div class="bar-row"><span class="bar-row-label">'+esc(m.label)+'</span><div class="bar-row-track"><div class="bar-row-fill">'+segs+'</div></div><span class="bar-row-val">'+m.total+'</span></div>';}).join('');}
+  
+  /* Completion Ring */
   var total=jobs.length;var completed=jobs.filter(function(j){return j.status==='completed';}).length;var rate=total>0?Math.round((completed/total)*100):0;
   var ringEl=document.getElementById('completionRing');if(ringEl){var R=52,C=2*Math.PI*R;var off=C-(rate/100)*C;ringEl.innerHTML='<svg class="ring-svg" viewBox="0 0 130 130"><circle class="ring-bg" cx="65" cy="65" r="'+R+'"></circle><circle class="ring-fg" cx="65" cy="65" r="'+R+'" stroke-dasharray="'+C+'" stroke-dashoffset="'+off+'"></circle><text class="ring-center" x="65" y="68" text-anchor="middle">'+rate+'%</text><text class="ring-sub" x="65" y="84" text-anchor="middle">Complete</text></svg><div class="ring-label">'+completed+' of '+total+' jobs</div>';}
+  
+  /* Inspector Activity - show ALL inspectors, sorted by count desc, scrollable */
   var inspMap={};
   jobs.forEach(function(j){if(j.status==='completed'&&j.createdByName){inspMap[j.createdByName]=(inspMap[j.createdByName]||0)+1;}});
-  var inspArr=Object.keys(inspMap).map(function(k){return{name:k,count:inspMap[k]};}).sort(function(a,b){return b.count-a.count;}).slice(0,6);
+  var inspArr=Object.keys(inspMap).map(function(k){return{name:k,count:inspMap[k]};}).sort(function(a,b){return b.count-a.count;});
   var inspEl=document.getElementById('inspectorActivityChart');if(inspEl){var maxI=Math.max.apply(null,inspArr.map(function(x){return x.count;}));if(maxI===0)maxI=1;if(inspArr.length===0){inspEl.innerHTML='<div class="chart-empty"><i class="fas fa-user-slash"></i>No completed jobs yet</div>';}else{inspEl.innerHTML=inspArr.map(function(i){var w=(i.count/maxI)*100;return '<div class="insp-bar-row"><span class="insp-bar-name" title="'+esc(i.name)+'">'+esc(i.name)+'</span><div class="insp-bar-track"><div class="insp-bar-fill" style="width:'+w+'%"></div></div><span class="insp-bar-val">'+i.count+'</span></div>';}).join('');}}
 }
+
 function getJobDate(j){if(j.inspectionDate){var p=j.inspectionDate.split(/[-.]/);if(p.length>=3)return new Date(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2]));}return j.createdAt?new Date(j.createdAt):null;}
 function inDateRange(j,filter){if(filter==='all')return true;var d=getJobDate(j);if(!d)return false;var now=new Date();if(filter==='today')return d.toDateString()===now.toDateString();if(filter==='week'){var w=new Date(now);w.setDate(w.getDate()-7);return d>=w;}if(filter==='month')return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();if(filter==='year')return d.getFullYear()===now.getFullYear();return true;}
 function matchSearch(j,customers,q){if(!q)return true;q=q.toLowerCase();var cu=customers.find(function(c){return c.id===j.customerId;})||{};if(j.title&&j.title.toLowerCase().indexOf(q)>=0)return true;if(j.parts&&j.parts.toLowerCase().indexOf(q)>=0)return true;if(cu.name&&cu.name.toLowerCase().indexOf(q)>=0)return true;if(cu.vehiclePlate&&cu.vehiclePlate.toLowerCase().indexOf(q)>=0)return true;if(j.createdByName&&j.createdByName.toLowerCase().indexOf(q)>=0)return true;return false;}
@@ -756,7 +767,7 @@ function generatePPTX(){if(typeof PptxGenJS==='undefined'){showToast('PPTX libra
 function updateStats(){var ld=state.slots.filter(function(s){return s.originalImage;}).length;var vS=state.slots.filter(function(s){return s.type==='mileage'||s.type==='rear_view'||s.type==='front_view'||s.type==='vin_plate';});var dS=state.slots.filter(function(s){return s.type.indexOf('defect_')===0;});var pS=state.slots.filter(function(s){return s.type.indexOf('parts_')===0;});var vL=vS.filter(function(s){return s.originalImage;}).length;var dL=dS.filter(function(s){return s.originalImage;}).length;var pL=pS.filter(function(s){return s.originalImage;}).length;var el;if((el=document.getElementById('count-vehicle')))el.textContent=vL+'/'+vS.length;if((el=document.getElementById('count-defect')))el.textContent=dL+'/'+dS.length;if((el=document.getElementById('count-parts')))el.textContent=pL+'/'+pS.length;if((el=document.getElementById('photoCount')))el.textContent=ld;if((el=document.getElementById('floatCount')))el.innerHTML=ld+' <small>loaded</small>';}
 function toggleCompact(){document.body.classList.toggle('compact');var b=document.getElementById('compactToggle');var a=document.body.classList.contains('compact');if(b){b.classList.toggle('active',a);b.innerHTML=a?'<i class="fas fa-expand-alt"></i> Full View':'<i class="fas fa-compress-alt"></i> Compact';}}
 
-/* FIXED: Float bar (Quick Add) ONLY shows on inspection view, never on dashboard/jobs/customers/users */
+/* FIXED: Float bar (Quick Add) ONLY shows on inspection view */
 window.addEventListener('scroll',function(){
   var stBtn=document.getElementById('scrollTopBtn');
   var flBar=document.getElementById('floatBar');
