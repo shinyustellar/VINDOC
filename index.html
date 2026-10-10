@@ -12,7 +12,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 <style>
-:root{--bg:#fff;--bg-2:#fafafa;--bg-3:#f4f4f5;--card:#fff;--border:#e5e5e7;--border-hi:#d4d4d8;--fg:#0a0a0a;--fg-2:#2a2a2a;--muted:#6b6b70;--muted-2:#9a9aa0;--danger:#c8102e;--success:#1b6b3c}
+:root{--bg:#fff;--bg-2:#fafafa;--bg-3:#f4f4f5;--card:#fff;--border:#e5e5e7;--border-hi:#d4d4d8;--fg:#0a0a0a;--fg-2:#2a2a2a;--muted:#6b6b70;--muted-2:#9a9aa0;--danger:#c8102e;--success:#1b6b3c;--warn:#d4b004;--info:#2563eb}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{font-family:'Hanken Grotesk',sans-serif;background:var(--bg);color:var(--fg);min-height:100vh;line-height:1.5;-webkit-font-smoothing:antialiased}
 .auth-screen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:3000;overflow-y:auto;padding:20px}
@@ -84,13 +84,15 @@ html,body{font-family:'Hanken Grotesk',sans-serif;background:var(--bg);color:var
 .btn-add.primary{background:var(--fg);color:var(--bg)}
 .btn-add.primary:hover{background:var(--bg);color:var(--fg)}
 .data-table{width:100%;border-collapse:collapse;font-family:'Hanken Grotesk',sans-serif}
-.data-table th{text-align:left;font-family:'Archivo',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);padding:10px 12px;border-bottom:2px solid var(--fg);white-space:nowrap}
+.data-table th{text-align:left;font-family:'Archivo',sans-serif;font-size:9px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);padding:10px 12px;border-bottom:2px solid var(--fg);white-space:nowrap;position:sticky;top:0;background:var(--bg);z-index:5}
+.data-table th.sortable{cursor:pointer;user-select:none;transition:color 0.15s}
+.data-table th.sortable:hover{color:var(--fg)}
+.data-table th.sortable .sort-indicator{display:inline-block;margin-left:4px;font-size:8px;color:var(--muted-2)}
+.data-table th.sortable.active .sort-indicator{color:var(--fg)}
 .data-table td{padding:10px 12px;border-bottom:1px solid var(--border);font-size:12px}
 .data-table tr:hover td{background:var(--bg-2)}
 .table-wrap{overflow:auto;border:1px solid var(--border);background:var(--card);max-height:65vh}
 .dash-section .table-wrap{max-height:400px}
-.data-table thead th{position:sticky;top:0;background:var(--bg);z-index:5;border-bottom:2px solid var(--fg)}
-.data-table thead th:first-child{left:0}
 .table-wrap::-webkit-scrollbar{width:8px;height:8px}
 .table-wrap::-webkit-scrollbar-track{background:var(--bg-2);border-left:1px solid var(--border)}
 .table-wrap::-webkit-scrollbar-thumb{background:var(--muted-2);border-radius:4px}
@@ -104,6 +106,72 @@ html,body{font-family:'Hanken Grotesk',sans-serif;background:var(--bg);color:var
 .table-action:hover{border-color:var(--fg);color:var(--fg)}
 .table-action.danger:hover{border-color:var(--danger);color:var(--danger)}
 .table-action.primary{border-color:var(--fg);color:var(--fg)}
+
+/* === NEW: Statistics Charts === */
+.stats-charts{display:grid;grid-template-columns:1fr 320px 320px;gap:16px;margin-bottom:28px}
+@media(max-width:1100px){.stats-charts{grid-template-columns:1fr 1fr}.stats-charts .chart-card.jobs-per-month{grid-column:span 2}}
+@media(max-width:700px){.stats-charts{grid-template-columns:1fr}.stats-charts .chart-card.jobs-per-month{grid-column:span 1}}
+.chart-card{background:var(--card);border:1px solid var(--border);padding:18px;display:flex;flex-direction:column}
+.chart-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.chart-card-title{font-family:'Archivo',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--fg)}
+.chart-card-sub{font-size:9px;color:var(--muted);letter-spacing:0.06em;text-transform:uppercase;font-weight:600}
+.bars-chart{display:flex;flex-direction:column;gap:8px;flex:1;justify-content:center}
+.bar-row{display:grid;grid-template-columns:36px 1fr 28px;align-items:center;gap:10px;font-size:11px}
+.bar-row-label{font-family:'Hanken Grotesk',sans-serif;font-weight:600;color:var(--fg-2);text-align:right}
+.bar-row-track{background:var(--bg-3);height:18px;position:relative;overflow:hidden;border:1px solid var(--border)}
+.bar-row-fill{height:100%;display:flex;min-width:2px;transition:width 0.4s ease}
+.bar-row-fill .seg{display:inline-block;height:100%}
+.bar-row-fill .Seg-pending{background:var(--muted-2)}
+.bar-row-fill .Seg-in_progress{background:var(--warn)}
+.bar-row-fill .Seg-completed{background:var(--success)}
+.bar-row-fill.empty{background:var(--bg-3)}
+.bar-row-val{font-family:'Hanken Grotesk',sans-serif;font-weight:700;color:var(--fg);font-size:11px;text-align:right}
+.chart-legend{display:flex;gap:12px;margin-top:10px;font-size:9px;color:var(--muted);flex-wrap:wrap}
+.chart-legend span{display:flex;align-items:center;gap:4px;font-family:'Archivo',sans-serif;font-weight:600;letter-spacing:0.05em;text-transform:uppercase}
+.chart-legend i{width:10px;height:10px;display:inline-block;border-radius:2px}
+.chart-empty{text-align:center;padding:24px 12px;color:var(--muted-2);font-size:11px;flex:1;display:flex;align-items:center;justify-content:center}
+.chart-empty i{font-size:24px;display:block;margin-bottom:6px}
+.ring-container{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;flex:1}
+.ring-svg{width:130px;height:130px}
+.ring-bg{fill:none;stroke:var(--bg-3);stroke-width:12}
+.ring-fg{fill:none;stroke:var(--success);stroke-width:12;stroke-linecap:round;transform:rotate(-90deg);transform-origin:center;transition:stroke-dashoffset 0.6s ease}
+.ring-center{font-family:'Archivo',sans-serif;font-weight:800;font-size:26px;fill:var(--fg)}
+.ring-sub{font-family:'Archivo',sans-serif;font-size:8px;fill:var(--muted);letter-spacing:0.15em;text-transform:uppercase;font-weight:600}
+.ring-label{font-size:9px;color:var(--muted);letter-spacing:0.12em;text-transform:uppercase;font-family:'Archivo',sans-serif;font-weight:600}
+.insp-bars{display:flex;flex-direction:column;gap:10px;flex:1;justify-content:center}
+.insp-bar-row{display:grid;grid-template-columns:70px 1fr 24px;align-items:center;gap:8px;font-size:11px}
+.insp-bar-name{font-family:'Hanken Grotesk',sans-serif;font-weight:600;color:var(--fg-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px}
+.insp-bar-track{background:var(--bg-3);height:16px;border:1px solid var(--border);overflow:hidden}
+.insp-bar-fill{height:100%;background:var(--fg);min-width:2px;transition:width 0.4s ease}
+.insp-bar-val{font-family:'Hanken Grotesk',sans-serif;font-weight:700;color:var(--fg);font-size:11px;text-align:right}
+
+/* === NEW: Search & Filter Bar === */
+.filter-bar{background:var(--bg);border:1px solid var(--border);padding:14px;margin-bottom:14px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.search-box{position:relative;flex:1;min-width:220px}
+.search-box i{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:12px;pointer-events:none}
+.search-input{width:100%;background:var(--bg);border:1px solid var(--border-hi);color:var(--fg);padding:9px 32px 9px 32px;font-size:13px;font-family:'Hanken Grotesk',sans-serif;font-weight:500;transition:all 0.15s}
+.search-input:focus{outline:none;border-color:var(--fg)}
+.search-clear{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:transparent;border:none;color:var(--muted);cursor:pointer;padding:4px 6px;font-size:12px;display:none}
+.search-clear.visible{display:block}
+.search-clear:hover{color:var(--danger)}
+.filter-select{background:var(--bg);border:1px solid var(--border-hi);color:var(--fg);padding:9px 28px 9px 12px;font-size:12px;font-family:'Hanken Grotesk',sans-serif;font-weight:500;cursor:pointer;transition:all 0.15s;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236b6b70'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");background-repeat:no-repeat;background-position:right 6px center;background-size:18px}
+.filter-select:focus{outline:none;border-color:var(--fg)}
+.filter-group{display:flex;align-items:center;gap:6px}
+.filter-label{font-size:9px;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;font-family:'Archivo',sans-serif;font-weight:700;white-space:nowrap}
+.result-info{font-size:11px;color:var(--muted);font-family:'Hanken Grotesk',sans-serif;font-weight:600;margin-left:auto;white-space:nowrap}
+.result-info b{color:var(--fg)}
+.pagination{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:14px;flex-wrap:wrap}
+.page-btn{min-width:32px;height:32px;padding:0 8px;background:var(--bg);border:1px solid var(--border-hi);color:var(--muted);font-family:'Hanken Grotesk',sans-serif;font-weight:600;font-size:12px;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;justify-content:center}
+.page-btn:hover:not(:disabled){border-color:var(--fg);color:var(--fg)}
+.page-btn.active{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.page-btn:disabled{opacity:0.4;cursor:not-allowed}
+.page-info{font-size:11px;color:var(--muted);font-family:'Hanken Grotesk',sans-serif;font-weight:600;margin:0 4px}
+.no-results{padding:40px 20px;text-align:center;color:var(--muted)}
+.no-results i{font-size:32px;color:var(--muted-2);margin-bottom:10px}
+.no-results p{font-size:12px;line-height:1.6}
+.no-results p b{color:var(--fg);display:block;margin-bottom:4px}
+
+/* existing styles preserved */
 .gen-modal{position:fixed;inset:0;background:rgba(255,255,255,0.97);backdrop-filter:blur(8px);z-index:2000;display:none;align-items:center;justify-content:center;padding:32px;overflow-y:auto}
 .gen-modal.active{display:flex}
 .gen-box{background:var(--bg);border:1px solid var(--fg);padding:28px;max-width:440px;width:100%}
@@ -376,9 +444,50 @@ body.compact .act-btn span{display:none}
 <div class="dash-card" onclick="showView('customers')"><div class="dash-card-icon"><i class="fas fa-users"></i></div><div class="dash-card-num" id="dashCustomers">0</div><div class="dash-card-lbl">Customers</div></div>
 <div class="dash-card" onclick="showView('jobs')"><div class="dash-card-icon"><i class="fas fa-spinner"></i></div><div class="dash-card-num" id="dashPending">0</div><div class="dash-card-lbl">In Progress</div></div>
 <div class="dash-card" onclick="showView('jobs')"><div class="dash-card-icon"><i class="fas fa-check-circle"></i></div><div class="dash-card-num" id="dashCompleted">0</div><div class="dash-card-lbl">Completed</div></div>
-</div><div class="dash-section"><div class="dash-section-head"><div class="dash-section-title">Recent Jobs <span class="section-count" id="dashRecentCount" style="margin-left:8px">0</span></div><button class="btn-add primary" onclick="showView('jobs')"><i class="fas fa-list"></i> View All Jobs</button></div><div class="table-wrap" id="dashRecentJobs"></div></div></div></div>
+</div>
 
-<div id="jobsView" class="view"><div class="view-pad"><div class="dash-section-head"><div class="dash-section-title">Inspection Jobs</div><button class="btn-add primary" onclick="openJobModal()"><i class="fas fa-plus"></i> New Job</button></div><div class="table-wrap" id="jobsTable"></div></div></div>
+<!-- NEW: Statistics Charts -->
+<div class="stats-charts">
+<div class="chart-card jobs-per-month">
+<div class="chart-card-header"><div class="chart-card-title">Jobs Per Month</div><div class="chart-card-sub" id="jobsPerMonthRange">Last 6 months</div></div>
+<div class="bars-chart" id="jobsPerMonthChart"></div>
+<div class="chart-legend"><span><i style="background:var(--muted-2)"></i>Pending</span><span><i style="background:var(--warn)"></i>In Progress</span><span><i style="background:var(--success)"></i>Completed</span></div>
+</div>
+<div class="chart-card">
+<div class="chart-card-header"><div class="chart-card-title">Completion Rate</div><div class="chart-card-sub">All jobs</div></div>
+<div class="ring-container" id="completionRing"></div>
+</div>
+<div class="chart-card">
+<div class="chart-card-header"><div class="chart-card-title">Inspector Activity</div><div class="chart-card-sub">Completed jobs</div></div>
+<div class="insp-bars" id="inspectorActivityChart"></div>
+</div>
+</div>
+
+<div class="dash-section"><div class="dash-section-head"><div class="dash-section-title">Recent Jobs <span class="section-count" id="dashRecentCount" style="margin-left:8px">0</span></div><button class="btn-add primary" onclick="showView('jobs')"><i class="fas fa-list"></i> View All Jobs</button></div>
+<!-- NEW: Filter bar for dashboard recent jobs -->
+<div class="filter-bar" id="dashFilterBar">
+<div class="search-box"><i class="fas fa-search"></i><input type="text" class="search-input" id="dashSearchInput" placeholder="Search job title, plate, customer..." oninput="applyDashFilters()"><button class="search-clear" id="dashSearchClear" onclick="clearDashSearch()"><i class="fas fa-times"></i></button></div>
+<div class="filter-group"><span class="filter-label">Status</span><select class="filter-select" id="dashStatusFilter" onchange="applyDashFilters()"><option value="all">All</option><option value="pending">Pending</option><option value="in_progress">In Progress</option><option value="completed">Completed</option></select></div>
+<div class="filter-group"><span class="filter-label">Date</span><select class="filter-select" id="dashDateFilter" onchange="applyDashFilters()"><option value="all">All</option><option value="today">Today</option><option value="week">This Week</option><option value="month">This Month</option><option value="year">This Year</option></select></div>
+<span class="result-info" id="dashResultInfo">Showing 0 of 0 jobs</span>
+</div>
+<div class="table-wrap" id="dashRecentJobs"></div>
+<div id="dashPagination" class="pagination"></div>
+</div></div></div>
+
+<div id="jobsView" class="view"><div class="view-pad"><div class="dash-section-head"><div class="dash-section-title">Inspection Jobs</div><button class="btn-add primary" onclick="openJobModal()"><i class="fas fa-plus"></i> New Job</button></div>
+<!-- NEW: Full filter bar for Jobs table -->
+<div class="filter-bar">
+<div class="search-box"><i class="fas fa-search"></i><input type="text" class="search-input" id="jobsSearchInput" placeholder="Search job title, plate, customer, parts..." oninput="applyJobsFilters()"><button class="search-clear" id="jobsSearchClear" onclick="clearJobsSearch()"><i class="fas fa-times"></i></button></div>
+<div class="filter-group"><span class="filter-label">Status</span><select class="filter-select" id="jobsStatusFilter" onchange="applyJobsFilters()"><option value="all">All</option><option value="pending">Pending</option><option value="in_progress">In Progress</option><option value="completed">Completed</option></select></div>
+<div class="filter-group"><span class="filter-label">Date</span><select class="filter-select" id="jobsDateFilter" onchange="applyJobsFilters()"><option value="all">All</option><option value="today">Today</option><option value="week">This Week</option><option value="month">This Month</option><option value="year">This Year</option></select></div>
+<div class="filter-group"><span class="filter-label">Sort</span><select class="filter-select" id="jobsSortFilter" onchange="applyJobsFilters()"><option value="newest">Newest First</option><option value="oldest">Oldest First</option><option value="az">Alphabetical (A-Z)</option><option value="status">By Status</option></select></div>
+<span class="result-info" id="jobsResultInfo">Showing 0 of 0 jobs</span>
+</div>
+<div class="table-wrap" id="jobsTable"></div>
+<div id="jobsPagination" class="pagination"></div>
+</div></div>
+
 <div id="customersView" class="view"><div class="view-pad"><div class="dash-section-head"><div class="dash-section-title">Customers</div><button class="btn-add primary" onclick="openCustomerModal()"><i class="fas fa-plus"></i> Add Customer</button></div><div class="table-wrap" id="customersTable"></div></div></div>
 <div id="usersView" class="view"><div class="view-pad"><div class="dash-section-head"><div class="dash-section-title">User Management</div><button class="btn-add primary" onclick="openUserModal()"><i class="fas fa-plus"></i> Add User</button></div><div class="table-wrap" id="usersTable"></div></div></div>
 
@@ -500,14 +609,113 @@ function showApp(){document.getElementById('authScreen').style.display='none';do
 function showView(n){document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active');});var v=document.getElementById(n+'View');if(v)v.classList.add('active');document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.toggle('active',b.dataset.nav===n);});var ih=document.getElementById('inspHeader');if(ih)ih.classList.toggle('active',n==='inspection');if(n==='dashboard')renderDashboard();else if(n==='jobs')renderJobs();else if(n==='customers')renderCustomers();else if(n==='users')renderUsers();}
 function closeModal(id){var m=document.getElementById(id);if(m)m.classList.remove('active');}
 function esc(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+/* === NEW: Cached data for charts and filters === */
+var _cachedJobs=[],_cachedCustomers=[],_cachedUsers=[];
+function refreshCachedData(){return Promise.all([DB.getAll('jobs'),DB.getAll('customers'),DB.getAll('users')]).then(function(results){_cachedJobs=results[0]||[];_cachedCustomers=results[1]||[];_cachedUsers=results[2]||[];return results;});}
+
 var _dashNotes=[];var _jobsNotes=[];
+var _dashFilteredJobs=[];var _dashPage=1;var _dashPerPage=5;
+var _jobsFilteredJobs=[];var _jobsPage=1;var _jobsPerPage=10;
+var _dashSort={col:'date',dir:'desc'};
+var _jobsSort={col:'date',dir:'desc'};
+
 function showNotesPopup(idx,src){var data=(src==='jobs'?_jobsNotes:_dashNotes)[idx];if(!data||!data.notes||!data.notes.trim()){showToast('No notes for this job','info');return;}var titleEl=document.getElementById('notesPopupTitle');if(titleEl)titleEl.innerHTML='<i class="fas fa-sticky-note"></i> '+esc(data.title);var contentEl=document.getElementById('notesPopupContent');if(contentEl)contentEl.textContent=data.notes;var popup=document.getElementById('notesPopup');if(popup)popup.classList.add('active');}
 function closeNotesPopup(){var p=document.getElementById('notesPopup');if(p)p.classList.remove('active');}
-function renderDashboard(){DB.getAll('jobs').then(function(j){DB.getAll('customers').then(function(c){document.getElementById('dashJobs').textContent=j.length;document.getElementById('dashCustomers').textContent=c.length;document.getElementById('dashPending').textContent=j.filter(function(x){return x.status==='in_progress';}).length;document.getElementById('dashCompleted').textContent=j.filter(function(x){return x.status==='completed';}).length;var s=j.slice().sort(function(a,b){return new Date(b.createdAt)-new Date(a.createdAt);});_dashNotes=[];var h='<table class="data-table"><thead><tr><th>Job</th><th>Parts</th><th>Notes</th><th>Plate</th><th>Status</th><th>Date</th><th>By</th><th>Action</th></tr></thead><tbody>';if(s.length===0)h+='<tr><td colspan="8"><div class="gen-empty"><i class="fas fa-clipboard"></i><p>No jobs yet</p></div></td></tr>';else{s.forEach(function(jb,idx){var cu=c.find(function(x){return x.id===jb.customerId;})||{};var sc=jb.status==='completed'?'completed':(jb.status==='in_progress'?'in_progress':'pending');var sl=jb.status==='completed'?'Completed':(jb.status==='in_progress'?'In Progress':'Pending');_dashNotes[idx]={title:jb.title,notes:jb.notes||''};var notesCell;if(jb.notes&&jb.notes.trim()){notesCell='<button class="table-action" onclick="showNotesPopup('+idx+')" style="border-color:var(--fg);color:var(--fg);"><i class="fas fa-sticky-note"></i> View</button>';}else{notesCell='<span style="color:var(--muted-2)">-</span>';}h+='<tr><td><strong>'+esc(jb.title)+'</strong></td><td>'+(jb.parts?esc(jb.parts):'-')+'</td><td>'+notesCell+'</td><td>'+esc(cu.vehiclePlate||'-')+'</td><td><span class="status-pill '+sc+'">'+sl+'</span></td><td>'+(jb.inspectionDate||'-')+'</td><td>'+esc(jb.createdByName||'-')+'</td><td><button class="table-action primary" onclick="openJob(\''+jb.id+'\')"><i class="fas fa-folder-open"></i> Open</button></td></tr>';});}h+='</tbody></table>';document.getElementById('dashRecentJobs').innerHTML=h;var cnt=document.getElementById('dashRecentCount');if(cnt)cnt.textContent=j.length;});});}
-function renderJobs(){DB.getAll('jobs').then(function(j){DB.getAll('customers').then(function(c){var cm={};c.forEach(function(x){cm[x.id]=x;});var s=j.slice().sort(function(a,b){return new Date(b.createdAt)-new Date(a.createdAt);});_jobsNotes=[];var h='<table class="data-table"><thead><tr><th>Job</th><th>Parts</th><th>Notes</th><th>Customer</th><th>Plate</th><th>Vehicle</th><th>Status</th><th>Date</th><th>By</th><th>Actions</th></tr></thead><tbody>';if(s.length===0)h+='<tr><td colspan="10"><div class="gen-empty"><i class="fas fa-clipboard-list"></i><p>No jobs yet.<br><button class="btn-add primary" style="margin-top:12px" onclick="openJobModal()"><i class="fas fa-plus"></i> Create First Job</button></p></div></td></tr>';else s.forEach(function(jb,idx){var cu=cm[jb.customerId]||{};var v=(cu.vehicleMake||'')+' '+(cu.vehicleModel||'');if(cu.vehicleYear)v+=' ('+cu.vehicleYear+')';if(!v.trim())v='-';var sc=jb.status==='completed'?'completed':(jb.status==='in_progress'?'in_progress':'pending');var sl=jb.status==='completed'?'Completed':(jb.status==='in_progress'?'In Progress':'Pending');_jobsNotes[idx]={title:jb.title,notes:jb.notes||''};var notesCell;if(jb.notes&&jb.notes.trim()){notesCell='<button class="table-action" onclick="showNotesPopup('+idx+',\'jobs\')" style="border-color:var(--fg);color:var(--fg);"><i class="fas fa-sticky-note"></i> View</button>';}else{notesCell='<span style="color:var(--muted-2)">-</span>';}h+='<tr><td><strong>'+esc(jb.title)+'</strong></td><td>'+(jb.parts?esc(jb.parts):'-')+'</td><td>'+notesCell+'</td><td>'+esc(cu.name||'-')+'</td><td><strong>'+esc(cu.vehiclePlate||'-')+'</strong></td><td>'+esc(v)+'</td><td><span class="status-pill '+sc+'">'+sl+'</span></td><td>'+(jb.inspectionDate||'-')+'</td><td>'+esc(jb.createdByName||'-')+'</td><td><div class="table-actions"><button class="table-action primary" onclick="openJob(\''+jb.id+'\')"><i class="fas fa-folder-open"></i> Open</button><button class="table-action" onclick="generateJobPDF(\''+jb.id+'\')"><i class="fas fa-file-pdf"></i> PDF</button>';if(currentUser.role==='admin'||currentUser.role==='manager')h+='<button class="table-action" onclick="openJobModal(\''+jb.id+'\')"><i class="fas fa-edit"></i> Edit</button>';if(currentUser.role==='admin'||currentUser.role==='manager'||jb.createdBy===currentUser.id)h+='<button class="table-action danger" onclick="deleteJob(\''+jb.id+'\')"><i class="fas fa-trash"></i></button>';h+='</div></td></tr>';});h+='</tbody></table>';document.getElementById('jobsTable').innerHTML=h;});});}
+
+/* === NEW: Statistics charts rendering === */
+function renderCharts(jobs,customers,users){
+  /* Jobs Per Month - last 6 months */
+  var months=[];var now=new Date();
+  for(var i=5;i>=0;i--){var d=new Date(now.getFullYear(),now.getMonth()-i,1);months.push({key:d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'),label:d.toLocaleDateString('en',{month:'short'}),year:d.getFullYear(),month:d.getMonth(),pending:0,in_progress:0,completed:0,total:0});}
+  jobs.forEach(function(j){var cd=j.createdAt?new Date(j.createdAt):null;var id=j.inspectionDate?new Date(j.inspectionDate):null;var useD=id||cd;if(!useD)return;var key=useD.getFullYear()+'-'+String(useD.getMonth()+1).padStart(2,'0');var m=months.find(function(x){return x.key===key;});if(m){var st=j.status||'pending';if(st==='completed')m.completed++;else if(st==='in_progress')m.in_progress++;else m.pending++;m.total++;}});
+  var jpmEl=document.getElementById('jobsPerMonthChart');if(jpmEl){var maxT=Math.max.apply(null,months.map(function(m){return m.total;}));if(maxT===0)maxT=1;jpmEl.innerHTML=months.map(function(m){var wP=(m.pending/maxT)*100;var wI=(m.in_progress/maxT)*100;var wC=(m.completed/maxT)*100;var segs='';if(m.total>0){segs='<span class="Seg-pending" style="width:'+wP+'%"></span><span class="Seg-in_progress" style="width:'+wI+'%"></span><span class="Seg-completed" style="width:'+wC+'%"></span>';}else{segs='<span class="bar-row-fill empty" style="width:100%"></span>';}return '<div class="bar-row"><span class="bar-row-label">'+esc(m.label)+'</span><div class="bar-row-track"><div class="bar-row-fill">'+segs+'</div></div><span class="bar-row-val">'+m.total+'</span></div>';}).join('');}
+  
+  /* Completion Ring */
+  var total=jobs.length;var completed=jobs.filter(function(j){return j.status==='completed';}).length;var rate=total>0?Math.round((completed/total)*100):0;
+  var ringEl=document.getElementById('completionRing');if(ringEl){var R=52,C=2*Math.PI*R;var off=C-(rate/100)*C;ringEl.innerHTML='<svg class="ring-svg" viewBox="0 0 130 130"><circle class="ring-bg" cx="65" cy="65" r="'+R+'"></circle><circle class="ring-fg" cx="65" cy="65" r="'+R+'" stroke-dasharray="'+C+'" stroke-dashoffset="'+off+'"></circle><text class="ring-center" x="65" y="68" text-anchor="middle">'+rate+'%</text><text class="ring-sub" x="65" y="84" text-anchor="middle">Complete</text></svg><div class="ring-label">'+completed+' of '+total+' jobs</div>';}
+  
+  /* Inspector Activity */
+  var inspMap={};
+  jobs.forEach(function(j){if(j.status==='completed'&&j.createdByName){inspMap[j.createdByName]=(inspMap[j.createdByName]||0)+1;}});
+  var inspArr=Object.keys(inspMap).map(function(k){return{name:k,count:inspMap[k]};}).sort(function(a,b){return b.count-a.count;}).slice(0,6);
+  var inspEl=document.getElementById('inspectorActivityChart');if(inspEl){var maxI=Math.max.apply(null,inspArr.map(function(x){return x.count;}));if(maxI===0)maxI=1;if(inspArr.length===0){inspEl.innerHTML='<div class="chart-empty"><i class="fas fa-user-slash"></i>No completed jobs yet</div>';}else{inspEl.innerHTML=inspArr.map(function(i){var w=(i.count/maxI)*100;return '<div class="insp-bar-row"><span class="insp-bar-name" title="'+esc(i.name)+'">'+esc(i.name)+'</span><div class="insp-bar-track"><div class="insp-bar-fill" style="width:'+w+'%"></div></div><span class="insp-bar-val">'+i.count+'</span></div>';}).join('');}}
+}
+
+/* === NEW: Filter helpers === */
+function getJobDate(j){if(j.inspectionDate){var p=j.inspectionDate.split(/[-.]/);if(p.length>=3)return new Date(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2]));}return j.createdAt?new Date(j.createdAt):null;}
+function inDateRange(j,filter){if(filter==='all')return true;var d=getJobDate(j);if(!d)return false;var now=new Date();if(filter==='today')return d.toDateString()===now.toDateString();if(filter==='week'){var w=new Date(now);w.setDate(w.getDate()-7);return d>=w;}if(filter==='month')return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();if(filter==='year')return d.getFullYear()===now.getFullYear();return true;}
+function matchSearch(j,customers,q){if(!q)return true;q=q.toLowerCase();var cu=customers.find(function(c){return c.id===j.customerId;})||{};if(j.title&&j.title.toLowerCase().indexOf(q)>=0)return true;if(j.parts&&j.parts.toLowerCase().indexOf(q)>=0)return true;if(cu.name&&cu.name.toLowerCase().indexOf(q)>=0)return true;if(cu.vehiclePlate&&cu.vehiclePlate.toLowerCase().indexOf(q)>=0)return true;if(j.createdByName&&j.createdByName.toLowerCase().indexOf(q)>=0)return true;return false;}
+function sortJobs(arr,sortMode){var arr=arr.slice();if(sortMode.col==='title'){arr.sort(function(a,b){var x=(a.title||'').toLowerCase(),y=(b.title||'').toLowerCase();return sortMode.dir==='asc'?(x<y?-1:1):(x>y?-1:1);});}else if(sortMode.col==='status'){var order={pending:0,in_progress:1,completed:2};arr.sort(function(a,b){var x=order[a.status||'pending']||0,y=order[b.status||'pending']||0;if(x!==y)return sortMode.dir==='asc'?x-y:y-x;return new Date(b.createdAt)-new Date(a.createdAt);});}else{arr.sort(function(a,b){var da=getJobDate(a),db=getJobDate(b);da=da||new Date(0);db=db||new Date(0);return sortMode.dir==='asc'?da-db:db-da;});}return arr;}
+
+function applyDashFilters(){var q=document.getElementById('dashSearchInput').value.trim();var s=document.getElementById('dashStatusFilter').value;var dF=document.getElementById('dashDateFilter').value;var clearBtn=document.getElementById('dashSearchClear');if(clearBtn)clearBtn.classList.toggle('visible',q.length>0);var filtered=_cachedJobs.filter(function(j){return(s==='all'||j.status===s)&&inDateRange(j,dF)&&matchSearch(j,_cachedCustomers,q);});filtered=sortJobs(filtered,_dashSort);_dashFilteredJobs=filtered;_dashPage=1;renderDashJobsTable();}
+function clearDashSearch(){var i=document.getElementById('dashSearchInput');if(i){i.value='';applyDashFilters();}}
+
+function renderDashJobsTable(){var el=document.getElementById('dashRecentJobs');var info=document.getElementById('dashResultInfo');var start=(_dashPage-1)*_dashPerPage;var page=_dashFilteredJobs.slice(start,start+_dashPerPage);_dashNotes=[];var h='<table class="data-table"><thead><tr><th class="sortable" data-col="title" onclick="setDashSort(\'title\')">Job <span class="sort-indicator">'+(_dashSort.col==='title'?(_dashSort.dir==='asc'?'\u25B2':'\u25BC'):'\u21C5')+'</span></th><th>Parts</th><th>Notes</th><th>Plate</th><th class="sortable" data-col="status" onclick="setDashSort(\'status\')">Status <span class="sort-indicator">'+(_dashSort.col==='status'?(_dashSort.dir==='asc'?'\u25B2':'\u25BC'):'\u21C5')+'</span></th><th class="sortable active" data-col="date" onclick="setDashSort(\'date\')">Date <span class="sort-indicator">'+(_dashSort.col==='date'?(_dashSort.dir==='asc'?'\u25B2':'\u25BC'):'\u21C5')+'</span></th><th>By</th><th>Action</th></tr></thead><tbody>';if(page.length===0)h+='<tr><td colspan="8"><div class="no-results"><i class="fas fa-search"></i><p><b>No matching jobs</b>Try a different search or filter</p></div></td></tr>';else{page.forEach(function(jb,idx){var cu=_cachedCustomers.find(function(x){return x.id===jb.customerId;})||{};var sc=jb.status==='completed'?'completed':(jb.status==='in_progress'?'in_progress':'pending');var sl=jb.status==='completed'?'Completed':(jb.status==='in_progress'?'In Progress':'Pending');_dashNotes[idx]={title:jb.title,notes:jb.notes||''};var notesCell;if(jb.notes&&jb.notes.trim()){notesCell='<button class="table-action" onclick="showNotesPopup('+idx+')" style="border-color:var(--fg);color:var(--fg);"><i class="fas fa-sticky-note"></i> View</button>';}else{notesCell='<span style="color:var(--muted-2)">-</span>';}var dStr=jb.inspectionDate||'-';h+='<tr><td><strong>'+esc(jb.title)+'</strong></td><td>'+(jb.parts?esc(jb.parts):'-')+'</td><td>'+notesCell+'</td><td>'+esc(cu.vehiclePlate||'-')+'</td><td><span class="status-pill '+sc+'">'+sl+'</span></td><td>'+dStr+'</td><td>'+esc(jb.createdByName||'-')+'</td><td><button class="table-action primary" onclick="openJob(\''+jb.id+'\')"><i class="fas fa-folder-open"></i> Open</button></td></tr>';});}h+='</tbody></table>';el.innerHTML=h;if(info)info.innerHTML='Showing <b>'+(page.length===0?0:start+1)+'-'+(start+page.length)+'</b> of <b>'+_dashFilteredJobs.length+'</b> jobs';renderDashPagination();}
+function setDashSort(col){if(_dashSort.col===col){_dashSort.dir=_dashSort.dir==='asc'?'desc':'asc';}else{_dashSort.col=col;_dashSort.dir=col==='title'?'asc':'desc';}_dashFilteredJobs=sortJobs(_dashFilteredJobs,_dashSort);renderDashJobsTable();}
+function renderDashPagination(){var el=document.getElementById('dashPagination');if(!el)return;var total=_dashFilteredJobs.length;var pages=Math.ceil(total/_dashPerPage);if(pages<=1){el.innerHTML='';return;}var h='';h+='<button class="page-btn" onclick="goDashPage('+(_dashPage-1)+')" '+( _dashPage===1?'disabled':'')+'>\u2190 Prev</button>';for(var i=1;i<=pages;i++){if(i===1||i===pages||Math.abs(i-_dashPage)<=1){h+='<button class="page-btn '+(_dashPage===i?'active':'')+'" onclick="goDashPage('+i+')">'+i+'</button>';}else if(i===_dashPage-2||i===_dashPage+2){h+='<span class="page-info">...</span>';}}h+='<button class="page-btn" onclick="goDashPage('+(_dashPage+1)+')" '+( _dashPage===pages?'disabled':'')+'>Next \u2192</button>';el.innerHTML=h;}
+function goDashPage(p){if(p<1||p>Math.ceil(_dashFilteredJobs.length/_dashPerPage))return;_dashPage=p;renderDashJobsTable();}
+
+function applyJobsFilters(){var q=document.getElementById('jobsSearchInput').value.trim();var s=document.getElementById('jobsStatusFilter').value;var dF=document.getElementById('jobsDateFilter').value;var sO=document.getElementById('jobsSortFilter').value;var clearBtn=document.getElementById('jobsSearchClear');if(clearBtn)clearBtn.classList.toggle('visible',q.length>0);var filtered=_cachedJobs.filter(function(j){return(s==='all'||j.status===s)&&inDateRange(j,dF)&&matchSearch(j,_cachedCustomers,q);});var sortMode=_jobsSort;if(sO==='newest'){sortMode={col:'date',dir:'desc'};}else if(sO==='oldest'){sortMode={col:'date',dir:'asc'};}else if(sO==='az'){sortMode={col:'title',dir:'asc'};}else if(sO==='status'){sortMode={col:'status',dir:'asc'};}_jobsSort=sortMode;filtered=sortJobs(filtered,sortMode);_jobsFilteredJobs=filtered;_jobsPage=1;renderJobsTable();}
+function clearJobsSearch(){var i=document.getElementById('jobsSearchInput');if(i){i.value='';applyJobsFilters();}}
+
+function renderJobsTable(){
+  var el=document.getElementById('jobsTable');
+  var info=document.getElementById('jobsResultInfo');
+  var start=(_jobsPage-1)*_jobsPerPage;
+  var page=_jobsFilteredJobs.slice(start,start+_jobsPerPage);
+  _jobsNotes=[];
+  var h='<table class="data-table"><thead><tr><th>Job</th><th>Parts</th><th>Notes</th><th>Customer</th><th>Plate</th><th>Vehicle</th><th>Status</th><th>Date</th><th>By</th><th>Actions</th></tr></thead><tbody>';
+  if(page.length===0)h+='<tr><td colspan="10"><div class="no-results"><i class="fas fa-search"></i><p><b>No matching jobs</b>Try a different search or filter</p></div></td></tr>';
+  else page.forEach(function(jb,idx){
+    var cu=_cachedCustomers.find(function(x){return x.id===jb.customerId;})||{};
+    var v=(cu.vehicleMake||'')+' '+(cu.vehicleModel||'');
+    if(cu.vehicleYear)v+=' ('+cu.vehicleYear+')';
+    if(!v.trim())v='-';
+    var sc=jb.status==='completed'?'completed':(jb.status==='in_progress'?'in_progress':'pending');
+    var sl=jb.status==='completed'?'Completed':(jb.status==='in_progress'?'In Progress':'Pending');
+    _jobsNotes[idx]={title:jb.title,notes:jb.notes||''};
+    var notesCell;
+    if(jb.notes&&jb.notes.trim()){notesCell='<button class="table-action" onclick="showNotesPopup('+idx+',\'jobs\')" style="border-color:var(--fg);color:var(--fg);"><i class="fas fa-sticky-note"></i> View</button>';}else{notesCell='<span style="color:var(--muted-2)">-</span>';}
+    h+='<tr><td><strong>'+esc(jb.title)+'</strong></td><td>'+(jb.parts?esc(jb.parts):'-')+'</td><td>'+notesCell+'</td><td>'+esc(cu.name||'-')+'</td><td><strong>'+esc(cu.vehiclePlate||'-')+'</strong></td><td>'+esc(v)+'</td><td><span class="status-pill '+sc+'">'+sl+'</span></td><td>'+(jb.inspectionDate||'-')+'</td><td>'+esc(jb.createdByName||'-')+'</td><td><div class="table-actions"><button class="table-action primary" onclick="openJob(\''+jb.id+'\')"><i class="fas fa-folder-open"></i> Open</button><button class="table-action" onclick="generateJobPDF(\''+jb.id+'\')"><i class="fas fa-file-pdf"></i> PDF</button>';
+    if(currentUser.role==='admin'||currentUser.role==='manager')h+='<button class="table-action" onclick="openJobModal(\''+jb.id+'\')"><i class="fas fa-edit"></i> Edit</button>';
+    if(currentUser.role==='admin'||currentUser.role==='manager'||jb.createdBy===currentUser.id)h+='<button class="table-action danger" onclick="deleteJob(\''+jb.id+'\')"><i class="fas fa-trash"></i></button>';
+    h+='</div></td></tr>';
+  });
+  h+='</tbody></table>';
+  el.innerHTML=h;
+  if(info)info.innerHTML='Showing <b>'+(page.length===0?0:start+1)+'-'+(start+page.length)+'</b> of <b>'+_jobsFilteredJobs.length+'</b> jobs';
+  renderJobsPagination();
+}
+function renderJobsPagination(){var el=document.getElementById('jobsPagination');if(!el)return;var total=_jobsFilteredJobs.length;var pages=Math.ceil(total/_jobsPerPage);if(pages<=1){el.innerHTML='';return;}var h='';h+='<button class="page-btn" onclick="goJobsPage('+(_jobsPage-1)+')" '+(_jobsPage===1?'disabled':'')+'>\u2190 Prev</button>';for(var i=1;i<=pages;i++){if(i===1||i===pages||Math.abs(i-_jobsPage)<=1){h+='<button class="page-btn '+(_jobsPage===i?'active':'')+'" onclick="goJobsPage('+i+')">'+i+'</button>';}else if(i===_jobsPage-2||i===_jobsPage+2){h+='<span class="page-info">...</span>';}}h+='<button class="page-btn" onclick="goJobsPage('+(_jobsPage+1)+')" '+(_jobsPage===pages?'disabled':'')+'>Next \u2192</button>';el.innerHTML=h;}
+function goJobsPage(p){if(p<1||p>Math.ceil(_jobsFilteredJobs.length/_jobsPerPage))return;_jobsPage=p;renderJobsTable();}
+
+function renderDashboard(){
+  refreshCachedData().then(function(results){
+    var jobs=results[0],customers=results[1],users=results[2];
+    document.getElementById('dashJobs').textContent=jobs.length;
+    document.getElementById('dashCustomers').textContent=customers.length;
+    document.getElementById('dashPending').textContent=jobs.filter(function(x){return x.status==='in_progress';}).length;
+    document.getElementById('dashCompleted').textContent=jobs.filter(function(x){return x.status==='completed';}).length;
+    var cnt=document.getElementById('dashRecentCount');if(cnt)cnt.textContent=jobs.length;
+    renderCharts(jobs,customers,users);
+    _dashFilteredJobs=sortJobs(jobs,_dashSort);
+    _dashPage=1;
+    renderDashJobsTable();
+  });
+}
+function renderJobs(){
+  refreshCachedData().then(function(results){
+    var jobs=results[0];
+    _jobsFilteredJobs=sortJobs(jobs,_jobsSort);
+    _jobsPage=1;
+    applyJobsFilters();
+  });
+}
+
 var editingJobId=null;
 function openJobModal(id){editingJobId=id||null;DB.getAll('customers').then(function(c){var s=document.getElementById('jobCustomer');if(c.length===0){showToast('Add a customer first','error');showView('customers');return;}s.innerHTML=c.map(function(x){return'<option value="'+x.id+'">'+esc(x.name)+(x.vehiclePlate?' \u2014 '+x.vehiclePlate:'')+'</option>';}).join('');if(editingJobId){DB.get('jobs',editingJobId).then(function(j){if(!j)return;document.getElementById('jobCustomer').value=j.customerId;document.getElementById('jobTitleInput').value=j.title||'';document.getElementById('jobPartsInput').value=j.parts||'';document.getElementById('jobDateInput').value=j.inspectionDate||'';document.getElementById('jobNotesInput').value=j.notes||'';document.getElementById('jobModalTitle').textContent='EDIT JOB';document.getElementById('jobModalSave').textContent='Update Job';document.getElementById('jobModal').classList.add('active');});}else{document.getElementById('jobTitleInput').value='';document.getElementById('jobPartsInput').value='';document.getElementById('jobDateInput').value=formatDateStamp(new Date()).replace(/\./g,'-');document.getElementById('jobNotesInput').value='';document.getElementById('jobModalTitle').textContent='NEW INSPECTION JOB';document.getElementById('jobModalSave').textContent='Create & Open';document.getElementById('jobModal').classList.add('active');}});}
-function saveJob(){var ci=document.getElementById('jobCustomer').value,t=document.getElementById('jobTitleInput').value.trim(),pr=document.getElementById('jobPartsInput').value.trim(),d=document.getElementById('jobDateInput').value,n=document.getElementById('jobNotesInput').value.trim();if(!ci||!t){showToast('Customer and title required','error');return;}if(editingJobId){DB.get('jobs',editingJobId).then(function(j){j.customerId=ci;j.title=t;j.parts=pr;j.inspectionDate=d;j.notes=n;DB.put('jobs',j).then(function(){closeModal('jobModal');showToast('Job updated','success');renderJobs();});});}else{var j={id:'job_'+Date.now(),customerId:ci,title:t,parts:pr,inspectionDate:d,notes:n,status:'pending',createdBy:currentUser.id,createdByName:currentUser.name,createdAt:new Date().toISOString()};DB.add('jobs',j).then(function(){closeModal('jobModal');openJob(j.id);});}}
+function saveJob(){var ci=document.getElementById('jobCustomer').value,t=document.getElementById('jobTitleInput').value.trim(),pr=document.getElementById('jobPartsInput').value.trim(),d=document.getElementById('jobDateInput').value,n=document.getElementById('jobNotesInput').value.trim();if(!ci||!t){showToast('Customer and title required','error');return;}if(editingJobId){DB.get('jobs',editingJobId).then(function(j){j.customerId=ci;j.title=t;j.parts=pr;j.inspectionDate=d;j.notes=n;DB.put('jobs',j).then(function(){closeModal('jobModal');showToast('Job updated','success');renderJobs();renderDashboard();});});}else{var j={id:'job_'+Date.now(),customerId:ci,title:t,parts:pr,inspectionDate:d,notes:n,status:'pending',createdBy:currentUser.id,createdByName:currentUser.name,createdAt:new Date().toISOString()};DB.add('jobs',j).then(function(){closeModal('jobModal');openJob(j.id);});}}
 function deleteJob(id){if(!confirm('Delete this job and all media?'))return;fs.collection('jobs').doc(id).collection('slots').get().then(function(s){var b=fs.batch();s.docs.forEach(function(d){b.delete(d.ref);});return b.commit();}).then(function(){return DB.del('jobs',id);}).then(function(){showToast('Job deleted','success');renderJobs();renderDashboard();});}
 function completeJob(){if(!state.currentJob)return;state.currentJob.status='completed';saveJobToDB(true);document.getElementById('currentJobTitle').textContent=state.currentJob.title+' \u2713';document.getElementById('completeBtn').style.display='none';showToast('Job completed','success');}
 function renderCustomers(){DB.getAll('customers').then(function(c){var s=c.slice().sort(function(a,b){return new Date(b.createdAt)-new Date(a.createdAt);});var h='<table class="data-table"><thead><tr><th>Name</th><th>Company</th><th>Phone</th><th>Vehicle</th><th>Plate</th><th>Actions</th></tr></thead><tbody>';if(s.length===0)h+='<tr><td colspan="6"><div class="gen-empty"><i class="fas fa-users"></i><p>No customers yet.<br><button class="btn-add primary" style="margin-top:12px" onclick="openCustomerModal()"><i class="fas fa-plus"></i> Add First Customer</button></p></div></td></tr>';else s.forEach(function(c){var v=(c.vehicleMake||'')+' '+(c.vehicleModel||'')+(c.vehicleYear?' ('+c.vehicleYear+')':'');if(!v.trim())v='-';h+='<tr><td><strong>'+esc(c.name)+'</strong></td><td>'+esc(c.company||'-')+'</td><td>'+esc(c.phone||'-')+'</td><td>'+esc(v)+'</td><td><strong>'+esc(c.vehiclePlate||'-')+'</strong></td><td><div class="table-actions"><button class="table-action" onclick="openCustomerModal(\''+c.id+'\')"><i class="fas fa-edit"></i> Edit</button>';if(currentUser.role==='admin'||currentUser.role==='manager')h+='<button class="table-action danger" onclick="deleteCustomer(\''+c.id+'\')"><i class="fas fa-trash"></i></button>';h+='</div></td></tr>';});h+='</tbody></table>';document.getElementById('customersTable').innerHTML=h;});}
