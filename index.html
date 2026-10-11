@@ -51,7 +51,8 @@ html,body{font-family:'Hanken Grotesk',sans-serif;background:var(--bg);color:var
 .fmt-btn:not(:last-child){border-right:1px solid var(--border-hi)}
 .fmt-btn.active{background:var(--fg);color:var(--bg)}
 .fmt-btn:hover:not(.active){color:var(--fg)}
-.user-badge{font-size:11px;color:var(--muted);font-family:'Hanken Grotesk',sans-serif;font-weight:600}
+/* CHANGED v4: flex row — avatar sits BESIDE the name, vertically centered (fixes ugly stacking) */
+.user-badge{font-size:11px;color:var(--muted);font-family:'Hanken Grotesk',sans-serif;font-weight:600;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .user-badge i{color:var(--fg);margin-right:4px}
 .role-tag{font-size:8px;padding:2px 6px;font-family:'Archivo',sans-serif;font-weight:700;letter-spacing:0.1em;text-transform:uppercase}
 .btn-logout{background:transparent;border:1px solid var(--border-hi);color:var(--muted);padding:7px 12px;font-family:'Archivo',sans-serif;font-weight:600;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;gap:5px}
@@ -271,7 +272,7 @@ body.compact .act-btn span{display:none}
 .slot.has-image{border-color:var(--fg)}
 .slot-head{padding:10px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
 .slot-title{display:flex;align-items:center;gap:8px;font-family:'Archivo',sans-serif;font-weight:700;font-size:11px;letter-spacing:0.06em;text-transform:uppercase}
-.slot-icon{width:24px;height=24px;background:var(--bg-3);display:grid;place-items:center;color:var(--fg);font-size:11px}
+.slot-icon{width:24px;height:24px;background:var(--bg-3);display:grid;place-items:center;color:var(--fg);font-size:11px}
 .slot-status{font-size:9px;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);padding:3px 7px;background:var(--bg-2);border:1px solid var(--border);font-family:'Archivo',sans-serif;font-weight:700}
 .slot-status.ready{color:var(--success);border-color:var(--success);background:rgba(27,107,60,0.05)}
 .slot-head-right{display:flex;align-items:center;gap:6px}
@@ -525,7 +526,7 @@ body.compact .act-btn span{display:none}
 .chat-msg.mentioned .chat-msg-bubble{border-color:var(--info);box-shadow:0 0 0 1px var(--info)}
 .chat-msg.flash .chat-msg-bubble{animation:chatFlash 1.2s ease}
 @keyframes chatFlash{0%,100%{box-shadow:none}20%,60%{box-shadow:0 0 0 2px var(--info)}}
-/* FIX BAKED IN: reply quote always visible — blue accent bar + blue name + dark text (WhatsApp style), on BOTH sides */
+/* reply quote always visible — blue accent bar + blue name + dark text (WhatsApp style), on BOTH sides */
 .chat-msg-quote{border-left:3px solid var(--info);background:var(--bg-2);padding:5px 9px;margin-bottom:5px;cursor:pointer;max-width:280px;overflow:hidden;border-radius:3px}
 .chat-msg.me .chat-msg-quote{border-left:3px solid var(--info);border-right:none}
 .chat-quote-name{font-size:9px;font-weight:700;font-family:'Archivo',sans-serif;text-transform:uppercase;letter-spacing:.06em;color:var(--info)}
@@ -543,7 +544,7 @@ body.compact .act-btn span{display:none}
 .chat-msg-sticker.animated{max-width:140px;max-height:140px}
 .chat-sticker-giftag{position:absolute;bottom:3px;left:3px;background:var(--fg);color:var(--bg);font-family:'Archivo',sans-serif;font-size:7px;font-weight:700;padding:1px 4px;letter-spacing:.08em;border-radius:2px;pointer-events:none}
 
-/* ===== NEW v3: avatars — header, messages, sidebar, popups ===== */
+/* ===== v3: avatars — header, messages, sidebar, popups ===== */
 .header-avatar{width:32px;height:32px;border-radius:50%;overflow:hidden;border:1px solid var(--border-hi);display:grid;place-items:center;background:var(--bg-3);font-family:'Archivo',sans-serif;font-weight:800;font-size:12px;color:var(--fg);cursor:pointer;transition:all .15s;flex-shrink:0}
 .header-avatar:hover{border-color:var(--fg)}
 .header-avatar img{width:100%;height:100%;object-fit:cover;display:block}
@@ -552,7 +553,7 @@ body.compact .act-btn span{display:none}
 .chat-msg.me .chat-msg-row{flex-direction:row-reverse}
 .chat-avatar{width:28px;height:28px;border-radius:50%;flex-shrink:0;overflow:hidden;border:1px solid var(--border);display:grid;place-items:center;background:var(--bg-3);font-family:'Archivo',sans-serif;font-weight:800;font-size:11px;color:var(--fg);margin-bottom:14px}
 .chat-avatar img{width:100%;height:100%;object-fit:cover;display:block}
-/* sidebar user list avatars (replace green dot) */
+/* sidebar user list avatars */
 .chat-user-avatar{width:24px;height:24px;border-radius:50%;flex-shrink:0;overflow:hidden;border:1px solid var(--border);display:grid;place-items:center;background:var(--bg);font-family:'Archivo',sans-serif;font-weight:800;font-size:9px;color:var(--fg);position:relative}
 .chat-user-avatar img{width:100%;height:100%;object-fit:cover;display:block}
 .chat-user-ondot{position:absolute;bottom:-2px;right:-2px;width:8px;height:8px;border-radius:50%;background:var(--success);border:2px solid var(--bg-2)}
@@ -599,7 +600,7 @@ body.compact .act-btn span{display:none}
 <div id="appShell" class="app-shell">
 <header class="app-header"><div class="brand"><div class="brand-logo">V</div><div class="brand-text"><h1>VINDOC</h1><p>Inspection Platform</p></div></div>
 <nav class="app-nav"><button class="nav-btn active" data-nav="dashboard" onclick="showView('dashboard')">Dashboard</button><button class="nav-btn" data-nav="jobs" onclick="showView('jobs')">Jobs</button><button class="nav-btn" data-nav="customers" onclick="showView('customers')">Customers</button><button class="nav-btn" id="navUsers" data-nav="users" onclick="showView('users')" style="display:none">Users</button><button class="nav-btn" data-nav="partscatalog" onclick="showView('partscatalog')">Parts Catalog</button><button class="nav-btn" data-nav="chat" onclick="showView('chat')">Chat<span class="nav-badge" id="chatNavBadge"></span></button><button class="nav-btn" data-nav="knowledge" onclick="showView('knowledge')">Knowledge</button></nav>
-<!-- CHANGED v3: clickable avatar replaces the static user icon — opens profile picture modal -->
+<!-- clickable avatar in the header — opens profile picture modal -->
 <div class="header-right"><div class="clock-display" id="clockDisplay"><i class="far fa-clock"></i><span>--</span></div><div class="user-badge"><div class="header-avatar" id="headerAvatar" onclick="openProfileModal()" title="Change profile picture"></div><span id="userNameDisplay"></span> <span class="role-tag" id="userRoleTag">ADMIN</span></div><button class="btn-logout" onclick="doLogout()"><i class="fas fa-sign-out-alt"></i> Logout</button></div></header>
 
 <div id="inspHeader" class="insp-header">
@@ -673,7 +674,7 @@ body.compact .act-btn span{display:none}
 <div id="aiGrid"></div>
 </div></div>
 
-<!-- CHANGED v3: chat view — wallpaper button added; avatars/wallpaper render via Part 5 JS -->
+<!-- chat view — wallpaper button, avatars, reply bar, mention dropdown, sticker panel -->
 <div id="chatView" class="view"><div class="view-pad">
 <div class="dash-section-head"><div class="dash-section-title">Staff Chat</div><button class="btn-add" onclick="openWallpaperModal()" title="Chat background"><i class="fas fa-image"></i> Wallpaper</button></div>
 <div class="chat-layout">
@@ -751,7 +752,7 @@ body.compact .act-btn span{display:none}
     <button class="gen-btn primary" onclick="generatePPTX()">Generate PPTX</button>
 </div></div></div>
 
-<!-- NEW v3: profile picture modal (EVERY user can set their own) -->
+<!-- profile picture modal (EVERY user can set their own) -->
 <div class="gen-modal" id="profileModal"><div class="gen-box">
 <div class="gen-box-title">PROFILE PICTURE</div>
 <div class="profile-avatar-big" id="profileAvatarBig" onclick="document.getElementById('profileFileInput').click()" title="Click to change"><div class="profile-avatar-hint"><i class="fas fa-camera"></i><span>Change</span></div></div>
@@ -759,12 +760,12 @@ body.compact .act-btn span{display:none}
 <div class="gen-actions"><button class="gen-btn" onclick="removeProfilePic()"><i class="fas fa-trash"></i> Remove</button><button class="gen-btn primary" onclick="closeModal('profileModal')">Done</button></div>
 </div></div>
 
-<!-- NEW v3: chat wallpaper modal (presets + custom image, per user) -->
+<!-- chat wallpaper modal (presets + custom image, per user) -->
 <div class="gen-modal" id="wallpaperModal"><div class="gen-box wide">
 <div class="gen-box-title">CHAT WALLPAPER</div>
 <div class="gen-label" style="margin-bottom:6px">Presets</div>
 <div class="wp-grid" id="wpGrid"></div>
-<div class="gen-label" style="margin:12px 0 6px">Custom Image</div>
+<div class="gen-label" style="margin:12px 0 6px">Custom Image (HD)</div>
 <div class="wp-custom-row"><button class="gen-btn" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px" onclick="document.getElementById('wpFileInput').click()"><i class="fas fa-upload"></i> Upload Image</button><button class="gen-btn" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px" onclick="removeChatWallpaper()"><i class="fas fa-ban"></i> No Wallpaper</button></div>
 <input type="file" id="wpFileInput" accept="image/*" style="display:none" onchange="uploadChatWallpaper(this)">
 <div class="gen-actions" style="margin-top:14px"><button class="gen-btn primary" onclick="closeModal('wallpaperModal')">Done</button></div>
@@ -848,7 +849,7 @@ function doRegister(){var n=document.getElementById('regName').value.trim(),e=do
 /* logout stops the global chat listener and clears the unread badge */
 function doLogout(){firebase.auth().signOut().then(function(){currentUser=null;stopGlobalChatNotifications();clearChatUnread();document.getElementById('appShell').classList.remove('active');document.getElementById('authScreen').style.display='flex';clearSlots();});}
 function checkSession(){firebase.auth().onAuthStateChanged(function(u){if(u){fs.collection('users').doc(u.uid).get().then(function(d){if(d.exists){currentUser=d.data();showApp();}else{var p={id:u.uid,name:u.email.split('@')[0],email:u.email,role:'staff',createdAt:new Date().toISOString()};fs.collection('users').doc(u.uid).set(p).then(function(){currentUser=p;showApp();});}});}else{document.getElementById('authScreen').style.display='flex';document.getElementById('appShell').classList.remove('active');}});}
-/* CHANGED v3: at login — load avatar into header, apply chat wallpaper, restore unread count, start global listener */
+/* at login — load avatar into header, apply chat wallpaper, restore unread count, start global listener */
 function showApp(){document.getElementById('authScreen').style.display='none';document.getElementById('appShell').classList.add('active');document.getElementById('userNameDisplay').textContent=currentUser.name;var t=document.getElementById('userRoleTag');t.textContent=currentUser.role.toUpperCase();if(currentUser.role==='admin'){t.style.background='var(--fg)';t.style.color='var(--bg)';t.style.border='none';}else if(currentUser.role==='manager'){t.style.background='#2563eb';t.style.color='#fff';t.style.border='none';}else{t.style.background='var(--bg-3)';t.style.color='var(--fg)';t.style.border='1px solid var(--border-hi)';}document.getElementById('navUsers').style.display=currentUser.role==='admin'?'block':'none';updateHeaderAvatar();applyChatWallpaper();loadChatUnread();startGlobalChatNotifications();showView('dashboard');}
 var _chatUnsub=null;
 function showView(n){
@@ -982,7 +983,7 @@ function openPartPhotoViewer(encodedData){
 function closeAiModal(){document.getElementById('aiModal').classList.remove('active');}
 
 /* ==================================================================
-   ===== CHAT v3: avatars + wallpaper + notifications + badge + reply + mentions + stickers =====
+   ===== CHAT v4: FIXED profile pics + HD wallpaper + all chat features =====
    ================================================================== */
 
 /* --- 🟡 Profile pictures (EVERY user sets their own) --- */
@@ -1012,6 +1013,9 @@ function openProfileModal(){
   big.innerHTML=(img?'<img src="'+img+'" alt="">':'<div style="display:grid;place-items:center;width:100%;height:100%">'+esc((currentUser.name||'?').charAt(0).toUpperCase())+'</div>')+'<div class="profile-avatar-hint"><i class="fas fa-camera"></i><span>Change</span></div>';
   document.getElementById('profileModal').classList.add('active');
 }
+/* CHANGED v4: FIXED the black-square bug — the image is now drawn DIRECTLY from the
+   source onto the output canvas (v3 created a canvas but never drew the image onto
+   it, so JPEG rendered the empty canvas as solid black) */
 function uploadProfilePic(input){
   var f=input.files&&input.files[0];input.value='';
   if(!f)return;
@@ -1021,14 +1025,13 @@ function uploadProfilePic(input){
   r.onload=function(e){
     var img=new Image();
     img.onload=function(){
-      var MAX=256;var sc=Math.min(MAX/img.width,MAX/img.height,1);
-      var w=Math.max(1,Math.round(img.width*sc)),h=Math.max(1,Math.round(img.height*sc));
-      var c=document.createElement('canvas');c.width=w;c.height=h;
-      var ctx=c.getContext('2d');
-      /* square crop from centre */
-      var side=Math.min(w,h);var sx=(w-side)/2,sy=(h-side)/2;
-      var sq=document.createElement('canvas');sq.width=side;sq.height=side;
-      sq.getContext('2d').drawImage(c,sx,sy,side,side,0,0,side,side);
+      /* v4 FIX: square centre-crop drawn DIRECTLY from the source image */
+      var side=Math.min(img.width,img.height);
+      var sc=Math.min(1,256/side);
+      var out=Math.max(1,Math.round(side*sc));
+      var sx=(img.width-side)/2,sy=(img.height-side)/2;
+      var sq=document.createElement('canvas');sq.width=out;sq.height=out;
+      sq.getContext('2d').drawImage(img,sx,sy,side,side,0,0,out,out);
       var data=sq.toDataURL('image/jpeg',0.85);
       if(data.length>200000)data=sq.toDataURL('image/jpeg',0.6);
       fs.collection('users').doc(currentUser.id).set({photoURL:data},{merge:true}).then(function(){
@@ -1053,7 +1056,7 @@ function removeProfilePic(){
   });
 }
 
-/* --- 🟣 Chat wallpaper (presets + custom, per user, localStorage) --- */
+/* --- 🟣 Chat wallpaper (CLOUD — Firestore `wallpapers` collection, syncs across ALL devices) --- */
 var _chatWallpapers=[
   {id:'none',name:'None',css:''},
   {id:'plain',name:'Plain',css:'#f4f4f5'},
@@ -1064,59 +1067,90 @@ var _chatWallpapers=[
   {id:'honey',name:'Honeycomb',css:"url('https://www.transparenttextures.com/patterns/hexellence.png')"},
   {id:'dark',name:'Dark',css:'#0a0a0a'}
 ];
-function _wpKey(){return 'vindoc_wallpaper_'+(currentUser?currentUser.id:'anon');}
+var _wpCurrent={kind:'none'}; /* cached copy for the modal's selected highlight */
+function _wpDoc(){return fs.collection('wallpapers').doc(currentUser.id);}
 function applyChatWallpaper(){
-  var el=document.getElementById('chatMessages');if(!el)return;
-  try{
-    var saved=JSON.parse(localStorage.getItem(_wpKey())||'{}');
-    if(saved.custom){el.style.backgroundImage='url('+saved.custom+')';el.style.backgroundColor='';}
-    else{
-      var wp=_chatWallpapers.find(function(w){return w.id===saved.id;})||_chatWallpapers[0];
+  var el=document.getElementById('chatMessages');if(!el||!currentUser)return;
+  DB.get('wallpapers',currentUser.id).then(function(w){
+    _wpCurrent=w||{kind:'none'};
+    if(_wpCurrent.kind==='custom'&&_wpCurrent.data){
+      el.style.backgroundImage='url('+_wpCurrent.data+')';el.style.backgroundColor='';
+    }else if(_wpCurrent.kind==='preset'){
+      var wp=_chatWallpapers.find(function(x){return x.id===_wpCurrent.preset;})||_chatWallpapers[0];
       el.style.backgroundImage=wp.css.indexOf('url')===0?wp.css:'';
       el.style.backgroundColor=wp.css.indexOf('url')===0?'':(wp.css||'');
+    }else{
+      el.style.backgroundImage='';el.style.backgroundColor='';
     }
-  }catch(e){}
+  }).catch(function(){});
 }
 function openWallpaperModal(){
   var grid=document.getElementById('wpGrid');if(!grid)return;
-  var saved={};try{saved=JSON.parse(localStorage.getItem(_wpKey())||'{}');}catch(e){}
   grid.innerHTML=_chatWallpapers.map(function(w){
     var bg=w.css.indexOf('url')===0?('background-image:'+w.css):('background-color:'+w.css);
-    return '<div class="wp-swatch'+(saved.id===w.id&&!saved.custom?' selected':'')+'" style="'+bg+'" onclick="setChatWallpaper(\''+w.id+'\')"><span>'+w.name+'</span></div>';
+    var sel=(_wpCurrent.kind==='preset'&&_wpCurrent.preset===w.id)?' selected':'';
+    return '<div class="wp-swatch'+sel+'" style="'+bg+'" onclick="setChatWallpaper(\''+w.id+'\')"><span>'+w.name+'</span></div>';
   }).join('');
   document.getElementById('wallpaperModal').classList.add('active');
 }
 function setChatWallpaper(id){
-  try{localStorage.setItem(_wpKey(),JSON.stringify({id:id}));}catch(e){}
-  applyChatWallpaper();openWallpaperModal();
+  _wpDoc().set({id:currentUser.id,kind:'preset',preset:id,updatedAt:new Date().toISOString()}).then(function(){
+    _wpCurrent={kind:'preset',preset:id};
+    applyChatWallpaper();showToast('Wallpaper set','success');
+  }).catch(function(er){showToast('Failed: '+er.message,'error');});
 }
+/* CLOUD: tries 1920px first; Firestore's ~1MB doc cap forces step-down only if rejected.
+   Each rung is announced so you always know the quality that actually saved. */
 function uploadChatWallpaper(input){
   var f=input.files&&input.files[0];input.value='';
   if(!f)return;
   if(f.type.indexOf('image/')!==0){showToast('Pick an image file','error');return;}
-  if(f.size>2*1024*1024){showToast('Image too large (max 2MB)','error');return;}
+  if(f.size>15*1024*1024){showToast('Image too large (max 15MB)','error');return;}
   var r=new FileReader();
   r.onload=function(e){
     var img=new Image();
     img.onload=function(){
-      var MAX=1000;var sc=Math.min(MAX/img.width,MAX/img.height,1);
-      var w=Math.max(1,Math.round(img.width*sc)),h=Math.max(1,Math.round(img.height*sc));
-      var c=document.createElement('canvas');c.width=w;c.height=h;
-      c.getContext('2d').drawImage(img,0,0,w,h);
-      var data=c.toDataURL('image/jpeg',0.75);
-      if(data.length>400000)data=c.toDataURL('image/jpeg',0.5);
-      if(data.length>400000){showToast('Image too heavy for storage — pick a smaller one','error');return;}
-      try{localStorage.setItem(_wpKey(),JSON.stringify({custom:data}));}catch(e2){showToast('Image too large to save locally — try a smaller one','error');return;}
-      applyChatWallpaper();
-      showToast('Wallpaper set','success');
-      closeModal('wallpaperModal');
+      showToast('Uploading to cloud...','info');
+      var tries=[
+        {side:1920,q:0.8,label:'1920px'},
+        {side:1600,q:0.85,label:'1600px'},
+        {side:1280,q:0.85,label:'1280px'},
+        {side:1024,q:0.8,label:'1024px'}
+      ];
+      function attempt(i){
+        if(i>=tries.length){showToast('Image too heavy for cloud — pick a smaller or simpler one','error');return;}
+        var t=tries[i];
+        var sc=Math.min(1,t.side/Math.max(img.width,img.height));
+        var w=Math.max(1,Math.round(img.width*sc)),h=Math.max(1,Math.round(img.height*sc));
+        var c=document.createElement('canvas');c.width=w;c.height=h;
+        c.getContext('2d').drawImage(img,0,0,w,h);
+        var data=c.toDataURL('image/jpeg',t.q);
+        if(data.length>900000){attempt(i+1);return;} /* too big for a Firestore doc → next rung */
+        _wpDoc().set({id:currentUser.id,kind:'custom',data:data,updatedAt:new Date().toISOString()}).then(function(){
+          _wpCurrent={kind:'custom',data:data};
+          applyChatWallpaper();
+          showToast('Cloud wallpaper set — '+t.label+' (syncs on all your devices)','success');
+          closeModal('wallpaperModal');
+        }).catch(function(er){
+          if(er&&(er.code==='resource-exhausted'||/resource|too large|exceeds/i.test(er.message||''))){attempt(i+1);return;}
+          showToast('Failed: '+er.message,'error');
+        });
+      }
+      attempt(0);
     };
     img.onerror=function(){showToast('Failed to load image','error');};
     img.src=e.target.result;
   };
   r.readAsDataURL(f);
 }
-function removeChatWallpaper(){try{localStorage.removeItem(_wpKey());}catch(e){}applyChatWallpaper();showToast('Wallpaper removed','success');closeModal('wallpaperModal');}
+function removeChatWallpaper(){
+  _wpDoc().set({id:currentUser.id,kind:'none',updatedAt:new Date().toISOString()}).then(function(){
+    _wpCurrent={kind:'none'};
+    applyChatWallpaper();
+    showToast('Wallpaper removed','success');
+    closeModal('wallpaperModal');
+  }).catch(function(er){showToast('Failed: '+er.message,'error');});
+}
 
 /* --- 🔴 Unread badge state (localStorage, per logged-in user) --- */
 var _chatUnread=0;
@@ -1175,7 +1209,7 @@ function startGlobalChatNotifications(){
 }
 function stopGlobalChatNotifications(){if(_globalChatUnsub){_globalChatUnsub();_globalChatUnsub=null;}}
 
-/* --- Chat view rendering v3: avatars, reply quotes (VISIBLE), mentions, stickers --- */
+/* --- Chat view rendering: avatars, reply quotes (VISIBLE), mentions, stickers --- */
 var _chatUsers=[],_stickersMap={},_chatMsgs=[],_replyTo=null;
 
 /* @mention highlighting — matches full known user names (longest first) */
@@ -1205,7 +1239,7 @@ function renderChatMsg(m){
   var h='<div class="'+cls+'" id="msg-'+m.id+'">';
   var canDel=isMe||currentUser.role==='admin'||currentUser.role==='manager';
   h+='<div class="chat-msg-actions"><button class="chat-msg-action" title="Reply" onclick="setReplyTo(\''+m.id+'\')"><i class="fas fa-reply"></i></button>'+(canDel?'<button class="chat-msg-action del" title="Delete" onclick="deleteChatMessage(\''+m.id+'\')"><i class="fas fa-trash"></i></button>':'')+'</div>';
-  /* v3: avatar + bubble column side by side; others' messages → avatar left, yours → right */
+  /* avatar + bubble column side by side; others' messages → avatar left, yours → right */
   h+='<div class="chat-msg-row">'+avatarHTML({id:md.uid,name:md.name},'chat-avatar')+'<div class="chat-msg-col"><div class="chat-msg-name">'+(isMe?'You':esc(md.name||'Unknown'))+'</div>';
   if(md.replyTo){h+='<div class="chat-msg-quote" onclick="scrollToChatMsg(\''+esc(md.replyTo.id||'')+'\')" title="Jump to original message"><div class="chat-quote-name">'+esc(md.replyTo.name||'Unknown')+'</div><div class="chat-quote-text">'+esc((md.replyTo.text||'').substring(0,90))+'</div></div>';}
   if(md.stickerId){
@@ -1225,7 +1259,7 @@ function renderChat(){
     _chatUsers=res[0]||[];
     _userAvatars={};_chatUsers.forEach(function(u){if(u.photoURL)_userAvatars[u.id]=u.photoURL;});
     _stickersMap={};(res[1]||[]).forEach(function(s){_stickersMap[s.id]=s;});
-    /* v3: sidebar with avatars; click → @mention */
+    /* sidebar with avatars; click → @mention */
     if(userListEl){userListEl.innerHTML=_chatUsers.map(function(u){
       var av=_userAvatars[u.id];var ini=(u.name||'?').charAt(0).toUpperCase();
       var avHTML=av?('<div class="chat-user-avatar"><img src="'+av+'" alt=""></div>'):('<div class="chat-user-avatar">'+esc(ini)+'</div>');
