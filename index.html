@@ -443,24 +443,64 @@ body.compact .act-btn span{display:none}
 .chat-layout{display:flex;height:calc(100vh - 160px);border:1px solid var(--border);background:var(--card)}
 .chat-side{width:200px;border-right:1px solid var(--border);overflow-y:auto;background:var(--bg-2);flex-shrink:0}
 .chat-side-head{padding:10px 12px;font-family:'Archivo',sans-serif;font-weight:700;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border)}
-.chat-user-item{padding:8px 12px;font-size:12px;display:flex;align-items:center;gap:6px}
+/* CHANGED v2: sidebar users clickable (click to @mention) */
+.chat-user-item{padding:8px 12px;font-size:12px;display:flex;align-items:center;gap:6px;cursor:pointer;transition:background 0.15s}
+.chat-user-item:hover{background:var(--bg-3)}
 .chat-user-dot{width:8px;height:8px;border-radius:50%;background:var(--success);flex-shrink:0}
 .chat-main{flex:1;display:flex;flex-direction:column;min-width:0}
 .chat-msgs{flex:1;overflow-y:auto;padding:12px}
-.chat-msg{margin-bottom:10px;max-width:80%;position:relative}
-.chat-msg.me{margin-left:auto;text-align:right}
-.chat-msg-name{font-size:10px;color:var(--muted);margin-bottom:2px;font-weight:600;padding-right:20px}
-.chat-msg-bubble{display:inline-block;padding:8px 12px;background:var(--bg-3);border:1px solid var(--border);font-size:13px;border-radius:4px}
+/* ===== CHANGED v2: column layout — action buttons (reply/trash) sit BESIDE the bubble,
+   vertically centered, instead of floating far away at the message corner ===== */
+.chat-msg{margin-bottom:10px;max-width:85%;position:relative}
+.chat-msg.me{margin-left:auto}
+.chat-msg-col{display:flex;flex-direction:column;min-width:0}
+.chat-msg.me .chat-msg-col{align-items:flex-end}
+.chat-msg-name{font-size:10px;color:var(--muted);margin-bottom:2px;font-weight:600}
+.chat-msg-bubble{display:inline-block;padding:8px 12px;background:var(--bg-3);border:1px solid var(--border);font-size:13px;border-radius:4px;word-break:break-word}
 .chat-msg.me .chat-msg-bubble{background:var(--fg);color:var(--bg);border-color:var(--fg)}
 .chat-msg-time{font-size:9px;color:var(--muted-2);margin-top:2px}
-.chat-msg-del{position:absolute;top:-4px;right:-4px;background:var(--bg);border:1px solid var(--border);color:var(--muted-2);cursor:pointer;font-size:8px;padding:2px 5px;opacity:0;transition:all 0.15s;border-radius:3px;box-shadow:0 1px 3px rgba(0,0,0,0.1);line-height:1}
-.chat-msg:hover .chat-msg-del{opacity:1}
-.chat-msg-del:hover{color:var(--danger)!important}
-.chat-input-bar{padding:10px;border-top:1px solid var(--border);display:flex;gap:8px;flex-shrink:0}
+/* ===== CHAT v2: input bar with reply preview, mention dropdown, sticker panel ===== */
+.chat-input-bar{padding:10px;border-top:1px solid var(--border);display:block;flex-shrink:0;position:relative}
+.chat-input-row{display:flex;gap:8px}
 .chat-input{flex:1;border:1px solid var(--border-hi);padding:9px 12px;font-size:13px;font-family:'Hanken Grotesk',sans-serif;background:var(--bg);color:var(--fg)}
 .chat-input:focus{outline:none;border-color:var(--fg)}
 .chat-send{background:var(--fg);color:var(--bg);border:none;padding:9px 16px;cursor:pointer;font-family:'Archivo',sans-serif;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:0.1em}
 .chat-send:hover{opacity:0.85}
+.chat-sticker-btn{background:var(--bg);border:1px solid var(--border-hi);padding:9px 12px;cursor:pointer;color:var(--muted);font-size:14px;transition:all .15s}
+.chat-sticker-btn:hover{border-color:var(--fg);color:var(--fg)}
+/* reply preview bar above the input */
+.chat-reply-bar{display:none;align-items:center;gap:8px;background:var(--bg-2);border:1px solid var(--border);border-left:3px solid var(--fg);padding:6px 10px;margin-bottom:8px}
+.chat-reply-bar.active{display:flex}
+.chat-reply-info{flex:1;min-width:0}
+.chat-reply-lbl{font-size:9px;font-family:'Archivo',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.chat-reply-snip{font-size:11px;color:var(--fg-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chat-reply-cancel{background:transparent;border:1px solid var(--border-hi);color:var(--muted);cursor:pointer;width:24px;height:24px;display:grid;place-items:center;font-size:11px;flex-shrink:0}
+.chat-reply-cancel:hover{border-color:var(--danger);color:var(--danger)}
+/* @mention autocomplete dropdown */
+.chat-mention-dd{display:none;position:absolute;bottom:100%;left:10px;right:10px;background:var(--bg);border:1px solid var(--fg);z-index:50;max-height:160px;overflow-y:auto;margin-bottom:4px}
+.chat-mention-dd.open{display:block}
+.chat-mention-item{padding:8px 12px;font-size:12px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--border)}
+.chat-mention-item:last-child{border-bottom:none}
+.chat-mention-item:hover{background:var(--bg-2)}
+.chat-mention-item b{color:var(--info)}
+/* sticker panel (pops above the input, right side) */
+.chat-sticker-panel{display:none;position:absolute;bottom:100%;right:10px;width:300px;background:var(--bg);border:1px solid var(--fg);z-index:60;margin-bottom:6px;box-shadow:0 -8px 30px rgba(0,0,0,.12)}
+.chat-sticker-panel.open{display:block}
+.chat-sticker-head{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-bottom:1px solid var(--border)}
+.chat-sticker-title{font-family:'Archivo',sans-serif;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.chat-sticker-close{background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:12px;padding:2px 6px}
+.chat-sticker-close:hover{color:var(--danger)}
+.chat-sticker-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:10px;max-height:220px;overflow-y:auto}
+.chat-sticker-cell{position:relative;border:1px solid var(--border);background:var(--bg-2);cursor:pointer;padding:4px;display:grid;place-items:center;transition:all .15s}
+.chat-sticker-cell:hover{border-color:var(--fg);background:var(--bg)}
+.chat-sticker-cell img{max-width:100%;max-height:52px;display:block;pointer-events:none}
+.chat-sticker-del{position:absolute;top:-6px;right:-6px;width:18px;height:18px;background:var(--bg);border:1px solid var(--danger);color:var(--danger);cursor:pointer;display:none;place-items:center;font-size:8px;border-radius:3px;z-index:2;padding:0}
+.chat-sticker-cell:hover .chat-sticker-del{display:grid}
+.chat-sticker-empty{grid-column:1/-1;text-align:center;padding:20px 10px;color:var(--muted-2);font-size:11px}
+.chat-sticker-admin{border-top:1px solid var(--border);padding:8px 10px;display:flex;gap:8px;align-items:center}
+.chat-sticker-add{flex:1;background:var(--fg);color:var(--bg);border:1px solid var(--fg);padding:8px;font-family:'Archivo',sans-serif;font-weight:600;font-size:10px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
+.chat-sticker-add:hover{background:var(--bg);color:var(--fg)}
+.chat-sticker-hint{font-size:9px;color:var(--muted-2)}
 .kb-item{padding:14px;border:1px solid var(--border);margin-bottom:8px;transition:all 0.15s}
 .kb-item:hover{border-color:var(--fg)}
 .kb-title{font-family:'Archivo',sans-serif;font-weight:700;font-size:13px}
@@ -483,7 +523,30 @@ body.compact .act-btn span{display:none}
 .ai-loading{text-align:center;padding:40px}
 .ai-loading i{font-size:32px;animation:spin 1.5s linear infinite;display:block;margin-bottom:12px;color:var(--fg)}
 
-/* ===== CHANGED: 🔴 Unread badge on Chat nav button + 🔔 global message notifications ===== */
+/* ===== CHAT v2 (continued): messages — actions BESIDE the bubble, replies, mentions, stickers ===== */
+/* v2 fix: shrink each message block to its content so the action buttons hug the bubble (this is what fixes the "trash too far away" problem) */
+.chat-msg{width:-moz-fit-content;width:fit-content}
+.chat-msg.mentioned .chat-msg-bubble{border-color:var(--info);box-shadow:0 0 0 1px var(--info)}
+.chat-msg.flash .chat-msg-bubble{animation:chatFlash 1.2s ease}
+@keyframes chatFlash{0%,100%{box-shadow:none}20%,60%{box-shadow:0 0 0 2px var(--info)}}
+.chat-msg-quote{border-left:3px solid var(--fg);background:var(--bg-2);padding:4px 8px;margin-bottom:5px;cursor:pointer;max-width:280px;overflow:hidden;border-radius:2px}
+.chat-msg.me .chat-msg-quote{border-left:none;border-right:3px solid var(--bg);background:rgba(255,255,255,0.18);text-align:left}
+.chat-quote-name{font-size:9px;font-weight:700;font-family:'Archivo',sans-serif;text-transform:uppercase;letter-spacing:.06em;color:var(--fg)}
+.chat-msg.me .chat-quote-name{color:var(--bg)}
+.chat-quote-text{font-size:11px;color:var(--fg-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+.chat-msg.me .chat-quote-text{color:rgba(255,255,255,0.8)}
+.chat-mention{color:var(--info);font-weight:700}
+.chat-msg.me .chat-mention{color:#7db4ff}
+.chat-msg-actions{position:absolute;top:50%;transform:translateY(-50%);right:-34px;display:flex;flex-direction:column;gap:3px;opacity:0;transition:opacity .15s;z-index:3}
+.chat-msg.me .chat-msg-actions{right:auto;left:-34px}
+.chat-msg:hover .chat-msg-actions{opacity:1}
+.chat-msg-action{width:26px;height:26px;background:var(--bg);border:1px solid var(--border-hi);color:var(--muted);cursor:pointer;display:grid;place-items:center;font-size:10px;border-radius:3px;transition:all .15s;padding:0}
+.chat-msg-action:hover{border-color:var(--fg);color:var(--fg)}
+.chat-msg-action.del:hover{border-color:var(--danger);color:var(--danger)}
+.chat-msg-sticker{max-width:110px;max-height:110px;display:block;border:1px solid var(--border);background:var(--bg);padding:2px;border-radius:4px}
+.chat-msg.me .chat-msg-sticker{border-color:var(--fg)}
+
+/* ===== 🔴 Unread badge on Chat nav button + 🔔 global message notifications ===== */
 .nav-badge{position:absolute;top:-7px;right:-4px;min-width:18px;height:18px;padding:0 5px;background:var(--danger);color:#fff;border-radius:999px;font-family:'Archivo',sans-serif;font-weight:700;font-size:10px;display:none;align-items:center;justify-content:center;border:2px solid var(--bg);box-shadow:0 2px 8px rgba(200,16,46,.4);pointer-events:none;z-index:20;text-align:center;line-height:1}
 .nav-badge.visible{display:inline-flex}
 .nav-badge.pulse{animation:badgePulse .5s cubic-bezier(.18,.89,.32,1.28)}
@@ -582,11 +645,28 @@ body.compact .act-btn span{display:none}
 <div id="aiGrid"></div>
 </div></div>
 
+<!-- CHANGED v2: chat view with reply bar, @mention dropdown, sticker button + panel -->
 <div id="chatView" class="view"><div class="view-pad">
 <div class="dash-section-head"><div class="dash-section-title">Staff Chat</div></div>
 <div class="chat-layout">
 <div class="chat-side"><div class="chat-side-head">Staff Members</div><div id="chatUserList"></div></div>
-<div class="chat-main"><div class="chat-msgs" id="chatMessages"></div><div class="chat-input-bar"><input type="text" class="chat-input" id="chatInput" placeholder="Type message to staff..." onkeydown="if(event.key==='Enter')sendChatMessage()"><button class="chat-send" onclick="sendChatMessage()"><i class="fas fa-paper-plane"></i> Send</button></div></div>
+<div class="chat-main">
+<div class="chat-msgs" id="chatMessages"></div>
+<div class="chat-input-bar">
+<div class="chat-reply-bar" id="chatReplyBar"><div class="chat-reply-info"><div class="chat-reply-lbl">Replying to <span id="chatReplyName"></span></div><div class="chat-reply-snip" id="chatReplySnip"></div></div><button class="chat-reply-cancel" onclick="cancelReply()" title="Cancel reply"><i class="fas fa-times"></i></button></div>
+<div class="chat-mention-dd" id="chatMentionDD"></div>
+<div class="chat-sticker-panel" id="chatStickerPanel">
+<div class="chat-sticker-head"><div class="chat-sticker-title">Stickers</div><button class="chat-sticker-close" onclick="closeStickerPanel()"><i class="fas fa-times"></i></button></div>
+<div class="chat-sticker-grid" id="chatStickerGrid"></div>
+<div class="chat-sticker-admin" id="chatStickerAdmin" style="display:none"><button class="chat-sticker-add" onclick="document.getElementById('chatStickerFile').click()"><i class="fas fa-plus"></i> Add Sticker</button><span class="chat-sticker-hint">Admin only</span><input type="file" id="chatStickerFile" accept="image/*" style="display:none" onchange="addSticker(this)"></div>
+</div>
+<div class="chat-input-row">
+<button class="chat-sticker-btn" onclick="toggleStickerPanel()" title="Stickers"><i class="far fa-smile"></i></button>
+<input type="text" class="chat-input" id="chatInput" placeholder="Type message... use @ to mention" oninput="onChatInputChange()" onkeydown="if(event.key==='Enter')sendChatMessage()">
+<button class="chat-send" onclick="sendChatMessage()"><i class="fas fa-paper-plane"></i> Send</button>
+</div>
+</div>
+</div>
 </div>
 </div></div>
 
@@ -777,7 +857,7 @@ function goDashPage(p){if(p<1||p>Math.ceil(_dashFilteredJobs.length/_dashPerPage
 function applyJobsFilters(){var q=document.getElementById('jobsSearchInput').value.trim();var s=document.getElementById('jobsStatusFilter').value;var dF=document.getElementById('jobsDateFilter').value;var sO=document.getElementById('jobsSortFilter').value;var clearBtn=document.getElementById('jobsSearchClear');if(clearBtn)clearBtn.classList.toggle('visible',q.length>0);var filtered=_cachedJobs.filter(function(j){return(s==='all'||j.status===s)&&inDateRange(j,dF)&&matchSearch(j,_cachedCustomers,q);});var sortMode=_jobsSort;if(sO==='newest'){sortMode={col:'date',dir:'desc'};}else if(sO==='oldest'){sortMode={col:'date',dir:'asc'};}else if(sO==='az'){sortMode={col:'title',dir:'asc'};}else if(sO==='status'){sortMode={col:'status',dir:'asc'};}_jobsSort=sortMode;filtered=sortJobs(filtered,sortMode);_jobsFilteredJobs=filtered;_jobsPage=1;renderJobsTable();}
 function clearJobsSearch(){var i=document.getElementById('jobsSearchInput');if(i){i.value='';applyJobsFilters();}}
 function renderJobsTable(){var el=document.getElementById('jobsTable');var info=document.getElementById('jobsResultInfo');var start=(_jobsPage-1)*_jobsPerPage;var page=_jobsFilteredJobs.slice(start,start+_jobsPerPage);_jobsNotes=[];var h='<table class="data-table"><thead><tr><th>Job</th><th>Parts</th><th>Notes</th><th>Customer</th><th>Plate</th><th>Vehicle</th><th>Status</th><th>Date</th><th>By</th><th>Actions</th></tr></thead><tbody>';if(page.length===0)h+='<tr><td colspan="10"><div class="no-results"><i class="fas fa-search"></i><p><b>No matching jobs</b>Try a different search or filter</p></div></td></tr>';else page.forEach(function(jb,idx){var cu=_cachedCustomers.find(function(x){return x.id===jb.customerId;})||{};var v=(cu.vehicleMake||'')+' '+(cu.vehicleModel||'');if(cu.vehicleYear)v+=' ('+cu.vehicleYear+')';if(!v.trim())v='-';var sc=jb.status==='completed'?'completed':(jb.status==='in_progress'?'in_progress':'pending');var sl=jb.status==='completed'?'Completed':(jb.status==='in_progress'?'In Progress':'Pending');_jobsNotes[idx]={title:jb.title,notes:jb.notes||''};var notesCell;if(jb.notes&&jb.notes.trim()){notesCell='<button class="table-action" onclick="showNotesPopup('+idx+',\'jobs\')" style="border-color:var(--fg);color:var(--fg);"><i class="fas fa-sticky-note"></i> View</button>';}else{notesCell='<span style="color:var(--muted-2)">-</span>';}h+='<tr><td><strong>'+esc(jb.title)+'</strong></td><td>'+(jb.parts?esc(jb.parts):'-')+'</td><td>'+notesCell+'</td><td>'+esc(cu.name||'-')+'</td><td><strong>'+esc(cu.vehiclePlate||'-')+'</strong></td><td>'+esc(v)+'</td><td><span class="status-pill '+sc+'">'+sl+'</span></td><td>'+(jb.inspectionDate||'-')+'</td><td>'+esc(jb.createdByName||'-')+'</td><td><div class="table-actions"><button class="table-action primary" onclick="openJob(\''+jb.id+'\')"><i class="fas fa-folder-open"></i> Open</button><button class="table-action" onclick="generateJobPDF(\''+jb.id+'\')"><i class="fas fa-file-pdf"></i> PDF</button>';if(currentUser.role==='admin'||currentUser.role==='manager')h+='<button class="table-action" onclick="openJobModal(\''+jb.id+'\')"><i class="fas fa-edit"></i> Edit</button>';if(currentUser.role==='admin'||currentUser.role==='manager'||jb.createdBy===currentUser.id)h+='<button class="table-action danger" onclick="deleteJob(\''+jb.id+'\')"><i class="fas fa-trash"></i></button>';h+='</div></td></tr>';});h+='</tbody></table>';el.innerHTML=h;if(info)info.innerHTML='Showing <b>'+(page.length===0?0:start+1)+'-'+(start+page.length)+'</b> of <b>'+_jobsFilteredJobs.length+'</b> jobs';renderJobsPagination();}
-function renderJobsPagination(){var el=document.getElementById('jobsPagination');if(!el)return;var total=_jobsFilteredJobs.length;var pages=Math.ceil(total/_jobsPerPage);if(pages<=1){el.innerHTML='';return;}var h='';h+='<button class="page-btn" onclick="goJobsPage('+(_jobsPage-1)+')" '+(_jobsPage===1?'disabled':'')+'>\u2190 Prev</button>';for(var i=1;i<=pages;i++){if(i===1||i===pages||Math.abs(i-_dashPage)<=1){h+='<button class="page-btn '+(_jobsPage===i?'active':'')+'" onclick="goJobsPage('+i+')">'+i+'</button>';}else if(i===_jobsPage-2||i===_jobsPage+2){h+='<span class="page-info">...</span>';}}h+='<button class="page-btn" onclick="goJobsPage('+(_jobsPage+1)+')" '+(_jobsPage===pages?'disabled':'')+'>Next \u2192</button>';el.innerHTML=h;}
+function renderJobsPagination(){var el=document.getElementById('jobsPagination');if(!el)return;var total=_jobsFilteredJobs.length;var pages=Math.ceil(total/_jobsPerPage);if(pages<=1){el.innerHTML='';return;}var h='';h+='<button class="page-btn" onclick="goJobsPage('+(_jobsPage-1)+')" '+(_jobsPage===1?'disabled':'')+'>\u2190 Prev</button>';for(var i=1;i<=pages;i++){if(i===1||i===pages||Math.abs(i-_jobsPage)<=1){h+='<button class="page-btn '+(_jobsPage===i?'active':'')+'" onclick="goJobsPage('+i+')">'+i+'</button>';}else if(i===_jobsPage-2||i===_jobsPage+2){h+='<span class="page-info">...</span>';}}h+='<button class="page-btn" onclick="goJobsPage('+(_jobsPage+1)+')" '+(_jobsPage===pages?'disabled':'')+'>Next \u2192</button>';el.innerHTML=h;}
 function goJobsPage(p){if(p<1||p>Math.ceil(_jobsFilteredJobs.length/_jobsPerPage))return;_jobsPage=p;renderJobsTable();}
 function renderDashboard(){refreshCachedData().then(function(results){var jobs=results[0],customers=results[1],users=results[2];document.getElementById('dashJobs').textContent=jobs.length;document.getElementById('dashCustomers').textContent=customers.length;document.getElementById('dashPending').textContent=jobs.filter(function(x){return x.status==='in_progress';}).length;document.getElementById('dashCompleted').textContent=jobs.filter(function(x){return x.status==='completed';}).length;var cnt=document.getElementById('dashRecentCount');if(cnt)cnt.textContent=jobs.length;renderCharts(jobs,customers,users);_dashFilteredJobs=sortJobs(jobs,_dashSort);_dashPage=1;renderDashJobsTable();});}
 function renderJobs(){refreshCachedData().then(function(results){var jobs=results[0];_jobsFilteredJobs=sortJobs(jobs,_jobsSort);_jobsPage=1;applyJobsFilters();});}
@@ -855,12 +935,14 @@ function openPartPhotoViewer(encodedData){
 function closeAiModal(){document.getElementById('aiModal').classList.remove('active');}
 
 /* ==================================================================
-   ===== CHANGED: Staff Chat + 🔔 GLOBAL NOTIFICATIONS + 🔴 UNREAD BADGE =====
+   ===== CHANGED v2: Staff Chat + 🔔 NOTIFICATIONS + 🔴 BADGE + ↩️ REPLY + @MENTIONS + 😀 STICKERS =====
    1. Global listener runs from login, on EVERY page, all the time
    2. New message while on Dashboard/Jobs/etc → popup + badge pulse
    3. Already on Chat → no popup (you see it live)
-   4. Badge: unread count, 99+ cap, pulses in, resets to 0 on Chat open
-   5. Count persists in localStorage per user, survives page refresh
+   4. Badge: unread count, 99+ cap, pulses in, resets to 0 on Chat open, localStorage
+   5. v2: reply ↩ + trash 🗑 hover BESIDE the bubble (fixes far-away trash)
+   6. v2: @mention autocomplete + highlighted mentions + clickable staff sidebar
+   7. v2: stickers — everyone sends, ONLY ADMIN can add/delete
    ================================================================== */
 
 /* --- 🔴 Unread badge state (localStorage, per logged-in user) --- */
@@ -898,7 +980,7 @@ function showMsgNotif(name,text){
   setTimeout(dismiss,5000);
 }
 
-/* --- 🔔 GLOBAL listener: separate from the chat view, runs all the time --- */
+/* --- 🔔 GLOBAL listener: separate from the chat view, runs all the time (sticker-aware) --- */
 var _globalChatUnsub=null;
 function startGlobalChatNotifications(){
   if(_globalChatUnsub||!currentUser)return;
@@ -912,32 +994,198 @@ function startGlobalChatNotifications(){
       if(md.uid===currentUser.id)return; /* own message → never counted, never notified */
       if(onChat)return; /* already viewing chat → no popup, no badge (you can see it) */
       bumpChatUnread(); /* 🔴 count++, save to localStorage, badge pulses in */
-      showMsgNotif(md.name||'Unknown',md.text||''); /* 🔔 popup on this page */
+      showMsgNotif(md.name||'Unknown',md.stickerId?'[Sticker] '+(md.stickerName||''):(md.text||'')); /* 🔔 popup — stickers show as [Sticker] */
     });
   },function(err){});
 }
 function stopGlobalChatNotifications(){if(_globalChatUnsub){_globalChatUnsub();_globalChatUnsub=null;}}
 
-/* --- Chat view rendering (display only — notifications handled globally above) --- */
+/* --- Chat view rendering v2: reply quotes, mention highlight, stickers, actions BESIDE bubble --- */
+var _chatUsers=[],_stickersMap={},_chatMsgs=[],_replyTo=null;
+
+/* @mention highlighting — matches full known user names (longest first, handles spaces like "Rozita Sanusi") */
+function fmtChatText(text){
+  var e=esc(text||'');
+  var names=(_chatUsers||[]).map(function(u){return u.name;}).filter(Boolean);
+  names.sort(function(a,b){return b.length-a.length;});
+  var tokens=[];
+  names.forEach(function(nm){
+    var safe=nm.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+    e=e.replace(new RegExp('@'+safe+'(?!\\w)','g'),function(m){
+      var t='\u0001'+tokens.length+'\u0001';
+      tokens.push('<span class="chat-mention">'+m+'</span>');
+      return t;
+    });
+  });
+  tokens.forEach(function(html,i){e=e.split('\u0001'+i+'\u0001').join(html);});
+  return e;
+}
+function mentionsMe(text){if(!text||!currentUser||!currentUser.name)return false;return text.indexOf('@'+currentUser.name)!==-1;}
+
+function renderChatMsg(m){
+  var md=m.data;var isMe=md.uid===currentUser.id;var cls=isMe?'chat-msg me':'chat-msg';
+  if(!md.stickerId&&mentionsMe(md.text))cls+=' mentioned';
+  var time='';
+  if(md.ts){try{var dt=md.ts.toDate?md.ts.toDate():new Date(md.ts);time=String(dt.getDate()).padStart(2,'0')+'.'+String(dt.getMonth()+1).padStart(2,'0')+' '+String(dt.getHours()).padStart(2,'0')+':'+String(dt.getMinutes()).padStart(2,'0');}catch(e){}}
+  var h='<div class="'+cls+'" id="msg-'+m.id+'">';
+  var canDel=isMe||currentUser.role==='admin'||currentUser.role==='manager';
+  /* v2: ↩ reply + 🗑 trash — positioned BESIDE the bubble (CSS in Part 3), vertically centered */
+  h+='<div class="chat-msg-actions"><button class="chat-msg-action" title="Reply" onclick="setReplyTo(\''+m.id+'\')"><i class="fas fa-reply"></i></button>'+(canDel?'<button class="chat-msg-action del" title="Delete" onclick="deleteChatMessage(\''+m.id+'\')"><i class="fas fa-trash"></i></button>':'')+'</div>';
+  h+='<div class="chat-msg-col"><div class="chat-msg-name">'+(isMe?'You':esc(md.name||'Unknown'))+'</div>';
+  if(md.replyTo){h+='<div class="chat-msg-quote" onclick="scrollToChatMsg(\''+esc(md.replyTo.id||'')+'\')" title="Jump to original message"><div class="chat-quote-name">'+esc(md.replyTo.name||'Unknown')+'</div><div class="chat-quote-text">'+esc((md.replyTo.text||'').substring(0,90))+'</div></div>';}
+  if(md.stickerId){
+    var st=_stickersMap[md.stickerId];
+    if(st){h+='<img class="chat-msg-sticker" src="'+st.imageData+'" alt="sticker" title="'+esc(st.name||'sticker')+'">';}
+    else{h+='<div class="chat-msg-bubble" style="font-size:11px;color:var(--muted)">[ sticker ]</div>';}
+  }else{
+    h+='<div class="chat-msg-bubble">'+fmtChatText(md.text)+'</div>';
+  }
+  h+='<div class="chat-msg-time">'+time+(md.replyTo?' · replied':'')+'</div></div></div>';
+  return h;
+}
+
 function renderChat(){
   var msgEl=document.getElementById('chatMessages');var userListEl=document.getElementById('chatUserList');
-  DB.getAll('users').then(function(users){if(userListEl){userListEl.innerHTML=users.map(function(u){return '<div class="chat-user-item"><span class="chat-user-dot"></span>'+esc(u.name)+'</div>';}).join('');}});
-  if(_chatUnsub){_chatUnsub();}
-  _chatUnsub=fs.collection('messages').orderBy('ts','asc').limit(100).onSnapshot(function(snap){
-    if(!msgEl)return;var msgs=snap.docs.map(function(d){return{data:d.data(),id:d.id};});
-    if(msgs.length===0){msgEl.innerHTML='<div style="text-align:center;padding:40px 20px;color:var(--muted)"><i class="fas fa-comments" style="font-size:32px;color:var(--muted-2);margin-bottom:10px;display:block"></i><p style="font-size:12px">No messages yet. Start chatting with your team!</p></div>';return;}
-    msgEl.innerHTML=msgs.map(function(m){
-      var md=m.data;var isMe=md.uid===currentUser.id;var cls=isMe?'chat-msg me':'chat-msg';var time='';
-      if(md.ts){try{var dt=md.ts.toDate?md.ts.toDate():new Date(md.ts);time=String(dt.getDate()).padStart(2,'0')+'.'+String(dt.getMonth()+1).padStart(2,'0')+' '+String(dt.getHours()).padStart(2,'0')+':'+String(dt.getMinutes()).padStart(2,'0');}catch(e){}}
-      var delBtn='';
-      if(isMe||currentUser.role==='admin'||currentUser.role==='manager'){delBtn='<button class="chat-msg-del" onclick="deleteChatMessage(\''+m.id+'\')"><i class="fas fa-trash"></i></button>';}
-      return '<div class="'+cls+'">'+delBtn+'<div class="chat-msg-name">'+(isMe?'You':esc(md.name||'Unknown'))+'</div><div class="chat-msg-bubble">'+esc(md.text||'')+'</div><div class="chat-msg-time">'+time+'</div></div>';
-    }).join('');
-    msgEl.scrollTop=msgEl.scrollHeight;
+  Promise.all([DB.getAll('users'),DB.getAll('stickers')]).then(function(res){
+    _chatUsers=res[0]||[];
+    _stickersMap={};(res[1]||[]).forEach(function(s){_stickersMap[s.id]=s;});
+    /* v2: sidebar names clickable → inserts @mention into the input */
+    if(userListEl){userListEl.innerHTML=_chatUsers.map(function(u){return '<div class="chat-user-item" title="Click to mention '+esc(u.name)+'" onclick="insertMention(\''+encodeURIComponent(u.name)+'\')"><span class="chat-user-dot"></span>'+esc(u.name)+'</div>';}).join('');}
+    renderStickerGrid();
+    if(_chatUnsub){_chatUnsub();}
+    _chatUnsub=fs.collection('messages').orderBy('ts','asc').limit(100).onSnapshot(function(snap){
+      if(!msgEl)return;var msgs=snap.docs.map(function(d){return{data:d.data(),id:d.id};});
+      _chatMsgs=msgs;
+      if(msgs.length===0){msgEl.innerHTML='<div style="text-align:center;padding:40px 20px;color:var(--muted)"><i class="fas fa-comments" style="font-size:32px;color:var(--muted-2);margin-bottom:10px;display:block"></i><p style="font-size:12px">No messages yet. Start chatting with your team!</p></div>';return;}
+      msgEl.innerHTML=msgs.map(renderChatMsg).join('');
+      msgEl.scrollTop=msgEl.scrollHeight;
+    });
   });
 }
+
+/* === ↩️ Reply === */
+function setReplyTo(id){
+  var m=null;for(var i=0;i<_chatMsgs.length;i++){if(_chatMsgs[i].id===id){m=_chatMsgs[i];break;}}
+  if(!m)return;var md=m.data;
+  _replyTo={id:id,name:md.name||'Unknown',text:md.stickerId?'[Sticker]':(md.text||'')};
+  document.getElementById('chatReplyName').textContent=md.name||'Unknown';
+  document.getElementById('chatReplySnip').textContent=(_replyTo.text||'').substring(0,80);
+  document.getElementById('chatReplyBar').classList.add('active');
+  var inp=document.getElementById('chatInput');if(inp)inp.focus();
+}
+function cancelReply(){_replyTo=null;var b=document.getElementById('chatReplyBar');if(b)b.classList.remove('active');}
+function scrollToChatMsg(id){
+  if(!id)return;var el=document.getElementById('msg-'+id);
+  if(!el){showToast('Original message not loaded','info');return;}
+  el.scrollIntoView({behavior:'smooth',block:'center'});
+  el.classList.remove('flash');void el.offsetWidth;el.classList.add('flash');
+}
+
+/* === @mention autocomplete === */
+function onChatInputChange(){
+  var inp=document.getElementById('chatInput');var dd=document.getElementById('chatMentionDD');if(!inp||!dd)return;
+  var m=/@([A-Za-z0-9._\- ]*)$/.exec(inp.value);
+  if(!m){closeMentionDD();return;}
+  var q=m[1].trim().toLowerCase();
+  var list=_chatUsers.filter(function(u){return u.name&&u.name.toLowerCase().indexOf(q)>=0;}).slice(0,6);
+  if(list.length===0){closeMentionDD();return;}
+  dd.innerHTML=list.map(function(u){
+    var hl=esc(u.name);
+    if(q){var i=u.name.toLowerCase().indexOf(q);if(i>=0){hl=esc(u.name.substring(0,i))+'<b>'+esc(u.name.substring(i,i+q.length))+'</b>'+esc(u.name.substring(i+q.length));}}
+    return '<div class="chat-mention-item" onclick="pickMention(\''+encodeURIComponent(u.name)+'\')"><i class="fas fa-at" style="font-size:10px;color:var(--muted)"></i>'+hl+'</div>';
+  }).join('');
+  dd.classList.add('open');
+}
+function pickMention(encName){
+  var name=decodeURIComponent(encName);
+  var inp=document.getElementById('chatInput');if(!inp)return;
+  inp.value=inp.value.replace(/@([A-Za-z0-9._\- ]*)$/,'@'+name+' ');
+  closeMentionDD();inp.focus();
+}
+function insertMention(encName){
+  var name=decodeURIComponent(encName);
+  var inp=document.getElementById('chatInput');if(!inp)return;
+  inp.value=(inp.value?inp.value.replace(/\s+$/,'')+' ':'')+'@'+name+' ';
+  inp.focus();
+}
+function closeMentionDD(){var dd=document.getElementById('chatMentionDD');if(dd){dd.classList.remove('open');dd.innerHTML='';}}
+
+/* === 😀 Stickers (everyone sends, ONLY ADMIN adds/deletes) === */
+function toggleStickerPanel(){var p=document.getElementById('chatStickerPanel');if(!p)return;p.classList.toggle('open');if(p.classList.contains('open'))refreshStickers();}
+function closeStickerPanel(){var p=document.getElementById('chatStickerPanel');if(p)p.classList.remove('open');}
+function refreshStickers(){
+  DB.getAll('stickers').then(function(list){
+    _stickersMap={};(list||[]).forEach(function(s){_stickersMap[s.id]=s;});
+    renderStickerGrid();
+    var msgEl=document.getElementById('chatMessages');
+    if(msgEl&&document.getElementById('chatView').classList.contains('active')&&_chatMsgs.length){msgEl.innerHTML=_chatMsgs.map(renderChatMsg).join('');msgEl.scrollTop=msgEl.scrollHeight;}
+  });
+}
+function renderStickerGrid(){
+  var grid=document.getElementById('chatStickerGrid');if(!grid)return;
+  var admin=currentUser&&currentUser.role==='admin';
+  var adminRow=document.getElementById('chatStickerAdmin');if(adminRow)adminRow.style.display=admin?'flex':'none';
+  var arr=Object.keys(_stickersMap).map(function(k){return _stickersMap[k];});
+  arr.sort(function(a,b){return new Date(b.createdAt||0)-new Date(a.createdAt||0);});
+  if(arr.length===0){grid.innerHTML='<div class="chat-sticker-empty">No stickers yet.'+(admin?'<br>Click "Add Sticker" below.':'<br>Ask an admin to add stickers.')+'</div>';return;}
+  grid.innerHTML=arr.map(function(s){
+    return '<div class="chat-sticker-cell" onclick="sendSticker(\''+s.id+'\')" title="'+esc(s.name||'sticker')+'"><img src="'+s.imageData+'" alt="'+esc(s.name||'')+'">'+(admin?'<button class="chat-sticker-del" title="Delete sticker" onclick="event.stopPropagation();deleteSticker(\''+s.id+'\')"><i class="fas fa-trash"></i></button>':'')+'</div>';
+  }).join('');
+}
+function addSticker(input){
+  var f=input.files&&input.files[0];input.value='';
+  if(!f)return;
+  if(!currentUser||currentUser.role!=='admin'){showToast('Only admin can add stickers','error');return;}
+  if(f.type.indexOf('image/')!==0){showToast('Pick an image file','error');return;}
+  if(f.size>2*1024*1024){showToast('Image too large (max 2MB)','error');return;}
+  var r=new FileReader();
+  r.onload=function(e){
+    var img=new Image();
+    img.onload=function(){
+      var MAX=128;var sc=Math.min(MAX/img.width,MAX/img.height,1);
+      var w=Math.max(1,Math.round(img.width*sc)),h=Math.max(1,Math.round(img.height*sc));
+      var c=document.createElement('canvas');c.width=w;c.height=h;
+      c.getContext('2d').drawImage(img,0,0,w,h);
+      var data=c.toDataURL('image/png');
+      if(data.length>300000)data=c.toDataURL('image/jpeg',0.8);
+      var name=f.name.replace(/\.[^.]+$/,'').substring(0,20)||'sticker';
+      DB.add('stickers',{name:name,imageData:data,createdBy:currentUser.id,createdByName:currentUser.name,createdAt:new Date().toISOString()}).then(function(){
+        showToast('Sticker added','success');refreshStickers();
+      }).catch(function(er){showToast('Failed: '+er.message,'error');});
+    };
+    img.onerror=function(){showToast('Failed to load image','error');};
+    img.src=e.target.result;
+  };
+  r.readAsDataURL(f);
+}
+function deleteSticker(id){
+  if(!currentUser||currentUser.role!=='admin'){showToast('Admin only','error');return;}
+  if(!confirm('Delete this sticker?'))return;
+  DB.del('stickers',id).then(function(){showToast('Sticker deleted','success');refreshStickers();});
+}
+function sendSticker(id){
+  closeStickerPanel();
+  var st=_stickersMap[id];if(!st){showToast('Sticker not found','error');return;}
+  fs.collection('messages').add({uid:currentUser.id,name:currentUser.name,text:'',stickerId:id,stickerName:st.name||'',replyTo:_replyTo||null,ts:firebase.firestore.FieldValue.serverTimestamp()}).catch(function(e){showToast('Failed: '+e.message,'error');});
+  cancelReply();
+}
+
 function deleteChatMessage(id){if(!confirm('Delete this message?'))return;fs.collection('messages').doc(id).delete().then(function(){showToast('Message deleted','success');}).catch(function(e){showToast('Delete failed: '+e.message,'error');});}
-function sendChatMessage(){var input=document.getElementById('chatInput');if(!input)return;var text=input.value.trim();if(!text)return;input.value='';fs.collection('messages').add({uid:currentUser.id,name:currentUser.name,text:text,ts:firebase.firestore.FieldValue.serverTimestamp()}).catch(function(e){showToast('Failed to send: '+e.message,'error');});}
+function sendChatMessage(){
+  var input=document.getElementById('chatInput');if(!input)return;
+  var text=input.value.trim();if(!text){showToast('Type a message','info');return;}
+  input.value='';closeMentionDD();
+  fs.collection('messages').add({uid:currentUser.id,name:currentUser.name,text:text,replyTo:_replyTo||null,ts:firebase.firestore.FieldValue.serverTimestamp()}).catch(function(e){showToast('Failed to send: '+e.message,'error');});
+  cancelReply();
+}
+
+/* close mention dropdown / sticker panel when clicking elsewhere */
+document.addEventListener('click',function(e){
+  var dd=document.getElementById('chatMentionDD');
+  if(dd&&dd.classList.contains('open')&&!e.target.closest('.chat-mention-dd')&&!e.target.closest('#chatInput')){dd.classList.remove('open');}
+  var sp=document.getElementById('chatStickerPanel');
+  if(sp&&sp.classList.contains('open')&&!e.target.closest('.chat-sticker-panel')&&!e.target.closest('.chat-sticker-btn')){sp.classList.remove('open');}
+});
 
 /* === Knowledge Base === */
 function renderKnowledge(){renderKbList();}
