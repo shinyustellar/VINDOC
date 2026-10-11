@@ -588,80 +588,81 @@ body.compact .act-btn span{display:none}
 .msg-notif-new{font-size:9px;color:var(--danger);font-family:'Archivo',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.08em;flex-shrink:0}
 .msg-notif-text{font-size:12px;color:var(--fg-2);line-height:1.5;margin-top:3px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;word-break:break-word}
 .msg-notif-cta{margin-top:6px;display:flex;align-items:center;gap:4px;font-size:9px;color:var(--muted);font-family:'Archivo',sans-serif;font-weight:600;text-transform:uppercase;letter-spacing:.1em}
-/* ================= MOBILE RESPONSIVE PATCH ================= */
+/* ================= MOBILE/iPHONE PATCH v2 ================= */
 @media(max-width:768px){
-  html,body{-webkit-text-size-adjust:100%}
-  /* --- header: compact, nav becomes a swipeable row --- */
-  .app-header{padding:10px 12px}
+  /* ---------- header ---------- */
+  .app-header{padding:8px 10px}
   .brand-text p{display:none}
   .brand-text h1{font-size:12px}
   .brand-logo{width:28px;height:28px;font-size:13px}
-  .app-nav{order:3;width:100%;overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .app-nav{order:3;width:100%;overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch;scrollbar-width:none;gap:0}
   .app-nav::-webkit-scrollbar{display:none}
-  .nav-btn{padding:7px 10px;font-size:10px;white-space:nowrap;flex-shrink:0}
+  .nav-btn{padding:7px 9px;font-size:10px;white-space:nowrap;flex-shrink:0}
   .header-right{width:100%;justify-content:space-between;gap:6px}
   .clock-display{display:none}
   .header-avatar{width:28px;height:28px;font-size:10px}
   .btn-logout{padding:6px 8px;font-size:9px}
   .user-badge{font-size:10px;gap:4px}
-  /* --- page padding --- */
-  .view-pad{padding:14px 12px 90px}
+  /* ---------- general ---------- */
+  .view-pad{padding:12px 10px 80px}
   .insp-header{padding:8px 10px}
-  .insp-title{font-size:11px}
-  .insp-btn{padding:7px 9px;font-size:9px;gap:4px}
   .stat{display:none}
-  /* --- tables: tighter, drop Parts column on phones --- */
-  .table-wrap{max-height:60vh}
-  .data-table th,.data-table td{padding:8px 8px;font-size:11px}
+  .table-wrap{max-height:55vh}
+  .data-table th,.data-table td{padding:7px 8px;font-size:11px}
   .data-table th:nth-child(2),.data-table td:nth-child(2){display:none}
   .filter-bar{padding:10px;gap:8px}
-  .search-box{min-width:140px}
-  .filter-select{font-size:11px;padding:8px 24px 8px 10px}
+  .search-box{min-width:130px}
   .result-info{display:none}
   .page-btn{min-width:28px;height:28px}
-  /* --- CHAT: sidebar becomes a horizontal chip strip on top --- */
-  .chat-layout{flex-direction:column;height:calc(100vh - 250px);height:calc(100dvh - 250px)}
-  .chat-side{width:100%;max-height:88px;border-right:none;border-bottom:1px solid var(--border)}
-  .chat-side-head{display:none}
-  #chatUserList{display:flex;overflow-x:auto;padding:8px;gap:6px;-webkit-overflow-scrolling:touch}
-  .chat-user-item{flex-shrink:0;padding:6px 10px;border:1px solid var(--border);background:var(--bg);font-size:11px;border-radius:4px}
-  .chat-msg{max-width:88%}
-  .chat-msg-actions{right:-30px}
-  .chat-msg.me .chat-msg-actions{left:-30px}
-  .chat-msg-sticker{max-width:90px;max-height:90px}
-  .chat-msg-sticker.animated{max-width:110px;max-height:110px}
-  .chat-sticker-panel{left:6px;right:6px;width:auto}
-  .chat-input{font-size:16px} /* stops iOS zoom-on-focus */
-  .gen-input,.auth-input,.search-input,.label-input,.date-input,.gen-textarea,.gen-select{font-size:16px} /* same */
-  /* --- modals fit phone screens --- */
-  .gen-modal,.save-modal,.view-modal,.notes-popup{padding:12px}
-  .gen-box{padding:18px;max-width:100%}
+  .gen-input,.auth-input,.search-input,.label-input,.date-input,.gen-textarea,.gen-select,.chat-input{font-size:16px} /* stops iOS zoom-on-focus */
+  .gen-modal,.save-modal,.view-modal,.notes-popup{padding:10px}
+  .gen-box{padding:16px;max-width:100%}
   .gen-form-row{flex-direction:column}
-  .view-container img{max-width:95vw;max-height:60vh}
-  /* --- toasts + notifications full-width --- */
+  .gen-actions{flex-direction:column}
+  .view-container img{max-width:95vw;max-height:55vh}
   .toast-container{left:10px;right:10px;bottom:10px}
   .toast{min-width:0}
   .msg-notif-container{left:8px;right:8px;width:auto}
-  /* --- misc --- */
-  .ai-grid{grid-template-columns:repeat(auto-fill,minmax(105px,1fr))}
-  .ai-card{padding:10px}
   .wp-grid{grid-template-columns:repeat(2,1fr)}
   .pptx-list{grid-template-columns:1fr 1fr}
-  .app-footer{padding:14px 12px}
-  .float-bar{padding:8px 10px;gap:8px}
-  .help-bar{padding:10px 12px;font-size:11px}
-  .scroll-top-btn{bottom:14px;left:14px;width:38px;height:38px}
-  .section{margin-bottom:32px}
-  .dash-section-head{margin-bottom:10px}
+  .app-footer{padding:12px}
+  .help-bar{padding:10px;font-size:11px}
+  /* ---------- CHAT — full iPhone app feel ---------- */
+  #chatView .view-pad{padding:8px 8px 12px;display:flex;flex-direction:column;height:calc(100dvh - 150px)}
+  #chatView .dash-section-head{margin-bottom:8px;padding:0}
+  .chat-layout{flex-direction:column;flex:1;min-height:0;height:auto;border:none}
+  .chat-side{width:100%;max-height:none;flex-shrink:0;border-right:none;border-bottom:1px solid var(--border);background:var(--bg-2);overflow:visible}
+  .chat-side-head{display:none}
+  #chatUserList{display:flex;overflow-x:auto;padding:8px;gap:6px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  #chatUserList::-webkit-scrollbar{display:none}
+  .chat-user-item{flex-shrink:0;padding:5px 12px;border:1px solid var(--border);background:var(--bg);border-radius:999px;font-size:11px;font-weight:600;align-items:center;gap:6px}
+  .chat-user-avatar{width:20px;height:20px;font-size:8px}
+  .chat-user-ondot{width:6px;height:6px;border-width:1px}
+  .chat-main{flex:1;min-height:0} /* CRITICAL — lets messages scroll inside instead of blowing out the layout */
+  .chat-msgs{padding:10px 8px;-webkit-overflow-scrolling:touch}
+  .chat-msg{max-width:86%}
+  .chat-msg-bubble{font-size:14px;padding:9px 12px}
+  .chat-msg-quote{max-width:200px}
+  .chat-msg-sticker{max-width:90px;max-height:90px}
+  .chat-msg-sticker.animated{max-width:110px;max-height:110px}
+  .chat-avatar{width:24px;height:24px;font-size:9px}
+  .chat-msg-actions{right:-30px}
+  .chat-msg.me .chat-msg-actions{left:-30px}
+  .chat-msg-action{width:24px;height:24px}
+  .chat-input-bar{padding:8px;padding-bottom:calc(8px + env(safe-area-inset-bottom))} /* clears the home-indicator bar */
+  .chat-input-row{gap:6px}
+  .chat-send{padding:10px 14px}
+  .chat-sticker-btn{padding:10px}
+  .chat-sticker-panel{left:6px;right:6px;width:auto;margin-bottom:4px}
+  .chat-mention-dd{left:6px;right:6px}
 }
 @media(max-width:480px){
   .dash-grid{grid-template-columns:1fr 1fr}
-  .dash-card{padding:14px}
-  .dash-card-num{font-size:24px}
-  .gen-actions{flex-direction:column}
+  .dash-card{padding:12px}
+  .dash-card-num{font-size:22px}
   .save-opt{padding:10px;gap:10px}
-  .chat-msg-quote{max-width:200px}
-  .chat-msg-bubble{font-size:14px}
+  .ai-grid{grid-template-columns:repeat(auto-fill,minmax(100px,1fr))}
+  .ai-card{padding:10px}
 }
 </style>
 </head>
