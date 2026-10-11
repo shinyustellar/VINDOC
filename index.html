@@ -39,10 +39,6 @@ html,body{font-family:'Hanken Grotesk',sans-serif;background:var(--bg);color:var
 .nav-btn{background:transparent;border:none;color:var(--muted);padding:8px 14px;font-family:'Archivo',sans-serif;font-weight:600;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;transition:all 0.15s;border-bottom:2px solid transparent}
 .nav-btn:hover{color:var(--fg)}
 .nav-btn.active{color:var(--fg);border-bottom-color:var(--fg)}
-.nav-btn-wrap{position:relative;display:inline-flex}
-.nav-badge{position:absolute;top:-2px;right:-8px;background:var(--danger);color:#fff;font-size:8px;font-family:'Archivo',sans-serif;font-weight:700;min-width:16px;height:16px;border-radius:8px;display:none;align-items:center;justify-content:center;padding:0 4px;z-index:10;animation:badgePulse 0.3s ease}
-.nav-badge.visible{display:flex}
-@keyframes badgePulse{0%{transform:scale(0.3);opacity:0}100%{transform:scale(1);opacity:1}}
 .header-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .stat{text-align:right;padding-right:10px;border-right:1px solid var(--border)}
 .stat-val{font-family:'Hanken Grotesk',sans-serif;font-size:22px;font-weight:700;line-height:1}
@@ -496,7 +492,7 @@ body.compact .act-btn span{display:none}
 
 <div id="appShell" class="app-shell">
 <header class="app-header"><div class="brand"><div class="brand-logo">V</div><div class="brand-text"><h1>VINDOC</h1><p>Inspection Platform</p></div></div>
-<nav class="app-nav"><button class="nav-btn active" data-nav="dashboard" onclick="showView('dashboard')">Dashboard</button><button class="nav-btn" data-nav="jobs" onclick="showView('jobs')">Jobs</button><button class="nav-btn" data-nav="customers" onclick="showView('customers')">Customers</button><button class="nav-btn" id="navUsers" data-nav="users" onclick="showView('users')" style="display:none">Users</button><button class="nav-btn" data-nav="partscatalog" onclick="showView('partscatalog')">Parts Catalog</button><span class="nav-btn-wrap"><button class="nav-btn" data-nav="chat" onclick="showView('chat')">Chat</button><span class="nav-badge" id="chatBadge"></span></span><button class="nav-btn" data-nav="knowledge" onclick="showView('knowledge')">Knowledge</button></nav>
+<nav class="app-nav"><button class="nav-btn active" data-nav="dashboard" onclick="showView('dashboard')">Dashboard</button><button class="nav-btn" data-nav="jobs" onclick="showView('jobs')">Jobs</button><button class="nav-btn" data-nav="customers" onclick="showView('customers')">Customers</button><button class="nav-btn" id="navUsers" data-nav="users" onclick="showView('users')" style="display:none">Users</button><button class="nav-btn" data-nav="partscatalog" onclick="showView('partscatalog')">Parts Catalog</button><button class="nav-btn" data-nav="chat" onclick="showView('chat')">Chat</button><button class="nav-btn" data-nav="knowledge" onclick="showView('knowledge')">Knowledge</button></nav>
 <div class="header-right"><div class="clock-display" id="clockDisplay"><i class="far fa-clock"></i><span>--</span></div><div class="user-badge"><i class="fas fa-user-circle"></i><span id="userNameDisplay"></span> <span class="role-tag" id="userRoleTag">ADMIN</span></div><button class="btn-logout" onclick="doLogout()"><i class="fas fa-sign-out-alt"></i> Logout</button></div></header>
 
 <div id="inspHeader" class="insp-header">
@@ -706,11 +702,8 @@ function doLogin(){var e=document.getElementById('loginEmail').value.trim(),p=do
 function doRegister(){var n=document.getElementById('regName').value.trim(),e=document.getElementById('regEmail').value.trim(),p=document.getElementById('regPassword').value;if(!n||!e||!p){showToast('All fields required','error');return;}if(p.length<6){showToast('Password min 6 chars','error');return;}firebase.auth().createUserWithEmailAndPassword(e,p).then(function(cred){return DB.getAll('users').then(function(u){var r=u.length===0?'admin':'staff';return fs.collection('users').doc(cred.user.uid).set({id:cred.user.uid,name:n,email:e,role:r,createdAt:new Date().toISOString()});});}).catch(function(er){showToast(er.message,'error');});}
 function doLogout(){firebase.auth().signOut().then(function(){currentUser=null;document.getElementById('appShell').classList.remove('active');document.getElementById('authScreen').style.display='flex';clearSlots();});}
 function checkSession(){firebase.auth().onAuthStateChanged(function(u){if(u){fs.collection('users').doc(u.uid).get().then(function(d){if(d.exists){currentUser=d.data();showApp();}else{var p={id:u.uid,name:u.email.split('@')[0],email:u.email,role:'staff',createdAt:new Date().toISOString()};fs.collection('users').doc(u.uid).set(p).then(function(){currentUser=p;showApp();});}});}else{document.getElementById('authScreen').style.display='flex';document.getElementById('appShell').classList.remove('active');}});}
-function showApp(){document.getElementById('authScreen').style.display='none';document.getElementById('appShell').classList.add('active');document.getElementById('userNameDisplay').textContent=currentUser.name;var t=document.getElementById('userRoleTag');t.textContent=currentUser.role.toUpperCase();if(currentUser.role==='admin'){t.style.background='var(--fg)';t.style.color='var(--bg)';t.style.border='none';}else if(currentUser.role==='manager'){t.style.background='#2563eb';t.style.color='#fff';t.style.border='none';}else{t.style.background='var(--bg-3)';t.style.color='var(--fg)';t.style.border='1px solid var(--border-hi)';}document.getElementById('navUsers').style.display=currentUser.role==='admin'?'block':'none';setupGlobalChatListener();showView('dashboard';}
-var _chatUnsub=null;var _globalChatListener=null;var _unreadCount=0;var _lastChatSeen=parseInt(localStorage.getItem('vindoc_last_chat_seen')||'0');
-function setupGlobalChatListener(){if(_globalChatListener){_globalChatListener();}_globalChatListener=fs.collection('messages').orderBy('ts','asc').limit(100).onSnapshot(function(snap){var msgs=snap.docs.map(function(d){return d.data();});if(!currentUser)return;var newCount=0;var lastNewMsg=null;var lastNewTime=0;msgs.forEach(function(m){if(m.uid===currentUser.id)return;var msgTime=0;if(m.ts){try{msgTime=m.ts.toDate?m.ts.toDate().getTime():new Date(m.ts).getTime();}catch(e){}}if(msgTime>_lastChatSeen){newCount++;if(msgTime>lastNewTime){lastNewTime=msgTime;lastNewMsg=m;}}});var prevUnread=_unreadCount;_unreadCount=newCount;updateChatBadge();if(!document.getElementById('chatView').classList.contains('active')&&newCount>prevUnread&&lastNewMsg&&lastNewTime>Date.now()-10000){showChatNotification(lastNewMsg.name||'Unknown',lastNewMsg.text||'');}});}
-function updateChatBadge(){var badge=document.getElementById('chatBadge');if(!badge)return;if(_unreadCount>0){badge.textContent=_unreadCount>99?'99+':_unreadCount;badge.classList.add('visible');}else{badge.textContent='';badge.classList.remove('visible');}}
-function markChatSeen(){_lastChatSeen=Date.now();_unreadCount=0;localStorage.setItem('vindoc_last_chat_seen',String(_lastChatSeen));updateChatBadge();}
+function showApp(){document.getElementById('authScreen').style.display='none';document.getElementById('appShell').classList.add('active');document.getElementById('userNameDisplay').textContent=currentUser.name;var t=document.getElementById('userRoleTag');t.textContent=currentUser.role.toUpperCase();if(currentUser.role==='admin'){t.style.background='var(--fg)';t.style.color='var(--bg)';t.style.border='none';}else if(currentUser.role==='manager'){t.style.background='#2563eb';t.style.color='#fff';t.style.border='none';}else{t.style.background='var(--bg-3)';t.style.color='var(--fg)';t.style.border='1px solid var(--border-hi)';}document.getElementById('navUsers').style.display=currentUser.role==='admin'?'block':'none';showView('dashboard');}
+var _chatUnsub=null;
 function showView(n){
   document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active');});
   var v=document.getElementById(n+'View');if(v)v.classList.add('active');
@@ -723,7 +716,7 @@ function showView(n){
   else if(n==='customers')renderCustomers();
   else if(n==='users')renderUsers();
   else if(n==='partscatalog')renderPartsCatalog();
-  else if(n==='chat'){markChatSeen();renderChat();}
+  else if(n==='chat')renderChat();
   else if(n==='knowledge')renderKnowledge();
 }
 function closeModal(id){var m=document.getElementById(id);if(m)m.classList.remove('active');}
