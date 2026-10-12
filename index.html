@@ -526,7 +526,6 @@ body.compact .act-btn span{display:none}
 .chat-msg.mentioned .chat-msg-bubble{border-color:var(--info);box-shadow:0 0 0 1px var(--info)}
 .chat-msg.flash .chat-msg-bubble{animation:chatFlash 1.2s ease}
 @keyframes chatFlash{0%,100%{box-shadow:none}20%,60%{box-shadow:0 0 0 2px var(--info)}}
-/* reply quote always visible — blue accent bar + blue name + dark text (WhatsApp style), on BOTH sides */
 .chat-msg-quote{border-left:3px solid var(--info);background:var(--bg-2);padding:5px 9px;margin-bottom:5px;cursor:pointer;max-width:280px;overflow:hidden;border-radius:3px}
 .chat-msg.me .chat-msg-quote{border-left:3px solid var(--info);border-right:none}
 .chat-quote-name{font-size:9px;font-weight:700;font-family:'Archivo',sans-serif;text-transform:uppercase;letter-spacing:.06em;color:var(--info)}
@@ -548,25 +547,20 @@ body.compact .act-btn span{display:none}
 .header-avatar{width:32px;height:32px;border-radius:50%;overflow:hidden;border:1px solid var(--border-hi);display:grid;place-items:center;background:var(--bg-3);font-family:'Archivo',sans-serif;font-weight:800;font-size:12px;color:var(--fg);cursor:pointer;transition:all .15s;flex-shrink:0}
 .header-avatar:hover{border-color:var(--fg)}
 .header-avatar img{width:100%;height:100%;object-fit:cover;display:block}
-/* message row: avatar beside the bubble column */
 .chat-msg-row{display:flex;gap:8px;align-items:flex-end;min-width:0}
 .chat-msg.me .chat-msg-row{flex-direction:row-reverse}
 .chat-avatar{width:28px;height:28px;border-radius:50%;flex-shrink:0;overflow:hidden;border:1px solid var(--border);display:grid;place-items:center;background:var(--bg-3);font-family:'Archivo',sans-serif;font-weight:800;font-size:11px;color:var(--fg);margin-bottom:14px}
 .chat-avatar img{width:100%;height:100%;object-fit:cover;display:block}
-/* sidebar user list avatars */
 .chat-user-avatar{width:24px;height:24px;border-radius:50%;flex-shrink:0;overflow:hidden;border:1px solid var(--border);display:grid;place-items:center;background:var(--bg);font-family:'Archivo',sans-serif;font-weight:800;font-size:9px;color:var(--fg);position:relative}
 .chat-user-avatar img{width:100%;height:100%;object-fit:cover;display:block}
 .chat-user-ondot{position:absolute;bottom:-2px;right:-2px;width:8px;height:8px;border-radius:50%;background:var(--success);border:2px solid var(--bg-2)}
-/* notification popup: avatar image fills the icon block, initials as fallback */
 .msg-notif-icon{position:relative;overflow:hidden}
 .msg-notif-icon img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
-/* profile picture modal */
 .profile-avatar-big{width:96px;height:96px;border-radius:50%;overflow:hidden;border:2px solid var(--fg);margin:0 auto 14px;display:grid;place-items:center;background:var(--bg-3);font-family:'Archivo',sans-serif;font-weight:800;font-size:34px;color:var(--fg);cursor:pointer;position:relative}
 .profile-avatar-big img{width:100%;height:100%;object-fit:cover;display:block}
 .profile-avatar-hint{position:absolute;inset:0;background:rgba(10,10,10,.55);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:9px;font-family:'Archivo',sans-serif;font-weight:700;letter-spacing:.1em;text-transform:uppercase;opacity:0;transition:opacity .15s;z-index:2}
 .profile-avatar-hint i{font-size:16px}
 .profile-avatar-big:hover .profile-avatar-hint{opacity:1}
-/* chat wallpaper modal */
 .wp-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:6px}
 .wp-swatch{height:70px;border:1px solid var(--border);cursor:pointer;position:relative;transition:all .15s;background-size:cover;background-position:center;overflow:hidden}
 .wp-swatch:hover{border-color:var(--fg)}
@@ -588,6 +582,18 @@ body.compact .act-btn span{display:none}
 .msg-notif-new{font-size:9px;color:var(--danger);font-family:'Archivo',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.08em;flex-shrink:0}
 .msg-notif-text{font-size:12px;color:var(--fg-2);line-height:1.5;margin-top:3px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;word-break:break-word}
 .msg-notif-cta{margin-top:6px;display:flex;align-items:center;gap:4px;font-size:9px;color:var(--muted);font-family:'Archivo',sans-serif;font-weight:600;text-transform:uppercase;letter-spacing:.1em}
+
+/* ===== NEW v7 (PATH B): multi-tenant auth mode toggle + Team Code box ===== */
+.auth-mode-row{display:flex;border:1px solid var(--fg);margin-bottom:2px}
+.auth-mode-btn{flex:1;padding:9px;border:none;background:var(--bg);color:var(--muted);font-family:'Archivo',sans-serif;font-weight:600;font-size:10px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:all .15s}
+.auth-mode-btn.active{background:var(--fg);color:var(--bg)}
+.auth-mode-btn:not(:last-child){border-right:1px solid var(--fg)}
+.teamcode-box{background:var(--bg-2);border:1px solid var(--border);border-left:3px solid var(--fg);padding:14px 18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+.teamcode-lbl{font-size:9px;color:var(--muted);letter-spacing:.15em;text-transform:uppercase;font-family:'Archivo',sans-serif;font-weight:700}
+.teamcode-val{font-family:'Archivo',sans-serif;font-size:22px;font-weight:800;letter-spacing:.2em;color:var(--fg)}
+.teamcode-hint{font-size:10px;color:var(--muted);flex:1;min-width:180px}
+.teamcode-copy{background:var(--fg);color:var(--bg);border:1px solid var(--fg);padding:8px 14px;font-family:'Archivo',sans-serif;font-weight:600;font-size:10px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .15s}
+.teamcode-copy:hover{background:var(--bg);color:var(--fg)}
 /* ================= MOBILE/iPHONE PATCH v2 ================= */
 @media(max-width:768px){
   /* ---------- header ---------- */
@@ -670,11 +676,22 @@ body.compact .act-btn span{display:none}
 
 <div id="authScreen" class="auth-screen"><div class="auth-box"><div class="auth-logo">V</div><div class="auth-title">VINDOC</div><div class="auth-subtitle">Vehicle Inspection Documentation</div>
 <div id="loginForm" class="auth-form"><input type="email" id="loginEmail" class="auth-input" placeholder="Email" onkeydown="if(event.key==='Enter')doLogin()"><input type="password" id="loginPassword" class="auth-input" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()"><button class="auth-btn" onclick="doLogin()">Sign In</button><div class="auth-toggle">No account? <a onclick="showRegister()">Register</a></div></div>
-<div id="registerForm" class="auth-form" style="display:none"><input type="text" id="regName" class="auth-input" placeholder="Full Name" onkeydown="if(event.key==='Enter')doRegister()"><input type="email" id="regEmail" class="auth-input" placeholder="Email" onkeydown="if(event.key==='Enter')doRegister()"><input type="password" id="regPassword" class="auth-input" placeholder="Password (min 6 chars)" onkeydown="if(event.key==='Enter')doRegister()"><button class="auth-btn" onclick="doRegister()">Create Account</button><div class="auth-toggle">Have an account? <a onclick="showLogin()">Sign In</a></div></div>
-<div class="auth-hint">First registered user becomes <b>Admin</b></div></div></div>
+<!-- CHANGED v7: register form — Create Business / Join with Code modes -->
+<div id="registerForm" class="auth-form" style="display:none">
+<div class="auth-mode-row"><button type="button" id="regModeCreate" class="auth-mode-btn active" onclick="setRegisterMode('create')">Create Business</button><button type="button" id="regModeJoin" class="auth-mode-btn" onclick="setRegisterMode('join')">Join with Code</button></div>
+<input type="text" id="regName" class="auth-input" placeholder="Full Name" onkeydown="if(event.key==='Enter')doRegister()">
+<input type="email" id="regEmail" class="auth-input" placeholder="Email" onkeydown="if(event.key==='Enter')doRegister()">
+<input type="password" id="regPassword" class="auth-input" placeholder="Password (min 6 chars)" onkeydown="if(event.key==='Enter')doRegister()">
+<input type="text" id="regBizName" class="auth-input" placeholder="Business / Workshop Name" onkeydown="if(event.key==='Enter')doRegister()">
+<input type="text" id="regJoinCode" class="auth-input" placeholder="Team Code (from your admin)" style="display:none;text-transform:uppercase" onkeydown="if(event.key==='Enter')doRegister()">
+<button class="auth-btn" id="regSubmitBtn" onclick="doRegister()">Create Business</button>
+<div class="auth-toggle">Have an account? <a onclick="showLogin()">Sign In</a></div>
+</div>
+<!-- CHANGED v7: updated hint -->
+<div class="auth-hint"><b>Create a Business</b> to become its Admin &middot; or <b>Join with Code</b> from your admin</div></div></div>
 
 <div id="appShell" class="app-shell">
-<header class="app-header"><div class="brand"><div class="brand-logo">V</div><div class="brand-text"><h1>VINDOC</h1><p>Inspection Platform</p></div></div>
+<header class="app-header"><div class="brand"><div class="brand-logo">V</div><div class="brand-text"><h1>VINDOC</h1><p id="brandSubline">Inspection Platform</p></div></div>
 <nav class="app-nav"><button class="nav-btn active" data-nav="dashboard" onclick="showView('dashboard')">Dashboard</button><button class="nav-btn" data-nav="jobs" onclick="showView('jobs')">Jobs</button><button class="nav-btn" data-nav="customers" onclick="showView('customers')">Customers</button><button class="nav-btn" id="navUsers" data-nav="users" onclick="showView('users')" style="display:none">Users</button><button class="nav-btn" data-nav="partscatalog" onclick="showView('partscatalog')">Parts Catalog</button><button class="nav-btn" data-nav="chat" onclick="showView('chat')">Chat<span class="nav-badge" id="chatNavBadge"></span></button><button class="nav-btn" data-nav="knowledge" onclick="showView('knowledge')">Knowledge</button></nav>
 <!-- clickable avatar in the header — opens profile picture modal -->
 <div class="header-right"><div class="clock-display" id="clockDisplay"><i class="far fa-clock"></i><span>--</span></div><div class="user-badge"><div class="header-avatar" id="headerAvatar" onclick="openProfileModal()" title="Change profile picture"></div><span id="userNameDisplay"></span> <span class="role-tag" id="userRoleTag">ADMIN</span></div><button class="btn-logout" onclick="doLogout()"><i class="fas fa-sign-out-alt"></i> Logout</button></div></header>
@@ -728,7 +745,6 @@ body.compact .act-btn span{display:none}
 <div class="table-wrap" id="dashRecentJobs"></div>
 <div id="dashPagination" class="pagination"></div>
 </div></div></div>
-
 <div id="jobsView" class="view"><div class="view-pad"><div class="dash-section-head"><div class="dash-section-title">Inspection Jobs</div><button class="btn-add primary" onclick="openJobModal()"><i class="fas fa-plus"></i> New Job</button></div>
 <div class="filter-bar">
 <div class="search-box"><i class="fas fa-search"></i><input type="text" class="search-input" id="jobsSearchInput" placeholder="Search job title, plate, customer, parts..." oninput="applyJobsFilters()"><button class="search-clear" id="jobsSearchClear" onclick="clearJobsSearch()"><i class="fas fa-times"></i></button></div>
@@ -742,7 +758,8 @@ body.compact .act-btn span{display:none}
 </div></div>
 
 <div id="customersView" class="view"><div class="view-pad"><div class="dash-section-head"><div class="dash-section-title">Customers</div><button class="btn-add primary" onclick="openCustomerModal()"><i class="fas fa-plus"></i> Add Customer</button></div><div class="table-wrap" id="customersTable"></div></div></div>
-<div id="usersView" class="view"><div class="view-pad"><div class="dash-section-head"><div class="dash-section-title">User Management</div><button class="btn-add primary" onclick="openUserModal()"><i class="fas fa-plus"></i> Add User</button></div><div class="table-wrap" id="usersTable"></div></div></div>
+<!-- CHANGED v7: usersView gets the Team Code box (rendered by Part 5 JS — admin only) -->
+<div id="usersView" class="view"><div class="view-pad"><div class="dash-section-head"><div class="dash-section-title">User Management</div><button class="btn-add primary" onclick="openUserModal()"><i class="fas fa-plus"></i> Add User</button></div><div id="teamCodeBox"></div><div class="table-wrap" id="usersTable"></div></div></div>
 
 <div id="partscatalogView" class="view"><div class="view-pad">
 <div class="dash-section-head"><div class="dash-section-title">🔧 Parts Catalog</div></div>
@@ -918,15 +935,118 @@ try{firebase.initializeApp(firebaseConfig);}catch(e){}
 var fs=firebase.firestore();
 var DB={add:function(c,d){if(!d.id)d.id=c.slice(0,-1)+'_'+Date.now();return fs.collection(c).doc(d.id).set(d).then(function(){return d;});},put:function(c,d){return fs.collection(c).doc(d.id).set(d,{merge:true}).then(function(){return d;});},get:function(c,id){return fs.collection(c).doc(id).get().then(function(d){return d.exists?d.data():null;});},getAll:function(c){return fs.collection(c).get().then(function(s){return s.docs.map(function(d){return d.data();});});},del:function(c,id){return fs.collection(c).doc(id).delete();}};
 var currentUser=null;
+var currentCompany=null; /* NEW v7: the business this user belongs to {id,name,teamCode} */
+
 function showLogin(){document.getElementById('loginForm').style.display='flex';document.getElementById('registerForm').style.display='none';}
-function showRegister(){document.getElementById('loginForm').style.display='none';document.getElementById('registerForm').style.display='flex';}
+function showRegister(){document.getElementById('loginForm').style.display='none';document.getElementById('registerForm').style.display='flex';setRegisterMode('create');}
+
+/* ===== NEW v7: multi-tenant registration ===== */
+var _regMode='create';
+function setRegisterMode(m){
+  _regMode=m;
+  var bC=document.getElementById('regModeCreate'),bJ=document.getElementById('regModeJoin');
+  if(bC)bC.classList.toggle('active',m==='create');
+  if(bJ)bJ.classList.toggle('active',m==='join');
+  var biz=document.getElementById('regBizName'),code=document.getElementById('regJoinCode');
+  if(biz)biz.style.display=m==='create'?'block':'none';
+  if(code)code.style.display=m==='join'?'block':'none';
+  var btn=document.getElementById('regSubmitBtn');
+  if(btn)btn.textContent=m==='create'?'Create Business':'Join Business';
+}
+function _genTeamCode(){
+  var chars='ABCDEFGHJKMNPQRSTUVWXYZ23456789'; /* no I,L,O,0,1 — readable when WhatsApped */
+  var s='';
+  for(var i=0;i<6;i++)s+=chars.charAt(Math.floor(Math.random()*chars.length));
+  return s;
+}
+function doRegister(){
+  var n=document.getElementById('regName').value.trim(),
+      e=document.getElementById('regEmail').value.trim(),
+      p=document.getElementById('regPassword').value;
+  if(!n||!e||!p){showToast('All fields required','error');return;}
+  if(p.length<6){showToast('Password min 6 chars','error');return;}
+  if(_regMode==='create'){
+    var bizName=document.getElementById('regBizName').value.trim();
+    if(!bizName){showToast('Business name required','error');return;}
+    var teamCode=_genTeamCode();
+    var companyId='biz_'+Date.now();
+    firebase.auth().createUserWithEmailAndPassword(e,p).then(function(cred){
+      var batch=fs.batch();
+      batch.set(fs.collection('companies').doc(companyId),{id:companyId,name:bizName,teamCode:teamCode,ownerUid:cred.user.uid,createdAt:new Date().toISOString()});
+      batch.set(fs.collection('users').doc(cred.user.uid),{id:cred.user.uid,name:n,email:e,role:'admin',companyId:companyId,createdAt:new Date().toISOString()});
+      return batch.commit();
+    }).then(function(){
+      showToast('Business created! Team Code: '+teamCode,'success');
+    }).catch(function(er){showToast(er.message,'error');});
+  }else{
+    var code=document.getElementById('regJoinCode').value.trim().toUpperCase();
+    if(!code){showToast('Enter the Team Code from your admin','error');return;}
+    fs.collection('companies').where('teamCode','==',code).limit(1).get().then(function(snap){
+      if(snap.empty){showToast('Team Code not found — check with your admin','error');return;}
+      var company=snap.docs[0].data();
+      return firebase.auth().createUserWithEmailAndPassword(e,p).then(function(cred){
+        return fs.collection('users').doc(cred.user.uid).set({id:cred.user.uid,name:n,email:e,role:'staff',companyId:company.id,createdAt:new Date().toISOString()});
+      }).then(function(){showToast('Joined '+company.name+'!','success');});
+    }).catch(function(er){showToast(er.message,'error');});
+  }
+}
 function doLogin(){var e=document.getElementById('loginEmail').value.trim(),p=document.getElementById('loginPassword').value;if(!e||!p){showToast('Enter email and password','error');return;}firebase.auth().signInWithEmailAndPassword(e,p).catch(function(er){showToast(er.message,'error');});}
-function doRegister(){var n=document.getElementById('regName').value.trim(),e=document.getElementById('regEmail').value.trim(),p=document.getElementById('regPassword').value;if(!n||!e||!p){showToast('All fields required','error');return;}if(p.length<6){showToast('Password min 6 chars','error');return;}firebase.auth().createUserWithEmailAndPassword(e,p).then(function(cred){return DB.getAll('users').then(function(u){var r=u.length===0?'admin':'staff';return fs.collection('users').doc(cred.user.uid).set({id:cred.user.uid,name:n,email:e,role:r,createdAt:new Date().toISOString()});});}).catch(function(er){showToast(er.message,'error');});}
-/* logout stops the global chat listener and clears the unread badge */
-function doLogout(){firebase.auth().signOut().then(function(){currentUser=null;stopGlobalChatNotifications();clearChatUnread();document.getElementById('appShell').classList.remove('active');document.getElementById('authScreen').style.display='flex';clearSlots();});}
-function checkSession(){firebase.auth().onAuthStateChanged(function(u){if(u){fs.collection('users').doc(u.uid).get().then(function(d){if(d.exists){currentUser=d.data();showApp();}else{var p={id:u.uid,name:u.email.split('@')[0],email:u.email,role:'staff',createdAt:new Date().toISOString()};fs.collection('users').doc(u.uid).set(p).then(function(){currentUser=p;showApp();});}});}else{document.getElementById('authScreen').style.display='flex';document.getElementById('appShell').classList.remove('active');}});}
-/* at login — load avatar into header, apply chat wallpaper, restore unread count, start global listener */
-function showApp(){document.getElementById('authScreen').style.display='none';document.getElementById('appShell').classList.add('active');document.getElementById('userNameDisplay').textContent=currentUser.name;var t=document.getElementById('userRoleTag');t.textContent=currentUser.role.toUpperCase();if(currentUser.role==='admin'){t.style.background='var(--fg)';t.style.color='var(--bg)';t.style.border='none';}else if(currentUser.role==='manager'){t.style.background='#2563eb';t.style.color='#fff';t.style.border='none';}else{t.style.background='var(--bg-3)';t.style.color='var(--fg)';t.style.border='1px solid var(--border-hi)';}document.getElementById('navUsers').style.display=currentUser.role==='admin'?'block':'none';updateHeaderAvatar();applyChatWallpaper();loadChatUnread();startGlobalChatNotifications();showView('dashboard');}
+/* logout stops the global chat listener and clears the unread badge + company */
+function doLogout(){firebase.auth().signOut().then(function(){currentUser=null;currentCompany=null;stopGlobalChatNotifications();clearChatUnread();document.getElementById('appShell').classList.remove('active');document.getElementById('authScreen').style.display='flex';clearSlots();});}
+
+/* CHANGED v7: login loads the user AND their company; no-company users get a clear message */
+function checkSession(){firebase.auth().onAuthStateChanged(function(u){
+  if(u){
+    fs.collection('users').doc(u.uid).get().then(function(d){
+      if(d.exists){
+        currentUser=d.data();
+        if(!currentUser.companyId){
+          showToast('Your account has no business yet. Register with Create Business or a Team Code.','error');
+          firebase.auth().signOut();
+          return;
+        }
+        DB.get('companies',currentUser.companyId).then(function(co){
+          if(!co){showToast('Your business was not found. Contact your admin.','error');firebase.auth().signOut();return;}
+          currentCompany=co;
+          showApp();
+        });
+      }else{
+        /* legacy user (pre-migration) — auto-attach to the first company once migration ran */
+        fs.collection('companies').limit(1).get().then(function(s){
+          if(!s.empty){
+            var co=s.docs[0].data();
+            fs.collection('users').doc(u.uid).set({companyId:co.id},{merge:true}).then(function(){
+              currentUser.companyId=co.id;currentCompany=co;showApp();
+            });
+          }else{
+            showToast('No business exists yet. Register with Create Business.','error');
+            firebase.auth().signOut();
+          }
+        });
+      }
+    });
+  }else{
+    currentCompany=null;
+    document.getElementById('authScreen').style.display='flex';
+    document.getElementById('appShell').classList.remove('active');
+  }
+});}
+
+/* CHANGED v7: business name in header sub-line */
+function showApp(){
+  document.getElementById('authScreen').style.display='none';
+  document.getElementById('appShell').classList.add('active');
+  document.getElementById('userNameDisplay').textContent=currentUser.name;
+  var sub=document.getElementById('brandSubline');
+  if(sub)sub.textContent=currentCompany?currentCompany.name:'Inspection Platform';
+  var t=document.getElementById('userRoleTag');
+  t.textContent=currentUser.role.toUpperCase();
+  if(currentUser.role==='admin'){t.style.background='var(--fg)';t.style.color='var(--bg)';t.style.border='none';}
+  else if(currentUser.role==='manager'){t.style.background='#2563eb';t.style.color='#fff';t.style.border='none';}
+  else{t.style.background='var(--bg-3)';t.style.color='var(--fg)';t.style.border='1px solid var(--border-hi)';}
+  document.getElementById('navUsers').style.display=currentUser.role==='admin'?'block':'none';
+  updateHeaderAvatar();applyChatWallpaper();loadChatUnread();startGlobalChatNotifications();showView('dashboard');
+}
 var _chatUnsub=null;
 function showView(n){
   if(n==='chat')resetChatUnread(); /* unread count → 0 the INSTANT the Chat page opens */
@@ -947,7 +1067,22 @@ function showView(n){
 function closeModal(id){var m=document.getElementById(id);if(m)m.classList.remove('active');}
 function esc(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 var _cachedJobs=[],_cachedCustomers=[],_cachedUsers=[];
-function refreshCachedData(){return Promise.all([DB.getAll('jobs'),DB.getAll('customers'),DB.getAll('users')]).then(function(results){_cachedJobs=results[0]||[];_cachedCustomers=results[1]||[];_cachedUsers=results[2]||[];return results;});}
+
+/* CHANGED v7: ALL cached data scoped to YOUR company — the core of multi-tenancy */
+function refreshCachedData(){
+  if(!currentUser||!currentUser.companyId){_cachedJobs=[];_cachedCustomers=[];_cachedUsers=[];return Promise.resolve([[],[],[]]);}
+  var cid=currentUser.companyId;
+  return Promise.all([
+    fs.collection('jobs').where('companyId','==',cid).get().then(function(s){return s.docs.map(function(d){return d.data();});}),
+    fs.collection('customers').where('companyId','==',cid).get().then(function(s){return s.docs.map(function(d){return d.data();});}),
+    fs.collection('users').where('companyId','==',cid).get().then(function(s){return s.docs.map(function(d){return d.data();});})
+  ]).then(function(results){
+    _cachedJobs=results[0]||[];
+    _cachedCustomers=results[1]||[];
+    _cachedUsers=results[2]||[];
+    return results;
+  });
+}
 var _dashNotes=[];var _jobsNotes=[];
 var _dashFilteredJobs=[];var _dashPage=1;var _dashPerPage=5;
 var _jobsFilteredJobs=[];var _jobsPage=1;var _jobsPerPage=10;
@@ -1059,20 +1194,24 @@ function openPartPhotoViewer(encodedData){
 function closeAiModal(){document.getElementById('aiModal').classList.remove('active');}
 
 /* ==================================================================
-   ===== CHAT v4: FIXED profile pics + HD wallpaper + all chat features =====
+   ===== CHAT v7 (PATH B): everything scoped to YOUR company =====
+   Each business gets its own private: staff list, chat messages,
+   stickers, wallpapers. No cross-business leakage anywhere.
    ================================================================== */
 
-/* --- 🟡 Profile pictures (EVERY user sets their own) --- */
-var _userAvatars={}; /* uid → imageData, kept fresh from Firestore users docs */
+/* --- 🟡 Profile pictures (unchanged mechanics, company-scoped reads) --- */
+var _userAvatars={};
 function avatarHTML(u,cls){
   var img=_userAvatars[u.id];
   var ini=(u.name||'?').charAt(0).toUpperCase();
   if(img)return '<div class="'+cls+'"><img src="'+img+'" alt=""></div>';
   return '<div class="'+cls+'">'+esc(ini)+'</div>';
 }
+/* v7: pulls avatars for YOUR company's users only */
 function refreshUserAvatars(cb){
-  DB.getAll('users').then(function(users){
-    _userAvatars={};(users||[]).forEach(function(u){if(u.photoURL)_userAvatars[u.id]=u.photoURL;});
+  if(!currentUser||!currentUser.companyId){if(cb)cb();return;}
+  fs.collection('users').where('companyId','==',currentUser.companyId).get().then(function(snap){
+    _userAvatars={};snap.docs.forEach(function(d){var u=d.data();if(u.photoURL)_userAvatars[u.id]=u.photoURL;});
     updateHeaderAvatar();
     if(cb)cb();
   });
@@ -1089,9 +1228,6 @@ function openProfileModal(){
   big.innerHTML=(img?'<img src="'+img+'" alt="">':'<div style="display:grid;place-items:center;width:100%;height:100%">'+esc((currentUser.name||'?').charAt(0).toUpperCase())+'</div>')+'<div class="profile-avatar-hint"><i class="fas fa-camera"></i><span>Change</span></div>';
   document.getElementById('profileModal').classList.add('active');
 }
-/* CHANGED v4: FIXED the black-square bug — the image is now drawn DIRECTLY from the
-   source onto the output canvas (v3 created a canvas but never drew the image onto
-   it, so JPEG rendered the empty canvas as solid black) */
 function uploadProfilePic(input){
   var f=input.files&&input.files[0];input.value='';
   if(!f)return;
@@ -1101,7 +1237,6 @@ function uploadProfilePic(input){
   r.onload=function(e){
     var img=new Image();
     img.onload=function(){
-      /* v4 FIX: square centre-crop drawn DIRECTLY from the source image */
       var side=Math.min(img.width,img.height);
       var sc=Math.min(1,256/side);
       var out=Math.max(1,Math.round(side*sc));
@@ -1113,7 +1248,7 @@ function uploadProfilePic(input){
       fs.collection('users').doc(currentUser.id).set({photoURL:data},{merge:true}).then(function(){
         currentUser.photoURL=data;_userAvatars[currentUser.id]=data;
         updateHeaderAvatar();
-        openProfileModal(); /* re-render big preview */
+        openProfileModal();
         showToast('Profile picture updated','success');
       }).catch(function(er){showToast('Failed: '+er.message,'error');});
     };
@@ -1132,7 +1267,7 @@ function removeProfilePic(){
   });
 }
 
-/* --- 🟣 Chat wallpaper (CLOUD — Firestore `wallpapers` collection, syncs across ALL devices) --- */
+/* --- 🟣 Chat wallpaper (cloud, per user — unchanged) --- */
 var _chatWallpapers=[
   {id:'none',name:'None',css:''},
   {id:'plain',name:'Plain',css:'#f4f4f5'},
@@ -1143,7 +1278,7 @@ var _chatWallpapers=[
   {id:'honey',name:'Honeycomb',css:"url('https://www.transparenttextures.com/patterns/hexellence.png')"},
   {id:'dark',name:'Dark',css:'#0a0a0a'}
 ];
-var _wpCurrent={kind:'none'}; /* cached copy for the modal's selected highlight */
+var _wpCurrent={kind:'none'};
 function _wpDoc(){return fs.collection('wallpapers').doc(currentUser.id);}
 function applyChatWallpaper(){
   var el=document.getElementById('chatMessages');if(!el||!currentUser)return;
@@ -1175,8 +1310,6 @@ function setChatWallpaper(id){
     applyChatWallpaper();showToast('Wallpaper set','success');
   }).catch(function(er){showToast('Failed: '+er.message,'error');});
 }
-/* CLOUD: tries 1920px first; Firestore's ~1MB doc cap forces step-down only if rejected.
-   Each rung is announced so you always know the quality that actually saved. */
 function uploadChatWallpaper(input){
   var f=input.files&&input.files[0];input.value='';
   if(!f)return;
@@ -1201,7 +1334,7 @@ function uploadChatWallpaper(input){
         var c=document.createElement('canvas');c.width=w;c.height=h;
         c.getContext('2d').drawImage(img,0,0,w,h);
         var data=c.toDataURL('image/jpeg',t.q);
-        if(data.length>900000){attempt(i+1);return;} /* too big for a Firestore doc → next rung */
+        if(data.length>900000){attempt(i+1);return;}
         _wpDoc().set({id:currentUser.id,kind:'custom',data:data,updatedAt:new Date().toISOString()}).then(function(){
           _wpCurrent={kind:'custom',data:data};
           applyChatWallpaper();
@@ -1228,7 +1361,7 @@ function removeChatWallpaper(){
   }).catch(function(er){showToast('Failed: '+er.message,'error');});
 }
 
-/* --- 🔴 Unread badge state (localStorage, per logged-in user) --- */
+/* --- 🔴 Unread badge state (unchanged — already per-user localStorage) --- */
 var _chatUnread=0;
 function _chatUnreadKey(){return 'vindoc_unread_'+(currentUser?currentUser.id:'anon');}
 function loadChatUnread(){try{_chatUnread=parseInt(localStorage.getItem(_chatUnreadKey())||'0',10)||0;}catch(e){_chatUnread=0;}renderChatBadge(false);}
@@ -1248,7 +1381,7 @@ function renderChatBadge(pulse){
   }
 }
 
-/* --- 🔔 Popup notification (renders on top of ANY page, with avatar) --- */
+/* --- 🔔 Popup notification (unchanged) --- */
 function showMsgNotif(name,text,avatarUrl){
   var c=document.getElementById('msgNotifContainer');if(!c)return;
   while(c.children.length>=4)c.removeChild(c.firstChild);
@@ -1264,31 +1397,29 @@ function showMsgNotif(name,text,avatarUrl){
   setTimeout(dismiss,5000);
 }
 
-/* --- 🔔 GLOBAL listener: separate from the chat view, runs all the time (sticker-aware) --- */
+/* --- 🔔 GLOBAL listener — v7: YOUR company's messages only --- */
 var _globalChatUnsub=null;
 function startGlobalChatNotifications(){
-  if(_globalChatUnsub||!currentUser)return;
+  if(_globalChatUnsub||!currentUser||!currentUser.companyId)return;
   var firstSnap=true;
-  refreshUserAvatars(); /* populate avatars for popups before messages arrive */
-  _globalChatUnsub=fs.collection('messages').orderBy('ts','asc').limit(100).onSnapshot(function(snap){
-    if(firstSnap){firstSnap=false;return;} /* skip initial load — no popup spam on login */
+  refreshUserAvatars();
+  _globalChatUnsub=fs.collection('messages').where('companyId','==',currentUser.companyId).orderBy('ts','asc').limit(100).onSnapshot(function(snap){
+    if(firstSnap){firstSnap=false;return;}
     var onChat=document.getElementById('chatView').classList.contains('active');
     snap.docChanges().forEach(function(ch){
-      if(ch.type!=='added')return; /* ignore deletes/edits */
+      if(ch.type!=='added')return;
       var md=ch.doc.data();if(!md)return;
-      if(md.uid===currentUser.id)return; /* own message → never counted, never notified */
-      if(onChat)return; /* already viewing chat → no popup, no badge (you can see it) */
-      bumpChatUnread(); /* 🔴 count++, save to localStorage, badge pulses in */
-      showMsgNotif(md.name||'Unknown',md.stickerId?'[Sticker] '+(md.stickerName||''):(md.text||''),_userAvatars[md.uid]); /* 🔔 popup with avatar */
+      if(md.uid===currentUser.id)return;
+      if(onChat)return;
+      bumpChatUnread();
+      showMsgNotif(md.name||'Unknown',md.stickerId?'[Sticker] '+(md.stickerName||''):(md.text||''),_userAvatars[md.uid]);
     });
   },function(err){});
 }
 function stopGlobalChatNotifications(){if(_globalChatUnsub){_globalChatUnsub();_globalChatUnsub=null;}}
 
-/* --- Chat view rendering: avatars, reply quotes (VISIBLE), mentions, stickers --- */
+/* --- Chat view rendering — v7: staff list = YOUR company only, listener scoped --- */
 var _chatUsers=[],_stickersMap={},_chatMsgs=[],_replyTo=null;
-
-/* @mention highlighting — matches full known user names (longest first) */
 function fmtChatText(text){
   var e=esc(text||'');
   var names=(_chatUsers||[]).map(function(u){return u.name;}).filter(Boolean);
@@ -1315,7 +1446,6 @@ function renderChatMsg(m){
   var h='<div class="'+cls+'" id="msg-'+m.id+'">';
   var canDel=isMe||currentUser.role==='admin'||currentUser.role==='manager';
   h+='<div class="chat-msg-actions"><button class="chat-msg-action" title="Reply" onclick="setReplyTo(\''+m.id+'\')"><i class="fas fa-reply"></i></button>'+(canDel?'<button class="chat-msg-action del" title="Delete" onclick="deleteChatMessage(\''+m.id+'\')"><i class="fas fa-trash"></i></button>':'')+'</div>';
-  /* avatar + bubble column side by side; others' messages → avatar left, yours → right */
   h+='<div class="chat-msg-row">'+avatarHTML({id:md.uid,name:md.name},'chat-avatar')+'<div class="chat-msg-col"><div class="chat-msg-name">'+(isMe?'You':esc(md.name||'Unknown'))+'</div>';
   if(md.replyTo){h+='<div class="chat-msg-quote" onclick="scrollToChatMsg(\''+esc(md.replyTo.id||'')+'\')" title="Jump to original message"><div class="chat-quote-name">'+esc(md.replyTo.name||'Unknown')+'</div><div class="chat-quote-text">'+esc((md.replyTo.text||'').substring(0,90))+'</div></div>';}
   if(md.stickerId){
@@ -1331,11 +1461,15 @@ function renderChatMsg(m){
 
 function renderChat(){
   var msgEl=document.getElementById('chatMessages');var userListEl=document.getElementById('chatUserList');
-  Promise.all([DB.getAll('users'),DB.getAll('stickers')]).then(function(res){
+  if(!currentUser||!currentUser.companyId){if(msgEl)msgEl.innerHTML='';return;}
+  var cid=currentUser.companyId;
+  Promise.all([
+    fs.collection('users').where('companyId','==',cid).get().then(function(s){return s.docs.map(function(d){return d.data();});}),
+    fs.collection('stickers').where('companyId','==',cid).get().then(function(s){return s.docs.map(function(d){return d.data();});})
+  ]).then(function(res){
     _chatUsers=res[0]||[];
     _userAvatars={};_chatUsers.forEach(function(u){if(u.photoURL)_userAvatars[u.id]=u.photoURL;});
     _stickersMap={};(res[1]||[]).forEach(function(s){_stickersMap[s.id]=s;});
-    /* sidebar with avatars; click → @mention */
     if(userListEl){userListEl.innerHTML=_chatUsers.map(function(u){
       var av=_userAvatars[u.id];var ini=(u.name||'?').charAt(0).toUpperCase();
       var avHTML=av?('<div class="chat-user-avatar"><img src="'+av+'" alt=""></div>'):('<div class="chat-user-avatar">'+esc(ini)+'</div>');
@@ -1344,7 +1478,7 @@ function renderChat(){
     updateHeaderAvatar();
     renderStickerGrid();
     if(_chatUnsub){_chatUnsub();}
-    _chatUnsub=fs.collection('messages').orderBy('ts','asc').limit(100).onSnapshot(function(snap){
+    _chatUnsub=fs.collection('messages').where('companyId','==',cid).orderBy('ts','asc').limit(100).onSnapshot(function(snap){
       if(!msgEl)return;var msgs=snap.docs.map(function(d){return{data:d.data(),id:d.id};});
       _chatMsgs=msgs;
       if(msgs.length===0){msgEl.innerHTML='<div style="text-align:center;padding:40px 20px;color:var(--muted)"><i class="fas fa-comments" style="font-size:32px;color:var(--muted-2);margin-bottom:10px;display:block"></i><p style="font-size:12px">No messages yet. Start chatting with your team!</p></div>';return;}
@@ -1401,12 +1535,14 @@ function insertMention(encName){
 }
 function closeMentionDD(){var dd=document.getElementById('chatMentionDD');if(dd){dd.classList.remove('open');dd.innerHTML='';}}
 
-/* === 😀 Stickers (everyone sends, ONLY ADMIN adds/deletes, animated GIF support) === */
+/* === 😀 Stickers — v7: per-company sticker shelf === */
 function toggleStickerPanel(){var p=document.getElementById('chatStickerPanel');if(!p)return;p.classList.toggle('open');if(p.classList.contains('open'))refreshStickers();}
 function closeStickerPanel(){var p=document.getElementById('chatStickerPanel');if(p)p.classList.remove('open');}
 function refreshStickers(){
-  DB.getAll('stickers').then(function(list){
-    _stickersMap={};(list||[]).forEach(function(s){_stickersMap[s.id]=s;});
+  if(!currentUser||!currentUser.companyId)return;
+  fs.collection('stickers').where('companyId','==',currentUser.companyId).get().then(function(snap){
+    var list=snap.docs.map(function(d){return d.data();});
+    _stickersMap={};list.forEach(function(s){_stickersMap[s.id]=s;});
     renderStickerGrid();
     var msgEl=document.getElementById('chatMessages');
     if(msgEl&&document.getElementById('chatView').classList.contains('active')&&_chatMsgs.length){msgEl.innerHTML=_chatMsgs.map(renderChatMsg).join('');msgEl.scrollTop=msgEl.scrollHeight;}
@@ -1427,6 +1563,7 @@ function addSticker(input){
   var f=input.files&&input.files[0];input.value='';
   if(!f)return;
   if(!currentUser||currentUser.role!=='admin'){showToast('Only admin can add stickers','error');return;}
+  if(!currentUser.companyId){showToast('No business attached to your account','error');return;}
   if(f.type.indexOf('image/')!==0){showToast('Pick an image or GIF file','error');return;}
   if(f.size>2*1024*1024){showToast('File too large (max 2MB)','error');return;}
   var isGif=f.type==='image/gif'||/\.gif$/i.test(f.name);
@@ -1435,12 +1572,12 @@ function addSticker(input){
   r.onload=function(e){
     var data=e.target.result;
     if(isGif){
-      /* ANIMATED sticker — stored raw, animates everywhere */
+      /* ANIMATED sticker — stored raw, animates everywhere. v7: stamped with companyId */
       if(data.length>900000){showToast('GIF too large for cloud storage — keep GIFs under ~650KB (compress at ezgif.com)','error');return;}
-      DB.add('stickers',{name:name,imageData:data,animated:true,createdBy:currentUser.id,createdByName:currentUser.name,createdAt:new Date().toISOString()}).then(function(){showToast('Animated sticker added','success');refreshStickers();}).catch(function(er){showToast('Failed: '+er.message,'error');});
+      DB.add('stickers',{name:name,imageData:data,animated:true,companyId:currentUser.companyId,createdBy:currentUser.id,createdByName:currentUser.name,createdAt:new Date().toISOString()}).then(function(){showToast('Animated sticker added','success');refreshStickers();}).catch(function(er){showToast('Failed: '+er.message,'error');});
       return;
     }
-    /* STATIC sticker — resize to 128px */
+    /* STATIC sticker — resize to 128px. v7: stamped with companyId */
     var img=new Image();
     img.onload=function(){
       var MAX=128;var sc=Math.min(MAX/img.width,MAX/img.height,1);
@@ -1449,7 +1586,7 @@ function addSticker(input){
       c.getContext('2d').drawImage(img,0,0,w,h);
       var out=c.toDataURL('image/png');
       if(out.length>300000)out=c.toDataURL('image/jpeg',0.8);
-      DB.add('stickers',{name:name,imageData:out,animated:false,createdBy:currentUser.id,createdByName:currentUser.name,createdAt:new Date().toISOString()}).then(function(){showToast('Sticker added','success');refreshStickers();}).catch(function(er){showToast('Failed: '+er.message,'error');});
+      DB.add('stickers',{name:name,imageData:out,animated:false,companyId:currentUser.companyId,createdBy:currentUser.id,createdByName:currentUser.name,createdAt:new Date().toISOString()}).then(function(){showToast('Sticker added','success');refreshStickers();}).catch(function(er){showToast('Failed: '+er.message,'error');});
     };
     img.onerror=function(){showToast('Failed to load image','error');};
     img.src=data;
@@ -1464,7 +1601,8 @@ function deleteSticker(id){
 function sendSticker(id){
   closeStickerPanel();
   var st=_stickersMap[id];if(!st){showToast('Sticker not found','error');return;}
-  fs.collection('messages').add({uid:currentUser.id,name:currentUser.name,text:'',stickerId:id,stickerName:st.name||'',replyTo:_replyTo||null,ts:firebase.firestore.FieldValue.serverTimestamp()}).catch(function(e){showToast('Failed: '+e.message,'error');});
+  if(!currentUser.companyId){showToast('No business attached to your account','error');return;}
+  fs.collection('messages').add({uid:currentUser.id,name:currentUser.name,text:'',stickerId:id,stickerName:st.name||'',replyTo:_replyTo||null,companyId:currentUser.companyId,ts:firebase.firestore.FieldValue.serverTimestamp()}).catch(function(e){showToast('Failed: '+e.message,'error');});
   cancelReply();
 }
 
@@ -1472,8 +1610,9 @@ function deleteChatMessage(id){if(!confirm('Delete this message?'))return;fs.col
 function sendChatMessage(){
   var input=document.getElementById('chatInput');if(!input)return;
   var text=input.value.trim();if(!text){showToast('Type a message','info');return;}
+  if(!currentUser.companyId){showToast('No business attached to your account','error');return;}
   input.value='';closeMentionDD();
-  fs.collection('messages').add({uid:currentUser.id,name:currentUser.name,text:text,replyTo:_replyTo||null,ts:firebase.firestore.FieldValue.serverTimestamp()}).catch(function(e){showToast('Failed to send: '+e.message,'error');});
+  fs.collection('messages').add({uid:currentUser.id,name:currentUser.name,text:text,replyTo:_replyTo||null,companyId:currentUser.companyId,ts:firebase.firestore.FieldValue.serverTimestamp()}).catch(function(e){showToast('Failed to send: '+e.message,'error');});
   cancelReply();
 }
 
@@ -1485,12 +1624,14 @@ document.addEventListener('click',function(e){
   if(sp&&sp.classList.contains('open')&&!e.target.closest('.chat-sticker-panel')&&!e.target.closest('.chat-sticker-btn')){sp.classList.remove('open');}
 });
 
-/* === Knowledge Base === */
+/* === Knowledge Base — v7: scoped to YOUR company === */
 function renderKnowledge(){renderKbList();}
 function renderKbList(){
   var el=document.getElementById('kbList');if(!el)return;
+  if(!currentUser||!currentUser.companyId){el.innerHTML='';return;}
   var q=(document.getElementById('kbSearchInput')?document.getElementById('kbSearchInput').value:'').toLowerCase();
-  DB.getAll('knowledge').then(function(articles){
+  fs.collection('knowledge').where('companyId','==',currentUser.companyId).get().then(function(snap){
+    var articles=snap.docs.map(function(d){return d.data();});
     articles.sort(function(a,b){return new Date(b.createdAt)-new Date(a.createdAt);});
     if(q)articles=articles.filter(function(a){return(a.title||'').toLowerCase().indexOf(q)>=0||(a.content||'').toLowerCase().indexOf(q)>=0;});
     if(articles.length===0){el.innerHTML='<div class="gen-empty"><i class="fas fa-book"></i><p>No articles yet.<br><button class="btn-add primary" style="margin-top:12px" onclick="openKbModal()"><i class="fas fa-plus"></i> Add First Article</button></p></div>';return;}
@@ -1511,29 +1652,56 @@ function openKbModal(id){
   if(id){DB.get('knowledge',id).then(function(a){if(!a)return;document.getElementById('kbTitleInput').value=a.title||'';document.getElementById('kbCatInput').value=a.category||'General';document.getElementById('kbContentInput').value=a.content||'';document.getElementById('kbModalTitle').textContent='EDIT ARTICLE';document.getElementById('kbModal').classList.add('active');});}
   else{document.getElementById('kbModalTitle').textContent='ADD ARTICLE';document.getElementById('kbModal').classList.add('active');}
 }
-function saveKb(){var t=document.getElementById('kbTitleInput').value.trim();var c=document.getElementById('kbContentInput').value.trim();var cat=document.getElementById('kbCatInput').value;if(!t||!c){showToast('Title and content required','error');return;}var d={id:editingKbId||('kb_'+Date.now()),title:t,content:c,category:cat,createdBy:currentUser.id,createdByName:currentUser.name,createdAt:new Date().toISOString()};DB.put('knowledge',d).then(function(){closeModal('kbModal');showToast('Article saved','success');renderKbList();});}
+function saveKb(){var t=document.getElementById('kbTitleInput').value.trim();var c=document.getElementById('kbContentInput').value.trim();var cat=document.getElementById('kbCatInput').value;if(!t||!c){showToast('Title and content required','error');return;}var d={id:editingKbId||('kb_'+Date.now()),title:t,content:c,category:cat,companyId:currentUser.companyId,createdBy:currentUser.id,createdByName:currentUser.name,createdAt:new Date().toISOString()};DB.put('knowledge',d).then(function(){closeModal('kbModal');showToast('Article saved','success');renderKbList();});}
 function deleteKb(id){if(!confirm('Delete this article?'))return;DB.del('knowledge',id).then(function(){showToast('Deleted','success');renderKbList();});}
 
-/* === Customer dropdown === */
+/* === Customer dropdown (uses scoped _cachedCustomers — unchanged) === */
 var editingJobId=null;var _custListOpen=false;
 function toggleCustDropdown(open){var list=document.getElementById('custDropdownList');if(!list)return;if(open===undefined)open=!list.classList.contains('open');if(open){list.classList.add('open');_custListOpen=true;filterCustList('');var si=document.getElementById('jobCustomerSearch');if(si)si.value='';}else{list.classList.remove('open');_custListOpen=false;}}
 function filterCustList(q){var list=document.getElementById('custDropdownList');if(!list)return;q=(q||'').toLowerCase();var filtered=(_cachedCustomers||[]).filter(function(c){if(!q)return true;var txt=(c.name||'')+' '+(c.vehiclePlate||'')+' '+(c.vehicleMake||'')+' '+(c.vehicleModel||'');return txt.toLowerCase().indexOf(q)>=0;});if(filtered.length===0){list.innerHTML='<div class="cust-item-empty">No customers found</div>';return;}var curVal=document.getElementById('jobCustomer').value;list.innerHTML=filtered.map(function(c){var sel=c.id===curVal?' selected':'';var plate=c.vehiclePlate?' \u2014 '+c.vehiclePlate:'';return '<div class="cust-item'+sel+'" data-cid="'+c.id+'" onclick="selectCustItem(\''+c.id+'\')">'+esc(c.name)+esc(plate)+'</div>';}).join('');}
 function selectCustItem(id){var c=(_cachedCustomers||[]).find(function(x){return x.id===id;});if(!c)return;document.getElementById('jobCustomer').value=id;var si=document.getElementById('jobCustomerSearch');var plate=c.vehiclePlate?' \u2014 '+c.vehiclePlate:'';if(si)si.value=c.name+plate;toggleCustDropdown(false);}
 function setCustValue(id){document.getElementById('jobCustomer').value=id||'';var si=document.getElementById('jobCustomerSearch');if(si){if(id){var c=(_cachedCustomers||[]).find(function(x){return x.id===id;});if(c){var plate=c.vehiclePlate?' \u2014 '+c.vehiclePlate:'';si.value=c.name+plate;}else{si.value='';}}else{si.value='';}}}
 document.addEventListener('click',function(e){if(!_custListOpen)return;var dd=document.getElementById('custDropdown');if(dd&&!dd.contains(e.target))toggleCustDropdown(false);});
-function openJobModal(id){editingJobId=id||null;DB.getAll('customers').then(function(c){if(c.length===0){showToast('Add a customer first','error');showView('customers');return;}_cachedCustomers=c.slice();setCustValue(null);filterCustList('');if(editingJobId){DB.get('jobs',editingJobId).then(function(j){if(!j)return;setCustValue(j.customerId);document.getElementById('jobTitleInput').value=j.title||'';document.getElementById('jobPartsInput').value=j.parts||'';document.getElementById('jobDateInput').value=j.inspectionDate||'';document.getElementById('jobNotesInput').value=j.notes||'';document.getElementById('jobModalTitle').textContent='EDIT JOB';document.getElementById('jobModalSave').textContent='Update Job';document.getElementById('jobModal').classList.add('active');});}else{document.getElementById('jobTitleInput').value='';document.getElementById('jobPartsInput').value='';document.getElementById('jobDateInput').value=formatDateStamp(new Date()).replace(/\./g,'-');document.getElementById('jobNotesInput').value='';document.getElementById('jobModalTitle').textContent='NEW INSPECTION JOB';document.getElementById('jobModalSave').textContent='Create & Open';document.getElementById('jobModal').classList.add('active');}});}
-function saveJob(){var ci=document.getElementById('jobCustomer').value,t=document.getElementById('jobTitleInput').value.trim(),pr=document.getElementById('jobPartsInput').value.trim(),d=document.getElementById('jobDateInput').value,n=document.getElementById('jobNotesInput').value.trim();if(!ci||!t){showToast('Customer and title required','error');return;}if(editingJobId){DB.get('jobs',editingJobId).then(function(j){j.customerId=ci;j.title=t;j.parts=pr;j.inspectionDate=d;j.notes=n;DB.put('jobs',j).then(function(){closeModal('jobModal');showToast('Job updated','success');renderJobs();renderDashboard();});});}else{var j={id:'job_'+Date.now(),customerId:ci,title:t,parts:pr,inspectionDate:d,notes:n,status:'pending',createdBy:currentUser.id,createdByName:currentUser.name,createdAt:new Date().toISOString()};DB.add('jobs',j).then(function(){closeModal('jobModal');openJob(j.id);});}}
+/* v7: job modal customer list — YOUR company's customers only */
+function openJobModal(id){editingJobId=id||null;if(!currentUser.companyId){showToast('No business attached to your account','error');return;}fs.collection('customers').where('companyId','==',currentUser.companyId).get().then(function(snap){var c=snap.docs.map(function(d){return d.data();});if(c.length===0){showToast('Add a customer first','error');showView('customers');return;}_cachedCustomers=c.slice();setCustValue(null);filterCustList('');if(editingJobId){DB.get('jobs',editingJobId).then(function(j){if(!j)return;setCustValue(j.customerId);document.getElementById('jobTitleInput').value=j.title||'';document.getElementById('jobPartsInput').value=j.parts||'';document.getElementById('jobDateInput').value=j.inspectionDate||'';document.getElementById('jobNotesInput').value=j.notes||'';document.getElementById('jobModalTitle').textContent='EDIT JOB';document.getElementById('jobModalSave').textContent='Update Job';document.getElementById('jobModal').classList.add('active');});}else{document.getElementById('jobTitleInput').value='';document.getElementById('jobPartsInput').value='';document.getElementById('jobDateInput').value=formatDateStamp(new Date()).replace(/\./g,'-');document.getElementById('jobNotesInput').value='';document.getElementById('jobModalTitle').textContent='NEW INSPECTION JOB';document.getElementById('jobModalSave').textContent='Create & Open';document.getElementById('jobModal').classList.add('active');}});}
+/* v7: new jobs stamped with companyId */
+function saveJob(){var ci=document.getElementById('jobCustomer').value,t=document.getElementById('jobTitleInput').value.trim(),pr=document.getElementById('jobPartsInput').value.trim(),d=document.getElementById('jobDateInput').value,n=document.getElementById('jobNotesInput').value.trim();if(!ci||!t){showToast('Customer and title required','error');return;}if(editingJobId){DB.get('jobs',editingJobId).then(function(j){j.customerId=ci;j.title=t;j.parts=pr;j.inspectionDate=d;j.notes=n;DB.put('jobs',j).then(function(){closeModal('jobModal');showToast('Job updated','success');renderJobs();renderDashboard();});});}else{var j={id:'job_'+Date.now(),companyId:currentUser.companyId,customerId:ci,title:t,parts:pr,inspectionDate:d,notes:n,status:'pending',createdBy:currentUser.id,createdByName:currentUser.name,createdAt:new Date().toISOString()};DB.add('jobs',j).then(function(){closeModal('jobModal');openJob(j.id);});}}
 function deleteJob(id){if(!confirm('Delete this job and all media?'))return;fs.collection('jobs').doc(id).collection('slots').get().then(function(s){var b=fs.batch();s.docs.forEach(function(d){b.delete(d.ref);});return b.commit();}).then(function(){return DB.del('jobs',id);}).then(function(){showToast('Job deleted','success');renderJobs();renderDashboard();});}
 function completeJob(){if(!state.currentJob)return;state.currentJob.status='completed';saveJobToDB(true);document.getElementById('currentJobTitle').textContent=state.currentJob.title+' \u2713';document.getElementById('completeBtn').style.display='none';showToast('Job completed','success');}
-function renderCustomers(){DB.getAll('customers').then(function(c){var s=c.slice().sort(function(a,b){return new Date(b.createdAt)-new Date(a.createdAt);});var h='<table class="data-table"><thead><tr><th>Name</th><th>Company</th><th>Phone</th><th>Vehicle</th><th>Plate</th><th>Actions</th></tr></thead><tbody>';if(s.length===0)h+='<tr><td colspan="6"><div class="gen-empty"><i class="fas fa-users"></i><p>No customers yet.<br><button class="btn-add primary" style="margin-top:12px" onclick="openCustomerModal()"><i class="fas fa-plus"></i> Add First Customer</button></p></div></td></tr>';else s.forEach(function(c){var v=(c.vehicleMake||'')+' '+(c.vehicleModel||'')+(c.vehicleYear?' ('+c.vehicleYear+')':'');if(!v.trim())v='-';h+='<tr><td><strong>'+esc(c.name)+'</strong></td><td>'+esc(c.company||'-')+'</td><td>'+esc(c.phone||'-')+'</td><td>'+esc(v)+'</td><td><strong>'+esc(c.vehiclePlate||'-')+'</strong></td><td><div class="table-actions"><button class="table-action" onclick="openCustomerModal(\''+c.id+'\')"><i class="fas fa-edit"></i> Edit</button>';if(currentUser.role==='admin'||currentUser.role==='manager')h+='<button class="table-action danger" onclick="deleteCustomer(\''+c.id+'\')"><i class="fas fa-trash"></i></button>';h+='</div></td></tr>';});h+='</tbody></table>';document.getElementById('customersTable').innerHTML=h;});}
+/* v7: customers table — YOUR company's customers only */
+function renderCustomers(){if(!currentUser.companyId){document.getElementById('customersTable').innerHTML='';return;}fs.collection('customers').where('companyId','==',currentUser.companyId).get().then(function(snap){var c=snap.docs.map(function(d){return d.data();});var s=c.slice().sort(function(a,b){return new Date(b.createdAt)-new Date(a.createdAt);});var h='<table class="data-table"><thead><tr><th>Name</th><th>Company</th><th>Phone</th><th>Vehicle</th><th>Plate</th><th>Actions</th></tr></thead><tbody>';if(s.length===0)h+='<tr><td colspan="6"><div class="gen-empty"><i class="fas fa-users"></i><p>No customers yet.<br><button class="btn-add primary" style="margin-top:12px" onclick="openCustomerModal()"><i class="fas fa-plus"></i> Add First Customer</button></p></div></td></tr>';else s.forEach(function(c){var v=(c.vehicleMake||'')+' '+(c.vehicleModel||'')+(c.vehicleYear?' ('+c.vehicleYear+')':'');if(!v.trim())v='-';h+='<tr><td><strong>'+esc(c.name)+'</strong></td><td>'+esc(c.company||'-')+'</td><td>'+esc(c.phone||'-')+'</td><td>'+esc(v)+'</td><td><strong>'+esc(c.vehiclePlate||'-')+'</strong></td><td><div class="table-actions"><button class="table-action" onclick="openCustomerModal(\''+c.id+'\')"><i class="fas fa-edit"></i> Edit</button>';if(currentUser.role==='admin'||currentUser.role==='manager')h+='<button class="table-action danger" onclick="deleteCustomer(\''+c.id+'\')"><i class="fas fa-trash"></i></button>';h+='</div></td></tr>';});h+='</tbody></table>';document.getElementById('customersTable').innerHTML=h;});}
 var editingCustomerId=null;
 function openCustomerModal(id){editingCustomerId=id||null;['custName','custCompany','custPhone','custEmail','custPlate','custMake','custModel','custYear','custVin'].forEach(function(f){document.getElementById(f).value='';});if(id){DB.get('customers',id).then(function(c){if(!c)return;document.getElementById('custName').value=c.name||'';document.getElementById('custCompany').value=c.company||'';document.getElementById('custPhone').value=c.phone||'';document.getElementById('custEmail').value=c.email||'';document.getElementById('custPlate').value=c.vehiclePlate||'';document.getElementById('custMake').value=c.vehicleMake||'';document.getElementById('custModel').value=c.vehicleModel||'';document.getElementById('custYear').value=c.vehicleYear||'';document.getElementById('custVin').value=c.vin||'';document.getElementById('customerModalTitle').textContent='EDIT CUSTOMER';document.getElementById('customerModal').classList.add('active');});}else{document.getElementById('customerModalTitle').textContent='ADD CUSTOMER';document.getElementById('customerModal').classList.add('active');}}
-function saveCustomer(){var n=document.getElementById('custName').value.trim();if(!n){showToast('Name required','error');return;}var d={id:editingCustomerId||('cust_'+Date.now()),name:n,company:document.getElementById('custCompany').value.trim(),phone:document.getElementById('custPhone').value.trim(),email:document.getElementById('custEmail').value.trim(),vehiclePlate:document.getElementById('custPlate').value.trim(),vehicleMake:document.getElementById('custMake').value.trim(),vehicleModel:document.getElementById('custModel').value.trim(),vehicleYear:document.getElementById('custYear').value.trim(),vin:document.getElementById('custVin').value.trim(),createdBy:currentUser.id,createdAt:new Date().toISOString()};DB.put('customers',d).then(function(){closeModal('customerModal');showToast('Customer saved','success');renderCustomers();});}
+/* v7: customers stamped with companyId */
+function saveCustomer(){var n=document.getElementById('custName').value.trim();if(!n){showToast('Name required','error');return;}var d={id:editingCustomerId||('cust_'+Date.now()),companyId:currentUser.companyId,name:n,company:document.getElementById('custCompany').value.trim(),phone:document.getElementById('custPhone').value.trim(),email:document.getElementById('custEmail').value.trim(),vehiclePlate:document.getElementById('custPlate').value.trim(),vehicleMake:document.getElementById('custMake').value.trim(),vehicleModel:document.getElementById('custModel').value.trim(),vehicleYear:document.getElementById('custYear').value.trim(),vin:document.getElementById('custVin').value.trim(),createdBy:currentUser.id,createdAt:new Date().toISOString()};DB.put('customers',d).then(function(){closeModal('customerModal');showToast('Customer saved','success');renderCustomers();});}
 function deleteCustomer(id){if(!confirm('Delete this customer?'))return;DB.del('customers',id).then(function(){showToast('Deleted','success');renderCustomers();});}
-function renderUsers(){if(currentUser.role!=='admin'){showView('dashboard');return;}DB.getAll('users').then(function(u){var h='<table class="data-table"><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Created</th><th>Actions</th></tr></thead><tbody>';u.forEach(function(x){h+='<tr><td><strong>'+esc(x.name)+'</strong>'+(x.id===currentUser.id?' <span style="font-size:9px;color:var(--success)">(you)</span>':'')+'</td><td>'+esc(x.email)+'</td><td><span class="role-tag" style="background:'+(x.role==='admin'?'var(--fg)':(x.role==='manager'?'#2563eb':'var(--bg-3)'))+';color:'+(x.role==='staff'?'var(--fg)':'#fff')+';border:'+(x.role==='staff'?'1px solid var(--border-hi)':'none')+'">'+x.role.toUpperCase()+'</span></td><td>'+(x.createdAt?new Date(x.createdAt).toLocaleDateString():'-')+'</td><td><div class="table-actions"><button class="table-action" onclick="openUserModal(\''+x.id+'\')"><i class="fas fa-edit"></i> Edit</button>';if(x.id!==currentUser.id)h+='<button class="table-action danger" onclick="deleteUser(\''+x.id+'\')"><i class="fas fa-trash"></i></button>';h+='</div></td></tr>';});h+='</tbody></table>';document.getElementById('usersTable').innerHTML=h;});}
+
+/* ===== NEW v7: Team Code box — admin sees the invite code with one-click copy ===== */
+function renderTeamCodeBox(){
+  var box=document.getElementById('teamCodeBox');if(!box)return;
+  if(!currentUser||currentUser.role!=='admin'||!currentCompany){box.innerHTML='';return;}
+  box.innerHTML='<div class="teamcode-box"><span class="teamcode-lbl">Team Code</span><span class="teamcode-val">'+esc(currentCompany.teamCode||'—')+'</span><span class="teamcode-hint">Share this code — staff use it to join <b>'+esc(currentCompany.name)+'</b> at signup</span><button class="teamcode-copy" onclick="copyTeamCode()"><i class="fas fa-copy"></i> Copy Code</button></div>';
+}
+function copyTeamCode(){
+  if(!currentCompany||!currentCompany.teamCode)return;
+  var code=currentCompany.teamCode;
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(code).then(function(){showToast('Team Code copied: '+code,'success');}).catch(function(){legacyCopy(code);});
+  }else{legacyCopy(code);}
+}
+function legacyCopy(code){
+  var ta=document.createElement('textarea');ta.value=code;ta.style.position='fixed';ta.style.opacity='0';
+  document.body.appendChild(ta);ta.select();
+  try{document.execCommand('copy');showToast('Team Code copied: '+code,'success');}catch(e){showToast('Copy failed — code is '+code,'info');}
+  ta.remove();
+}
+
+/* v7: users table — YOUR company's users only + Team Code box */
+function renderUsers(){if(currentUser.role!=='admin'){showView('dashboard');return;}renderTeamCodeBox();fs.collection('users').where('companyId','==',currentUser.companyId).get().then(function(snap){var u=snap.docs.map(function(d){return d.data();});var h='<table class="data-table"><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Created</th><th>Actions</th></tr></thead><tbody>';u.forEach(function(x){h+='<tr><td><strong>'+esc(x.name)+'</strong>'+(x.id===currentUser.id?' <span style="font-size:9px;color:var(--success)">(you)</span>':'')+'</td><td>'+esc(x.email)+'</td><td><span class="role-tag" style="background:'+(x.role==='admin'?'var(--fg)':(x.role==='manager'?'#2563eb':'var(--bg-3)'))+';color:'+(x.role==='staff'?'var(--fg)':'#fff')+';border:'+(x.role==='staff'?'1px solid var(--border-hi)':'none')+'">'+x.role.toUpperCase()+'</span></td><td>'+(x.createdAt?new Date(x.createdAt).toLocaleDateString():'-')+'</td><td><div class="table-actions"><button class="table-action" onclick="openUserModal(\''+x.id+'\')"><i class="fas fa-edit"></i> Edit</button>';if(x.id!==currentUser.id)h+='<button class="table-action danger" onclick="deleteUser(\''+x.id+'\')"><i class="fas fa-trash"></i></button>';h+='</div></td></tr>';});h+='</tbody></table>';document.getElementById('usersTable').innerHTML=h;});}
 var editingUserId=null;
 function openUserModal(id){editingUserId=id||null;document.getElementById('userNameInput').value='';document.getElementById('userEmailInput').value='';document.getElementById('userPasswordInput').value='';document.getElementById('userRoleInput').value='staff';if(id){DB.get('users',id).then(function(u){if(!u)return;document.getElementById('userNameInput').value=u.name;document.getElementById('userEmailInput').value=u.email;document.getElementById('userRoleInput').value=u.role;document.getElementById('userPasswordInput').placeholder='Leave blank to keep';document.getElementById('userModalTitle').textContent='EDIT USER';document.getElementById('userModal').classList.add('active');});}else{document.getElementById('userPasswordInput').placeholder='Password (min 6)';document.getElementById('userModalTitle').textContent='ADD USER';document.getElementById('userModal').classList.add('active');}}
-function saveUser(){var n=document.getElementById('userNameInput').value.trim(),e=document.getElementById('userEmailInput').value.trim(),p=document.getElementById('userPasswordInput').value,r=document.getElementById('userRoleInput').value;if(!n||!e){showToast('Name and email required','error');return;}if(!editingUserId&&!p){showToast('Password required','error');return;}if(p&&p.length<6){showToast('Password min 6 chars','error');return;}if(editingUserId){DB.get('users',editingUserId).then(function(ex){var u=Object.assign({},ex||{});u.name=n;u.email=e;u.role=r;DB.put('users',u).then(function(){closeModal('userModal');showToast('User updated','success');renderUsers();});});}else{var sa=firebase.initializeApp(firebaseConfig,'sec_'+Date.now());sa.auth().createUserWithEmailAndPassword(e,p).then(function(c){return fs.collection('users').doc(c.user.uid).set({id:c.user.uid,name:n,email:e,role:r,createdAt:new Date().toISOString()}).then(function(){return sa.auth().signOut();});}).then(function(){closeModal('userModal');showToast('User created','success');renderUsers();}).catch(function(er){showToast(er.message,'error');});}}
+/* v7: users created via admin panel join YOUR company */
+function saveUser(){var n=document.getElementById('userNameInput').value.trim(),e=document.getElementById('userEmailInput').value.trim(),p=document.getElementById('userPasswordInput').value,r=document.getElementById('userRoleInput').value;if(!n||!e){showToast('Name and email required','error');return;}if(!editingUserId&&!p){showToast('Password required','error');return;}if(p&&p.length<6){showToast('Password min 6 chars','error');return;}if(editingUserId){DB.get('users',editingUserId).then(function(ex){var u=Object.assign({},ex||{});u.name=n;u.email=e;u.role=r;DB.put('users',u).then(function(){closeModal('userModal');showToast('User updated','success');renderUsers();});});}else{var sa=firebase.initializeApp(firebaseConfig,'sec_'+Date.now());sa.auth().createUserWithEmailAndPassword(e,p).then(function(c){return fs.collection('users').doc(c.user.uid).set({id:c.user.uid,name:n,email:e,role:r,companyId:currentUser.companyId,createdAt:new Date().toISOString()}).then(function(){return sa.auth().signOut();});}).then(function(){closeModal('userModal');showToast('User created','success');renderUsers();}).catch(function(er){showToast(er.message,'error');});}}
 function deleteUser(id){if(id===currentUser.id){showToast('Cannot delete yourself','error');return;}if(!confirm('Delete this user profile?'))return;DB.del('users',id).then(function(){showToast('User deleted','success');renderUsers();});}
 var _returnToPartsCatalog=false;
 function closeJob(){clearSlots();if(_returnToPartsCatalog){_returnToPartsCatalog=false;showView('partscatalog');}else{showView('jobs');}}
@@ -1638,3 +1806,4 @@ if(firebaseConfig.apiKey==='PASTE_API_KEY_HERE'){document.getElementById('authSc
 </script>
 </body>
 </html>
+
