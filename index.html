@@ -954,7 +954,7 @@ function setRegisterMode(m){
   if(btn)btn.textContent=m==='create'?'Create Business':'Join Business';
 }
 function _genTeamCode(){
-  var chars='ABCDEFGHJKMNPQRSTUVWXYZ23456789'; /* no I,L,O,0,1 — readable when WhatsApped */
+  var chars='ABCDEFGHJKMNPQRSTUVWXYZ23456789';
   var s='';
   for(var i=0;i<6;i++)s+=chars.charAt(Math.floor(Math.random()*chars.length));
   return s;
@@ -971,22 +971,25 @@ function doRegister(){
     var teamCode=_genTeamCode();
     var companyId='biz_'+Date.now();
     firebase.auth().createUserWithEmailAndPassword(e,p).then(function(cred){
-      var batch=fs.batch();
-      batch.set(fs.collection('companies').doc(companyId),{id:companyId,name:bizName,teamCode:teamCode,ownerUid:cred.user.uid,createdAt:new Date().toISOString()});
-      batch.set(fs.collection('users').doc(cred.user.uid),{id:cred.user.uid,name:n,email:e,role:'admin',companyId:companyId,createdAt:new Date().toISOString()});
-      return batch.commit();
+      /* FIXED: sequential — company FIRST, then your profile. No race, rules-compatible */
+      return fs.collection('companies').doc(companyId).set({id:companyId,name:bizName,teamCode:teamCode,ownerUid:cred.user.uid,createdAt:new Date().toISOString()}).then(function(){
+        return fs.collection('users').doc(cred.user.uid).set({id:cred.user.uid,name:n,email:e,role:'admin',companyId:companyId,createdAt:new Date().toISOString()});
+      });
     }).then(function(){
       showToast('Business created! Team Code: '+teamCode,'success');
     }).catch(function(er){showToast(er.message,'error');});
   }else{
     var code=document.getElementById('regJoinCode').value.trim().toUpperCase();
     if(!code){showToast('Enter the Team Code from your admin','error');return;}
-    fs.collection('companies').where('teamCode','==',code).limit(1).get().then(function(snap){
-      if(snap.empty){showToast('Team Code not found — check with your admin','error');return;}
-      var company=snap.docs[0].data();
-      return firebase.auth().createUserWithEmailAndPassword(e,p).then(function(cred){
-        return fs.collection('users').doc(cred.user.uid).set({id:cred.user.uid,name:n,email:e,role:'staff',companyId:company.id,createdAt:new Date().toISOString()});
-      }).then(function(){showToast('Joined '+company.name+'!','success');});
+    /* FIXED: account FIRST (rules need login to read companies), then code lookup */
+    firebase.auth().createUserWithEmailAndPassword(e,p).then(function(cred){
+      return fs.collection('companies').where('teamCode','==',code).limit(1).get().then(function(snap){
+        if(snap.empty){return cred.user.delete().then(function(){throw new Error('Team Code not found — check with your admin');});}
+        var company=snap.docs[0].data();
+        return fs.collection('users').doc(cred.user.uid).set({id:cred.user.uid,name:n,email:e,role:'staff',companyId:company.id,createdAt:new Date().toISOString()}).then(function(){return company;});
+      });
+    }).then(function(company){
+      showToast('Joined '+company.name+'!','success');
     }).catch(function(er){showToast(er.message,'error');});
   }
 }
@@ -995,35 +998,37 @@ function doLogin(){var e=document.getElementById('loginEmail').value.trim(),p=do
 function doLogout(){firebase.auth().signOut().then(function(){currentUser=null;currentCompany=null;stopGlobalChatNotifications();clearChatUnread();document.getElementById('appShell').classList.remove('active');document.getElementById('authScreen').style.display='flex';clearSlots();});}
 
 /* CHANGED v7: login loads the user AND their company; no-company users get a clear message */
+/* FIXED: never auto-attach to a random company (that's what dumped the test into MBL) */
 function checkSession(){firebase.auth().onAuthStateChanged(function(u){
-  if(u){
-    fs.collection('users').doc(u.uid).get().then(function(d){
-      if(d.exists){
-        currentUser=d.data();
-        if(!currentUser.companyId){
-          showToast('Your account has no business yet. Register with Create Business or a Team Code.','error');
-          firebase.auth().signOut();
-          return;
-        }
-        DB.get('companies',currentUser.companyId).then(function(co){
-          if(!co){showToast('Your business was not found. Contact your admin.','error');firebase.auth().signOut();return;}
-          currentCompany=co;
-          showApp();
-        });
-      }else{
-        /* legacy user (pre-migration) — auto-attach to the first company once migration ran */
-        fs.collection('companies').limit(1).get().then(function(s){
-          if(!s.empty){
-            var co=s.docs[0].data();
-            fs.collection('users').doc(u.uid).set({companyId:co.id},{merge:true}).then(function(){
-              currentUser.companyId=co.id;currentCompany=co;showApp();
-            });
-          }else{
-            showToast('No business exists yet. Register with Create Business.','error');
-            firebase.auth().signOut();
-          }
-        });
+  if(!u){
+    currentCompany=null;
+    document.getElementById('authScreen').style.display='flex';
+    document.getElementById('appShell').classList.remove('active');
+    return;
+  }
+  loadUserIntoApp(u.uid,0);
+});}
+function loadUserIntoApp(uid,attempt){
+  fs.collection('users').doc(uid).get().then(function(d){
+    if(d.exists){
+      var u=d.data();
+      if(!u.companyId){
+        if(attempt<6){setTimeout(function(){loadUserIntoApp(uid,attempt+1);},1200);return;}
+        showToast('Account has no business. Register again with Create Business or a Team Code.','error');
+        firebase.auth().signOut();return;
       }
+      currentUser=u;
+      DB.get('companies',u.companyId).then(function(co){
+        if(!co){showToast('Your business was not found. Contact your admin.','error');firebase.auth().signOut();return;}
+        currentCompany=co;showApp();
+      });
+    }else{
+      if(attempt<6){setTimeout(function(){loadUserIntoApp(uid,attempt+1);},1200);return;}
+      showToast('Account incomplete — please register again.','error');
+      firebase.auth().signOut();
+    }
+  });
+}
     });
   }else{
     currentCompany=null;
