@@ -44,14 +44,14 @@ html,body{font-family:'Hanken Grotesk',sans-serif;background:var(--bg);color:var
 .stat{text-align:right;padding-right:10px;border-right:1px solid var(--border)}
 .stat-val{font-family:'Hanken Grotesk',sans-serif;font-size:22px;font-weight:700;line-height:1}
 .stat-lbl{font-size:9px;color:var(--muted);letter-spacing:0.2em;text-transform:uppercase;margin-top:4px;font-weight:600}
-.clock-display{font-family:'Hanken Grotesk',sans-serif;font-size:11px;color:var(--fg-2);background:var(--bg-2);border:1px solid var(--border);padding:7px 12px;display:flex;align-items:center;gap:6px;font-weight:500}
+.clock-display{font-family:'Hanken Grotesk',sans-serif;font-size:11px;color:var(--fg-2);background:var(--bg-2);border:1px solid var(--border);padding:7px 12px;display:flex;align-items:center;justify-content:center;gap:6px;font-weight:500}
 .clock-display i{color:var(--muted);font-size:10px}
 .format-toggle{display:flex;border:1px solid var(--border-hi)}
 .fmt-btn{padding:11px 16px;border:none;background:var(--bg);color:var(--muted);font-family:'Archivo',sans-serif;font-weight:600;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;transition:all 0.15s}
 .fmt-btn:not(:last-child){border-right:1px solid var(--border-hi)}
 .fmt-btn.active{background:var(--fg);color:var(--bg)}
 .fmt-btn:hover:not(.active){color:var(--fg)}
-/* CHANGED v4: flex row — avatar sits BESIDE the name, vertically centered (fixes ugly stacking) */
+/* flex row — avatar sits BESIDE the name, vertically centered */
 .user-badge{font-size:11px;color:var(--muted);font-family:'Hanken Grotesk',sans-serif;font-weight:600;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
 .user-badge i{color:var(--fg);margin-right:4px}
 .role-tag{font-size:8px;padding:2px 6px;font-family:'Archivo',sans-serif;font-weight:700;letter-spacing:0.1em;text-transform:uppercase}
@@ -159,13 +159,13 @@ html,body{font-family:'Hanken Grotesk',sans-serif;background:var(--bg);color:var
 .search-box i{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:12px;pointer-events:none}
 .search-input{width:100%;background:var(--bg);border:1px solid var(--border-hi);color:var(--fg);padding:9px 32px 9px 32px;font-size:13px;font-family:'Hanken Grotesk',sans-serif;font-weight:500;transition:all 0.15s}
 .search-input:focus{outline:none;border-color:var(--fg)}
-.search-clear{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:transparent;border:none;color:var(--muted);cursor:pointer;padding:4px 6px;font-size:12px;display:none}
-.search-clear.visible{display:block}
+/* CHANGED v6: ✕ clear button — properly centered, INSIDE the border, also shows on hover */
+.search-clear{position:absolute;right:6px;top:0;bottom:0;height:100%;margin:auto 0;display:none;align-items:center;justify-content:center;width:24px;background:transparent;border:none;color:var(--muted);cursor:pointer;padding:0;font-size:12px}
 .search-clear:hover{color:var(--danger)}
-.filter-select{background:var(--bg);border:1px solid var(--border-hi);color:var(--fg);padding:9px 28px 9px 12px;font-size:12px;font-family:'Hanken Grotesk',sans-serif;font-weight:500;cursor:pointer;transition:all 0.15s;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236b6b70'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");background-repeat:no-repeat;background-position:right 6px center;background-size:18px}
-.filter-select:focus{outline:none;border-color:var(--fg)}
-.filter-group{display:flex;align-items:center;gap:6px}
-.filter-label{font-size:9px;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;font-family:'Archivo',sans-serif;font-weight:700;white-space:nowrap}
+.search-clear.visible{display:flex}
+.search-box:hover .search-clear{display:flex}
+.search-box:hover .search-clear:not(.visible){opacity:.45}
+.search-clear:not(.visible):hover{opacity:1}
 .result-info{font-size:11px;color:var(--muted);font-family:'Hanken Grotesk',sans-serif;font-weight:600;margin-left:auto;white-space:nowrap}
 .result-info b{color:var(--fg)}
 .pagination{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:14px;flex-wrap:wrap}
@@ -526,7 +526,6 @@ body.compact .act-btn span{display:none}
 .chat-msg.mentioned .chat-msg-bubble{border-color:var(--info);box-shadow:0 0 0 1px var(--info)}
 .chat-msg.flash .chat-msg-bubble{animation:chatFlash 1.2s ease}
 @keyframes chatFlash{0%,100%{box-shadow:none}20%,60%{box-shadow:0 0 0 2px var(--info)}}
-/* reply quote always visible — blue accent bar + blue name + dark text (WhatsApp style), on BOTH sides */
 .chat-msg-quote{border-left:3px solid var(--info);background:var(--bg-2);padding:5px 9px;margin-bottom:5px;cursor:pointer;max-width:280px;overflow:hidden;border-radius:3px}
 .chat-msg.me .chat-msg-quote{border-left:3px solid var(--info);border-right:none}
 .chat-quote-name{font-size:9px;font-weight:700;font-family:'Archivo',sans-serif;text-transform:uppercase;letter-spacing:.06em;color:var(--info)}
@@ -548,25 +547,20 @@ body.compact .act-btn span{display:none}
 .header-avatar{width:32px;height:32px;border-radius:50%;overflow:hidden;border:1px solid var(--border-hi);display:grid;place-items:center;background:var(--bg-3);font-family:'Archivo',sans-serif;font-weight:800;font-size:12px;color:var(--fg);cursor:pointer;transition:all .15s;flex-shrink:0}
 .header-avatar:hover{border-color:var(--fg)}
 .header-avatar img{width:100%;height:100%;object-fit:cover;display:block}
-/* message row: avatar beside the bubble column */
 .chat-msg-row{display:flex;gap:8px;align-items:flex-end;min-width:0}
 .chat-msg.me .chat-msg-row{flex-direction:row-reverse}
 .chat-avatar{width:28px;height:28px;border-radius:50%;flex-shrink:0;overflow:hidden;border:1px solid var(--border);display:grid;place-items:center;background:var(--bg-3);font-family:'Archivo',sans-serif;font-weight:800;font-size:11px;color:var(--fg);margin-bottom:14px}
 .chat-avatar img{width:100%;height:100%;object-fit:cover;display:block}
-/* sidebar user list avatars */
 .chat-user-avatar{width:24px;height:24px;border-radius:50%;flex-shrink:0;overflow:hidden;border:1px solid var(--border);display:grid;place-items:center;background:var(--bg);font-family:'Archivo',sans-serif;font-weight:800;font-size:9px;color:var(--fg);position:relative}
 .chat-user-avatar img{width:100%;height:100%;object-fit:cover;display:block}
 .chat-user-ondot{position:absolute;bottom:-2px;right:-2px;width:8px;height:8px;border-radius:50%;background:var(--success);border:2px solid var(--bg-2)}
-/* notification popup: avatar image fills the icon block, initials as fallback */
 .msg-notif-icon{position:relative;overflow:hidden}
 .msg-notif-icon img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
-/* profile picture modal */
 .profile-avatar-big{width:96px;height:96px;border-radius:50%;overflow:hidden;border:2px solid var(--fg);margin:0 auto 14px;display:grid;place-items:center;background:var(--bg-3);font-family:'Archivo',sans-serif;font-weight:800;font-size:34px;color:var(--fg);cursor:pointer;position:relative}
 .profile-avatar-big img{width:100%;height:100%;object-fit:cover;display:block}
 .profile-avatar-hint{position:absolute;inset:0;background:rgba(10,10,10,.55);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:9px;font-family:'Archivo',sans-serif;font-weight:700;letter-spacing:.1em;text-transform:uppercase;opacity:0;transition:opacity .15s;z-index:2}
 .profile-avatar-hint i{font-size:16px}
 .profile-avatar-big:hover .profile-avatar-hint{opacity:1}
-/* chat wallpaper modal */
 .wp-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:6px}
 .wp-swatch{height:70px;border:1px solid var(--border);cursor:pointer;position:relative;transition:all .15s;background-size:cover;background-position:center;overflow:hidden}
 .wp-swatch:hover{border-color:var(--fg)}
@@ -588,6 +582,11 @@ body.compact .act-btn span{display:none}
 .msg-notif-new{font-size:9px;color:var(--danger);font-family:'Archivo',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.08em;flex-shrink:0}
 .msg-notif-text{font-size:12px;color:var(--fg-2);line-height:1.5;margin-top:3px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;word-break:break-word}
 .msg-notif-cta{margin-top:6px;display:flex;align-items:center;gap:4px;font-size:9px;color:var(--muted);font-family:'Archivo',sans-serif;font-weight:600;text-transform:uppercase;letter-spacing:.1em}
+
+/* ===== NEW v6: Vehicle chart — wider labels so "Proton Persona" fits instead of "Proton P…" ===== */
+#vehicleBrandChart .insp-bar-row{grid-template-columns:118px 1fr 24px}
+#vehicleBrandChart .insp-bar-name{font-size:10px}
+
 /* ================= MOBILE/iPHONE PATCH v2 ================= */
 @media(max-width:768px){
   /* ---------- header ---------- */
@@ -627,6 +626,8 @@ body.compact .act-btn span{display:none}
   .pptx-list{grid-template-columns:1fr 1fr}
   .app-footer{padding:12px}
   .help-bar{padding:10px;font-size:11px}
+  /* v6: chart labels fit on phones too */
+  #vehicleBrandChart .insp-bar-row{grid-template-columns:100px 1fr 20px}
   /* ---------- CHAT — full iPhone app feel ---------- */
   #chatView .view-pad{padding:8px 8px 12px;display:flex;flex-direction:column;height:calc(100dvh - 150px)}
   #chatView .dash-section-head{margin-bottom:8px;padding:0}
@@ -638,7 +639,7 @@ body.compact .act-btn span{display:none}
   .chat-user-item{flex-shrink:0;padding:5px 12px;border:1px solid var(--border);background:var(--bg);border-radius:999px;font-size:11px;font-weight:600;align-items:center;gap:6px}
   .chat-user-avatar{width:20px;height:20px;font-size:8px}
   .chat-user-ondot{width:6px;height:6px;border-width:1px}
-  .chat-main{flex:1;min-height:0} /* CRITICAL — lets messages scroll inside instead of blowing out the layout */
+  .chat-main{flex:1;min-height:0}
   .chat-msgs{padding:10px 8px;-webkit-overflow-scrolling:touch}
   .chat-msg{max-width:86%}
   .chat-msg-bubble{font-size:14px;padding:9px 12px}
@@ -649,7 +650,7 @@ body.compact .act-btn span{display:none}
   .chat-msg-actions{right:-30px}
   .chat-msg.me .chat-msg-actions{left:-30px}
   .chat-msg-action{width:24px;height:24px}
-  .chat-input-bar{padding:8px;padding-bottom:calc(8px + env(safe-area-inset-bottom))} /* clears the home-indicator bar */
+  .chat-input-bar{padding:8px;padding-bottom:calc(8px + env(safe-area-inset-bottom))}
   .chat-input-row{gap:6px}
   .chat-send{padding:10px 14px}
   .chat-sticker-btn{padding:10px}
@@ -708,7 +709,8 @@ body.compact .act-btn span{display:none}
 <div class="insp-bars" id="inspectorActivityChart"></div>
 </div>
 <div class="chart-card">
-<div class="chart-card-header"><div class="chart-card-title">Vehicle Brands</div><div class="chart-card-sub">By make</div></div>
+<!-- CHANGED v6: counts make + model now, blank models show as "— Unknown" -->
+<div class="chart-card-header"><div class="chart-card-title">Vehicle Models</div><div class="chart-card-sub">By make &amp; model</div></div>
 <div class="insp-bars" id="vehicleBrandChart"></div>
 </div>
 </div>
@@ -752,7 +754,7 @@ body.compact .act-btn span{display:none}
 
 <!-- chat view — wallpaper button, avatars, reply bar, mention dropdown, sticker panel -->
 <div id="chatView" class="view"><div class="view-pad">
-<div class="dash-section-head"><div class="dash-section-title">Staff Chat</div><button class="btn-add" onclick="openWallpaperModal()" title="Chat background"><i class="fas fa-image"></i> Wallpaper</button></div>
+<div class="dash-section-head"><div class="dash-section-title">Staff Chat</div><button class="btn-add" onclick="openWallpaperModal()" title="Chat wallpaper & background" style="padding:7px 10px"><i class="fas fa-image"></i></button></div>
 <div class="chat-layout">
 <div class="chat-side"><div class="chat-side-head">Staff Members</div><div id="chatUserList"></div></div>
 <div class="chat-main">
@@ -791,12 +793,13 @@ body.compact .act-btn span{display:none}
 <footer class="app-footer">VINDOC &nbsp;&middot;&nbsp; <span>Cloud Edition</span> &nbsp;&middot;&nbsp; Firebase</footer>
 </div>
 
+<!-- CHANGED v6: customer modal — Make becomes a dropdown (14 brands + Other), Model gets smart suggestions per brand -->
 <div class="gen-modal" id="customerModal"><div class="gen-box wide"><div class="gen-box-title" id="customerModalTitle">ADD CUSTOMER</div><div class="gen-form">
 <div class="gen-form-row"><div><label class="gen-label">Name *</label><input class="gen-input" id="custName" placeholder="John Smith"></div><div><label class="gen-label">Company</label><input class="gen-input" id="custCompany" placeholder="ABC Motors"></div></div>
 <div class="gen-form-row"><div><label class="gen-label">Phone</label><input class="gen-input" id="custPhone" placeholder="+60123456789"></div><div><label class="gen-label">Email</label><input class="gen-input" id="custEmail" placeholder="john@example.com"></div></div>
 <hr class="gen-form-sep">
-<div class="gen-form-row"><div><label class="gen-label">Vehicle Plate</label><input class="gen-input" id="custPlate" placeholder="ABC 1234"></div><div><label class="gen-label">Vehicle Make</label><input class="gen-input" id="custMake" placeholder="Toyota"></div></div>
-<div class="gen-form-row"><div><label class="gen-label">Vehicle Model</label><input class="gen-input" id="custModel" placeholder="Camry"></div><div><label class="gen-label">Vehicle Year</label><input class="gen-input" id="custYear" placeholder="2021"></div></div>
+<div class="gen-form-row"><div><label class="gen-label">Vehicle Plate</label><input class="gen-input" id="custPlate" placeholder="ABC 1234"></div><div><label class="gen-label">Vehicle Make</label><select class="gen-select" id="custMake" onchange="onCustMakeChange()"><option value="">— Select —</option><option>Proton</option><option>Perodua</option><option>Toyota</option><option>Honda</option><option>Nissan</option><option>Mazda</option><option>Mitsubishi</option><option>Hyundai</option><option>Kia</option><option>Mercedes-Benz</option><option>BMW</option><option>Volvo</option><option>Isuzu</option><option>Ford</option><option value="Other">Other…</option></select><input class="gen-input" id="custMakeOther" placeholder="Type vehicle make" style="display:none;margin-top:6px"></div></div>
+<div class="gen-form-row"><div><label class="gen-label">Vehicle Model</label><input class="gen-input" id="custModel" placeholder="Pick or type model" list="custModelList" autocomplete="off"><datalist id="custModelList"></datalist></div><div><label class="gen-label">Vehicle Year</label><input class="gen-input" id="custYear" placeholder="2021"></div></div>
 <div><label class="gen-label">VIN Number</label><input class="gen-input" id="custVin" placeholder="JTDBT123456789012"></div>
 </div><div class="gen-actions"><button class="gen-btn" onclick="closeModal('customerModal')">Cancel</button><button class="gen-btn primary" onclick="saveCustomer()">Save Customer</button></div></div></div>
 
@@ -836,12 +839,12 @@ body.compact .act-btn span{display:none}
 <div class="gen-actions"><button class="gen-btn" onclick="removeProfilePic()"><i class="fas fa-trash"></i> Remove</button><button class="gen-btn primary" onclick="closeModal('profileModal')">Done</button></div>
 </div></div>
 
-<!-- chat wallpaper modal (presets + custom image, per user) -->
+<!-- chat wallpaper modal (presets + custom image, cloud-synced) -->
 <div class="gen-modal" id="wallpaperModal"><div class="gen-box wide">
 <div class="gen-box-title">CHAT WALLPAPER</div>
 <div class="gen-label" style="margin-bottom:6px">Presets</div>
 <div class="wp-grid" id="wpGrid"></div>
-<div class="gen-label" style="margin:12px 0 6px">Custom Image (HD)</div>
+<div class="gen-label" style="margin:12px 0 6px">Custom Image</div>
 <div class="wp-custom-row"><button class="gen-btn" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px" onclick="document.getElementById('wpFileInput').click()"><i class="fas fa-upload"></i> Upload Image</button><button class="gen-btn" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px" onclick="removeChatWallpaper()"><i class="fas fa-ban"></i> No Wallpaper</button></div>
 <input type="file" id="wpFileInput" accept="image/*" style="display:none" onchange="uploadChatWallpaper(this)">
 <div class="gen-actions" style="margin-top:14px"><button class="gen-btn primary" onclick="closeModal('wallpaperModal')">Done</button></div>
@@ -964,13 +967,13 @@ function renderCharts(jobs,customers,users){
   var total=jobs.length;var completed=jobs.filter(function(j){return j.status==='completed';}).length;var rate=total>0?Math.round((completed/total)*100):0;
   var ringEl=document.getElementById('completionRing');if(ringEl){var R=52,C=2*Math.PI*R;var off=C-(rate/100)*C;ringEl.innerHTML='<svg class="ring-svg" viewBox="0 0 130 130"><circle class="ring-bg" cx="65" cy="65" r="'+R+'"></circle><circle class="ring-fg" cx="65" cy="65" r="'+R+'" stroke-dasharray="'+C+'" stroke-dashoffset="'+off+'"></circle><text class="ring-center" x="65" y="68" text-anchor="middle">'+rate+'%</text><text class="ring-sub" x="65" y="84" text-anchor="middle">Complete</text></svg><div class="ring-label">'+completed+' of '+total+' jobs</div>';}
   var inspMap={};jobs.forEach(function(j){if(j.status==='completed'&&j.createdByName){inspMap[j.createdByName]=(inspMap[j.createdByName]||0)+1;}});var inspArr=Object.keys(inspMap).map(function(k){return{name:k,count:inspMap[k]};}).sort(function(a,b){return b.count-a.count;});var inspEl=document.getElementById('inspectorActivityChart');if(inspEl){var maxI=Math.max.apply(null,inspArr.map(function(x){return x.count;}));if(maxI===0)maxI=1;if(inspArr.length===0){inspEl.innerHTML='<div class="chart-empty"><i class="fas fa-user-slash"></i>No completed jobs yet</div>';}else{inspEl.innerHTML=inspArr.map(function(i){var w=(i.count/maxI)*100;return '<div class="insp-bar-row"><span class="insp-bar-name" title="'+esc(i.name)+'">'+esc(i.name)+'</span><div class="insp-bar-track"><div class="insp-bar-fill" style="width:'+w+'%"></div></div><span class="insp-bar-val">'+i.count+'</span></div>';}).join('');}}
-  var brandMap={};jobs.forEach(function(j){var c=customers.find(function(x){return x.id===j.customerId;});if(c&&c.vehicleMake){var b=c.vehicleMake.trim();if(b){brandMap[b]=(brandMap[b]||0)+1;}}});var brandArr=Object.keys(brandMap).map(function(k){return{name:k,count:brandMap[k]};}).sort(function(a,b){return b.count-a.count;});var brandEl=document.getElementById('vehicleBrandChart');if(brandEl){var maxB=Math.max.apply(null,brandArr.map(function(x){return x.count;}));if(maxB===0)maxB=1;if(brandArr.length===0){brandEl.innerHTML='<div class="chart-empty"><i class="fas fa-car"></i>No vehicles yet</div>';}else{brandEl.innerHTML=brandArr.map(function(b){var w=(b.count/maxB)*100;return '<div class="insp-bar-row"><span class="insp-bar-name" title="'+esc(b.name)+'">'+esc(b.name)+'</span><div class="insp-bar-track"><div class="insp-bar-fill" style="width:'+w+'%"></div></div><span class="insp-bar-val">'+b.count+'</span></div>';}).join('');}}
+  var brandMap={};jobs.forEach(function(j){var c=customers.find(function(x){return x.id===j.customerId;});if(c&&c.vehicleMake){var mk=c.vehicleMake.trim();var mdl=(c.vehicleModel||'').trim();var b=mdl?(mk?mk+' '+mdl:mdl):mk;if(b){brandMap[b]=(brandMap[b]||0)+1;}}});var brandArr=Object.keys(brandMap).map(function(k){return{name:k,count:brandMap[k]};}).sort(function(a,b){return b.count-a.count;});var brandEl=document.getElementById('vehicleBrandChart');if(brandEl){var maxB=Math.max.apply(null,brandArr.map(function(x){return x.count;}));if(maxB===0)maxB=1;if(brandArr.length===0){brandEl.innerHTML='<div class="chart-empty"><i class="fas fa-car"></i>No vehicles yet</div>';}else{brandEl.innerHTML=brandArr.map(function(b){var w=(b.count/maxB)*100;return '<div class="insp-bar-row"><span class="insp-bar-name" title="'+esc(b.name)+'">'+esc(b.name)+'</span><div class="insp-bar-track"><div class="insp-bar-fill" style="width:'+w+'%"></div></div><span class="insp-bar-val">'+b.count+'</span></div>';}).join('');}}
   var partsMap={};jobs.forEach(function(j){if(j.parts){j.parts.split(/[,;]/).forEach(function(p){p=p.trim();if(p){partsMap[p]=(partsMap[p]||0)+1;}});}});var partsArr=Object.keys(partsMap).map(function(k){return{name:k,count:partsMap[k]};}).sort(function(a,b){return b.count-a.count;}).slice(0,5);var tsEl=document.getElementById('topServicesChart');if(tsEl){var maxS=Math.max.apply(null,partsArr.map(function(x){return x.count;}));if(maxS===0)maxS=1;if(partsArr.length===0){tsEl.innerHTML='<div class="chart-empty"><i class="fas fa-cogs"></i>No parts replaced yet</div>';}else{tsEl.innerHTML=partsArr.map(function(s){var w=(s.count/maxS)*100;return '<div class="ts-bar-row"><span class="ts-bar-name" title="'+esc(s.name)+'">'+esc(s.name)+'</span><div class="ts-bar-track"><div class="ts-bar-fill" style="width:'+w+'%"></div></div><span class="ts-bar-val">'+s.count+'</span></div>';}).join('');}}
 }
 
 function getJobDate(j){if(j.inspectionDate){var p=j.inspectionDate.split(/[-.]/);if(p.length>=3)return new Date(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2]));}return j.createdAt?new Date(j.createdAt):null;}
 function inDateRange(j,filter){if(filter==='all')return true;var d=getJobDate(j);if(!d)return false;var now=new Date();if(filter==='today')return d.toDateString()===now.toDateString();if(filter==='week'){var w=new Date(now);w.setDate(w.getDate()-7);return d>=w;}if(filter==='month')return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();if(filter==='year')return d.getFullYear()===now.getFullYear();return true;}
-function matchSearch(j,customers,q){if(!q)return true;q=q.toLowerCase();var cu=customers.find(function(c){return c.id===j.customerId;})||{};if(j.title&&j.title.toLowerCase().indexOf(q)>=0)return true;if(j.parts&&j.parts.toLowerCase().indexOf(q)>=0)return true;if(cu.name&&cu.name.toLowerCase().indexOf(q)>=0)return true;if(cu.vehiclePlate&&cu.vehiclePlate.toLowerCase().indexOf(q)>=0)return true;if(j.createdByName&&j.createdByName.toLowerCase().indexOf(q)>=0)return true;return false;}
+function matchSearch(j,customers,q){if(!q)return true;q=q.toLowerCase();var cu=customers.find(function(c){return c.id===j.customerId;})||{};if(j.title&&j.title.toLowerCase().indexOf(q)>=0)return true;if(j.parts&&j.parts.toLowerCase().indexOf(q)>=0)return true;if(cu.name&&cu.name.toLowerCase().indexOf(q)>=0)return true;if(cu.vehicleMake&&cu.vehicleMake.toLowerCase().indexOf(q)>=0)return true;if(cu.vehicleModel&&cu.vehicleModel.toLowerCase().indexOf(q)>=0)return true;if(cu.vehiclePlate&&cu.vehiclePlate.toLowerCase().indexOf(q)>=0)return true;if(j.createdByName&&j.createdByName.toLowerCase().indexOf(q)>=0)return true;return false;}
 function sortJobs(arr,sortMode){var arr=arr.slice();if(sortMode.col==='title'){arr.sort(function(a,b){var x=(a.title||'').toLowerCase(),y=(b.title||'').toLowerCase();return sortMode.dir==='asc'?(x<y?-1:1):(x>y?-1:1);});}else if(sortMode.col==='status'){var order={pending:0,in_progress:1,completed:2};arr.sort(function(a,b){var x=order[a.status||'pending']||0,y=order[b.status||'pending']||0;if(x!==y)return sortMode.dir==='asc'?x-y:y-x;return new Date(b.createdAt)-new Date(a.createdAt);});}else{arr.sort(function(a,b){var da=getJobDate(a),db=getJobDate(b);da=da||new Date(0);db=db||new Date(0);return sortMode.dir==='asc'?da-db:db-da;});}return arr;}
 function applyDashFilters(){var q=document.getElementById('dashSearchInput').value.trim();var s=document.getElementById('dashStatusFilter').value;var dF=document.getElementById('dashDateFilter').value;var clearBtn=document.getElementById('dashSearchClear');if(clearBtn)clearBtn.classList.toggle('visible',q.length>0);var filtered=_cachedJobs.filter(function(j){return(s==='all'||j.status===s)&&inDateRange(j,dF)&&matchSearch(j,_cachedCustomers,q);});filtered=sortJobs(filtered,_dashSort);_dashFilteredJobs=filtered;_dashPage=1;renderDashJobsTable();}
 function clearDashSearch(){var i=document.getElementById('dashSearchInput');if(i){i.value='';applyDashFilters();}}
@@ -985,6 +988,28 @@ function renderJobsPagination(){var el=document.getElementById('jobsPagination')
 function goJobsPage(p){if(p<1||p>Math.ceil(_jobsFilteredJobs.length/_jobsPerPage))return;_jobsPage=p;renderJobsTable();}
 function renderDashboard(){refreshCachedData().then(function(results){var jobs=results[0],customers=results[1],users=results[2];document.getElementById('dashJobs').textContent=jobs.length;document.getElementById('dashCustomers').textContent=customers.length;document.getElementById('dashPending').textContent=jobs.filter(function(x){return x.status==='in_progress';}).length;document.getElementById('dashCompleted').textContent=jobs.filter(function(x){return x.status==='completed';}).length;var cnt=document.getElementById('dashRecentCount');if(cnt)cnt.textContent=jobs.length;renderCharts(jobs,customers,users);_dashFilteredJobs=sortJobs(jobs,_dashSort);_dashPage=1;renderDashJobsTable();});}
 function renderJobs(){refreshCachedData().then(function(results){var jobs=results[0];_jobsFilteredJobs=sortJobs(jobs,_jobsSort);_jobsPage=1;applyJobsFilters();});}
+
+/* ==================================================================
+   ===== CHANGED v6 — OVERRIDE: replaces the renderCharts shipped in Part 4 =====
+   Vehicle chart now counts MAKE + MODEL, and blank models are NEVER hidden
+   inside the brand number:
+     model filled   → "Proton Saga", "Toyota Vios", ...
+     model blank    → "Proton — Unknown"  (its own bar)
+     make blank too → "Unknown"
+   Stack normally — JavaScript uses this (last-defined) version automatically.
+   ================================================================== */
+function renderCharts(jobs,customers,users){
+  var months=[];var now=new Date();
+  for(var i=5;i>=0;i--){var d=new Date(now.getFullYear(),now.getMonth()-i,1);months.push({key:d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'),label:d.toLocaleDateString('en',{month:'short'}),year:d.getFullYear(),month:d.getMonth(),pending:0,in_progress:0,completed:0,total:0});}
+  jobs.forEach(function(j){var cd=j.createdAt?new Date(j.createdAt):null;var id=j.inspectionDate?new Date(j.inspectionDate):null;var useD=id||cd;if(!useD)return;var key=useD.getFullYear()+'-'+String(useD.getMonth()+1).padStart(2,'0');var m=months.find(function(x){return x.key===key;});if(m){var st=j.status||'pending';if(st==='completed')m.completed++;else if(st==='in_progress')m.in_progress++;else m.pending++;m.total++;}});
+  var jpmEl=document.getElementById('jobsPerMonthChart');if(jpmEl){var maxT=Math.max.apply(null,months.map(function(m){return m.total;}));if(maxT===0)maxT=1;jpmEl.innerHTML=months.map(function(m){var wP=(m.pending/maxT)*100;var wI=(m.in_progress/maxT)*100;var wC=(m.completed/maxT)*100;var segs='';if(m.total>0){segs='<span class="Seg-pending" style="width:'+wP+'%"></span><span class="Seg-in_progress" style="width:'+wI+'%"></span><span class="Seg-completed" style="width:'+wC+'%"></span>';}else{segs='<span class="bar-row-fill empty" style="width:100%"></span>';}return '<div class="bar-row"><span class="bar-row-label">'+esc(m.label)+'</span><div class="bar-row-track"><div class="bar-row-fill">'+segs+'</div></div><span class="bar-row-val">'+m.total+'</span></div>';}).join('');}
+  var total=jobs.length;var completed=jobs.filter(function(j){return j.status==='completed';}).length;var rate=total>0?Math.round((completed/total)*100):0;
+  var ringEl=document.getElementById('completionRing');if(ringEl){var R=52,C=2*Math.PI*R;var off=C-(rate/100)*C;ringEl.innerHTML='<svg class="ring-svg" viewBox="0 0 130 130"><circle class="ring-bg" cx="65" cy="65" r="'+R+'"></circle><circle class="ring-fg" cx="65" cy="65" r="'+R+'" stroke-dasharray="'+C+'" stroke-dashoffset="'+off+'"></circle><text class="ring-center" x="65" y="68" text-anchor="middle">'+rate+'%</text><text class="ring-sub" x="65" y="84" text-anchor="middle">Complete</text></svg><div class="ring-label">'+completed+' of '+total+' jobs</div>';}
+  var inspMap={};jobs.forEach(function(j){if(j.status==='completed'&&j.createdByName){inspMap[j.createdByName]=(inspMap[j.createdByName]||0)+1;}});var inspArr=Object.keys(inspMap).map(function(k){return{name:k,count:inspMap[k]};}).sort(function(a,b){return b.count-a.count;});var inspEl=document.getElementById('inspectorActivityChart');if(inspEl){var maxI=Math.max.apply(null,inspArr.map(function(x){return x.count;}));if(maxI===0)maxI=1;if(inspArr.length===0){inspEl.innerHTML='<div class="chart-empty"><i class="fas fa-user-slash"></i>No completed jobs yet</div>';}else{inspEl.innerHTML=inspArr.map(function(i){var w=(i.count/maxI)*100;return '<div class="insp-bar-row"><span class="insp-bar-name" title="'+esc(i.name)+'">'+esc(i.name)+'</span><div class="insp-bar-track"><div class="insp-bar-fill" style="width:'+w+'%"></div></div><span class="insp-bar-val">'+i.count+'</span></div>';}).join('');}}
+  /* v6: make + model, blank model = "Make — Unknown" as its own bar */
+  var brandMap={};jobs.forEach(function(j){var c=customers.find(function(x){return x.id===j.customerId;});if(c){var mk=(c.vehicleMake||'').trim();var mdl=(c.vehicleModel||'').trim();var b;if(mk&&mdl)b=mk+' '+mdl;else if(mk)b=mk+' \u2014 Unknown';else if(mdl)b=mdl;else b='Unknown';brandMap[b]=(brandMap[b]||0)+1;}});var brandArr=Object.keys(brandMap).map(function(k){return{name:k,count:brandMap[k]};}).sort(function(a,b){return b.count-a.count;});var brandEl=document.getElementById('vehicleBrandChart');if(brandEl){var maxB=Math.max.apply(null,brandArr.map(function(x){return x.count;}));if(maxB===0)maxB=1;if(brandArr.length===0){brandEl.innerHTML='<div class="chart-empty"><i class="fas fa-car"></i>No vehicles yet</div>';}else{brandEl.innerHTML=brandArr.map(function(b){var w=(b.count/maxB)*100;return '<div class="insp-bar-row"><span class="insp-bar-name" title="'+esc(b.name)+'">'+esc(b.name)+'</span><div class="insp-bar-track"><div class="insp-bar-fill" style="width:'+w+'%"></div></div><span class="insp-bar-val">'+b.count+'</span></div>';}).join('');}}
+  var partsMap={};jobs.forEach(function(j){if(j.parts){j.parts.split(/[,;]/).forEach(function(p){p=p.trim();if(p){partsMap[p]=(partsMap[p]||0)+1;}});}});var partsArr=Object.keys(partsMap).map(function(k){return{name:k,count:partsMap[k]};}).sort(function(a,b){return b.count-a.count;}).slice(0,5);var tsEl=document.getElementById('topServicesChart');if(tsEl){var maxS=Math.max.apply(null,partsArr.map(function(x){return x.count;}));if(maxS===0)maxS=1;if(partsArr.length===0){tsEl.innerHTML='<div class="chart-empty"><i class="fas fa-cogs"></i>No parts replaced yet</div>';}else{tsEl.innerHTML=partsArr.map(function(s){var w=(s.count/maxS)*100;return '<div class="ts-bar-row"><span class="ts-bar-name" title="'+esc(s.name)+'">'+esc(s.name)+'</span><div class="ts-bar-track"><div class="ts-bar-fill" style="width:'+w+'%"></div></div><span class="ts-bar-val">'+s.count+'</span></div>';}).join('');}}
+}
 
 /* === PARTS CATALOG (auto from jobs) === */
 function renderPartsCatalog(){
@@ -1059,11 +1084,11 @@ function openPartPhotoViewer(encodedData){
 function closeAiModal(){document.getElementById('aiModal').classList.remove('active');}
 
 /* ==================================================================
-   ===== CHAT v4: FIXED profile pics + HD wallpaper + all chat features =====
+   ===== CHAT: profile pics (fixed) + cloud wallpaper + badge + notifications + reply + mentions + stickers =====
    ================================================================== */
 
 /* --- 🟡 Profile pictures (EVERY user sets their own) --- */
-var _userAvatars={}; /* uid → imageData, kept fresh from Firestore users docs */
+var _userAvatars={};
 function avatarHTML(u,cls){
   var img=_userAvatars[u.id];
   var ini=(u.name||'?').charAt(0).toUpperCase();
@@ -1089,9 +1114,6 @@ function openProfileModal(){
   big.innerHTML=(img?'<img src="'+img+'" alt="">':'<div style="display:grid;place-items:center;width:100%;height:100%">'+esc((currentUser.name||'?').charAt(0).toUpperCase())+'</div>')+'<div class="profile-avatar-hint"><i class="fas fa-camera"></i><span>Change</span></div>';
   document.getElementById('profileModal').classList.add('active');
 }
-/* CHANGED v4: FIXED the black-square bug — the image is now drawn DIRECTLY from the
-   source onto the output canvas (v3 created a canvas but never drew the image onto
-   it, so JPEG rendered the empty canvas as solid black) */
 function uploadProfilePic(input){
   var f=input.files&&input.files[0];input.value='';
   if(!f)return;
@@ -1101,7 +1123,6 @@ function uploadProfilePic(input){
   r.onload=function(e){
     var img=new Image();
     img.onload=function(){
-      /* v4 FIX: square centre-crop drawn DIRECTLY from the source image */
       var side=Math.min(img.width,img.height);
       var sc=Math.min(1,256/side);
       var out=Math.max(1,Math.round(side*sc));
@@ -1113,7 +1134,7 @@ function uploadProfilePic(input){
       fs.collection('users').doc(currentUser.id).set({photoURL:data},{merge:true}).then(function(){
         currentUser.photoURL=data;_userAvatars[currentUser.id]=data;
         updateHeaderAvatar();
-        openProfileModal(); /* re-render big preview */
+        openProfileModal();
         showToast('Profile picture updated','success');
       }).catch(function(er){showToast('Failed: '+er.message,'error');});
     };
@@ -1143,7 +1164,7 @@ var _chatWallpapers=[
   {id:'honey',name:'Honeycomb',css:"url('https://www.transparenttextures.com/patterns/hexellence.png')"},
   {id:'dark',name:'Dark',css:'#0a0a0a'}
 ];
-var _wpCurrent={kind:'none'}; /* cached copy for the modal's selected highlight */
+var _wpCurrent={kind:'none'};
 function _wpDoc(){return fs.collection('wallpapers').doc(currentUser.id);}
 function applyChatWallpaper(){
   var el=document.getElementById('chatMessages');if(!el||!currentUser)return;
@@ -1175,8 +1196,6 @@ function setChatWallpaper(id){
     applyChatWallpaper();showToast('Wallpaper set','success');
   }).catch(function(er){showToast('Failed: '+er.message,'error');});
 }
-/* CLOUD: tries 1920px first; Firestore's ~1MB doc cap forces step-down only if rejected.
-   Each rung is announced so you always know the quality that actually saved. */
 function uploadChatWallpaper(input){
   var f=input.files&&input.files[0];input.value='';
   if(!f)return;
@@ -1201,7 +1220,7 @@ function uploadChatWallpaper(input){
         var c=document.createElement('canvas');c.width=w;c.height=h;
         c.getContext('2d').drawImage(img,0,0,w,h);
         var data=c.toDataURL('image/jpeg',t.q);
-        if(data.length>900000){attempt(i+1);return;} /* too big for a Firestore doc → next rung */
+        if(data.length>900000){attempt(i+1);return;}
         _wpDoc().set({id:currentUser.id,kind:'custom',data:data,updatedAt:new Date().toISOString()}).then(function(){
           _wpCurrent={kind:'custom',data:data};
           applyChatWallpaper();
@@ -1269,17 +1288,17 @@ var _globalChatUnsub=null;
 function startGlobalChatNotifications(){
   if(_globalChatUnsub||!currentUser)return;
   var firstSnap=true;
-  refreshUserAvatars(); /* populate avatars for popups before messages arrive */
+  refreshUserAvatars();
   _globalChatUnsub=fs.collection('messages').orderBy('ts','asc').limit(100).onSnapshot(function(snap){
-    if(firstSnap){firstSnap=false;return;} /* skip initial load — no popup spam on login */
+    if(firstSnap){firstSnap=false;return;}
     var onChat=document.getElementById('chatView').classList.contains('active');
     snap.docChanges().forEach(function(ch){
-      if(ch.type!=='added')return; /* ignore deletes/edits */
+      if(ch.type!=='added')return;
       var md=ch.doc.data();if(!md)return;
-      if(md.uid===currentUser.id)return; /* own message → never counted, never notified */
-      if(onChat)return; /* already viewing chat → no popup, no badge (you can see it) */
-      bumpChatUnread(); /* 🔴 count++, save to localStorage, badge pulses in */
-      showMsgNotif(md.name||'Unknown',md.stickerId?'[Sticker] '+(md.stickerName||''):(md.text||''),_userAvatars[md.uid]); /* 🔔 popup with avatar */
+      if(md.uid===currentUser.id)return;
+      if(onChat)return;
+      bumpChatUnread();
+      showMsgNotif(md.name||'Unknown',md.stickerId?'[Sticker] '+(md.stickerName||''):(md.text||''),_userAvatars[md.uid]);
     });
   },function(err){});
 }
@@ -1287,8 +1306,6 @@ function stopGlobalChatNotifications(){if(_globalChatUnsub){_globalChatUnsub();_
 
 /* --- Chat view rendering: avatars, reply quotes (VISIBLE), mentions, stickers --- */
 var _chatUsers=[],_stickersMap={},_chatMsgs=[],_replyTo=null;
-
-/* @mention highlighting — matches full known user names (longest first) */
 function fmtChatText(text){
   var e=esc(text||'');
   var names=(_chatUsers||[]).map(function(u){return u.name;}).filter(Boolean);
@@ -1315,7 +1332,6 @@ function renderChatMsg(m){
   var h='<div class="'+cls+'" id="msg-'+m.id+'">';
   var canDel=isMe||currentUser.role==='admin'||currentUser.role==='manager';
   h+='<div class="chat-msg-actions"><button class="chat-msg-action" title="Reply" onclick="setReplyTo(\''+m.id+'\')"><i class="fas fa-reply"></i></button>'+(canDel?'<button class="chat-msg-action del" title="Delete" onclick="deleteChatMessage(\''+m.id+'\')"><i class="fas fa-trash"></i></button>':'')+'</div>';
-  /* avatar + bubble column side by side; others' messages → avatar left, yours → right */
   h+='<div class="chat-msg-row">'+avatarHTML({id:md.uid,name:md.name},'chat-avatar')+'<div class="chat-msg-col"><div class="chat-msg-name">'+(isMe?'You':esc(md.name||'Unknown'))+'</div>';
   if(md.replyTo){h+='<div class="chat-msg-quote" onclick="scrollToChatMsg(\''+esc(md.replyTo.id||'')+'\')" title="Jump to original message"><div class="chat-quote-name">'+esc(md.replyTo.name||'Unknown')+'</div><div class="chat-quote-text">'+esc((md.replyTo.text||'').substring(0,90))+'</div></div>';}
   if(md.stickerId){
@@ -1335,7 +1351,6 @@ function renderChat(){
     _chatUsers=res[0]||[];
     _userAvatars={};_chatUsers.forEach(function(u){if(u.photoURL)_userAvatars[u.id]=u.photoURL;});
     _stickersMap={};(res[1]||[]).forEach(function(s){_stickersMap[s.id]=s;});
-    /* sidebar with avatars; click → @mention */
     if(userListEl){userListEl.innerHTML=_chatUsers.map(function(u){
       var av=_userAvatars[u.id];var ini=(u.name||'?').charAt(0).toUpperCase();
       var avHTML=av?('<div class="chat-user-avatar"><img src="'+av+'" alt=""></div>'):('<div class="chat-user-avatar">'+esc(ini)+'</div>');
@@ -1435,12 +1450,10 @@ function addSticker(input){
   r.onload=function(e){
     var data=e.target.result;
     if(isGif){
-      /* ANIMATED sticker — stored raw, animates everywhere */
       if(data.length>900000){showToast('GIF too large for cloud storage — keep GIFs under ~650KB (compress at ezgif.com)','error');return;}
       DB.add('stickers',{name:name,imageData:data,animated:true,createdBy:currentUser.id,createdByName:currentUser.name,createdAt:new Date().toISOString()}).then(function(){showToast('Animated sticker added','success');refreshStickers();}).catch(function(er){showToast('Failed: '+er.message,'error');});
       return;
     }
-    /* STATIC sticker — resize to 128px */
     var img=new Image();
     img.onload=function(){
       var MAX=128;var sc=Math.min(MAX/img.width,MAX/img.height,1);
@@ -1527,8 +1540,80 @@ function deleteJob(id){if(!confirm('Delete this job and all media?'))return;fs.c
 function completeJob(){if(!state.currentJob)return;state.currentJob.status='completed';saveJobToDB(true);document.getElementById('currentJobTitle').textContent=state.currentJob.title+' \u2713';document.getElementById('completeBtn').style.display='none';showToast('Job completed','success');}
 function renderCustomers(){DB.getAll('customers').then(function(c){var s=c.slice().sort(function(a,b){return new Date(b.createdAt)-new Date(a.createdAt);});var h='<table class="data-table"><thead><tr><th>Name</th><th>Company</th><th>Phone</th><th>Vehicle</th><th>Plate</th><th>Actions</th></tr></thead><tbody>';if(s.length===0)h+='<tr><td colspan="6"><div class="gen-empty"><i class="fas fa-users"></i><p>No customers yet.<br><button class="btn-add primary" style="margin-top:12px" onclick="openCustomerModal()"><i class="fas fa-plus"></i> Add First Customer</button></p></div></td></tr>';else s.forEach(function(c){var v=(c.vehicleMake||'')+' '+(c.vehicleModel||'')+(c.vehicleYear?' ('+c.vehicleYear+')':'');if(!v.trim())v='-';h+='<tr><td><strong>'+esc(c.name)+'</strong></td><td>'+esc(c.company||'-')+'</td><td>'+esc(c.phone||'-')+'</td><td>'+esc(v)+'</td><td><strong>'+esc(c.vehiclePlate||'-')+'</strong></td><td><div class="table-actions"><button class="table-action" onclick="openCustomerModal(\''+c.id+'\')"><i class="fas fa-edit"></i> Edit</button>';if(currentUser.role==='admin'||currentUser.role==='manager')h+='<button class="table-action danger" onclick="deleteCustomer(\''+c.id+'\')"><i class="fas fa-trash"></i></button>';h+='</div></td></tr>';});h+='</tbody></table>';document.getElementById('customersTable').innerHTML=h;});}
 var editingCustomerId=null;
-function openCustomerModal(id){editingCustomerId=id||null;['custName','custCompany','custPhone','custEmail','custPlate','custMake','custModel','custYear','custVin'].forEach(function(f){document.getElementById(f).value='';});if(id){DB.get('customers',id).then(function(c){if(!c)return;document.getElementById('custName').value=c.name||'';document.getElementById('custCompany').value=c.company||'';document.getElementById('custPhone').value=c.phone||'';document.getElementById('custEmail').value=c.email||'';document.getElementById('custPlate').value=c.vehiclePlate||'';document.getElementById('custMake').value=c.vehicleMake||'';document.getElementById('custModel').value=c.vehicleModel||'';document.getElementById('custYear').value=c.vehicleYear||'';document.getElementById('custVin').value=c.vin||'';document.getElementById('customerModalTitle').textContent='EDIT CUSTOMER';document.getElementById('customerModal').classList.add('active');});}else{document.getElementById('customerModalTitle').textContent='ADD CUSTOMER';document.getElementById('customerModal').classList.add('active');}}
-function saveCustomer(){var n=document.getElementById('custName').value.trim();if(!n){showToast('Name required','error');return;}var d={id:editingCustomerId||('cust_'+Date.now()),name:n,company:document.getElementById('custCompany').value.trim(),phone:document.getElementById('custPhone').value.trim(),email:document.getElementById('custEmail').value.trim(),vehiclePlate:document.getElementById('custPlate').value.trim(),vehicleMake:document.getElementById('custMake').value.trim(),vehicleModel:document.getElementById('custModel').value.trim(),vehicleYear:document.getElementById('custYear').value.trim(),vin:document.getElementById('custVin').value.trim(),createdBy:currentUser.id,createdAt:new Date().toISOString()};DB.put('customers',d).then(function(){closeModal('customerModal');showToast('Customer saved','success');renderCustomers();});}
+
+/* ===== NEW v6: Vehicle make/model picker =====
+   Make = dropdown (no typos possible). Model = smart suggestions that change
+   with the brand + free text still allowed for rare models. */
+var VEHICLE_MAKES=['Proton','Perodua','Toyota','Honda','Nissan','Mazda','Mitsubishi','Hyundai','Kia','Mercedes-Benz','BMW','Volvo','Isuzu','Ford'];
+var CUST_MODELS={
+'Proton':['Saga','Persona','Iriz','S70','X50','X70','X80','X90','Perdana','Exora','Arena','Waja'],
+'Perodua':['Myvi','Axia','Bezza','Alza','Ativa','Aruz','Kancil','Kenari','Viva','Rusa'],
+'Toyota':['Vios','Yaris','Corolla','Camry','Hilux','Fortuner','Rush','Avanza','Innova','Hiace'],
+'Honda':['City','Civic','Accord','Jazz','HR-V','CR-V','BR-V','Odyssey'],
+'Nissan':['Almera','Sylphy','Teana','X-Trail','Navara','Serena'],
+'Mazda':['Mazda2','Mazda3','Mazda6','CX-3','CX-5','CX-8'],
+'Mitsubishi':['Attrage','Xpander','Triton','Pajero','Outlander'],
+'Hyundai':['i10','i30','Elantra','Sonata','Tucson','Santa Fe'],
+'Kia':['Picanto','Rio','Cerato','Sorento','Sportage','Seltos'],
+'Mercedes-Benz':['A-Class','C-Class','E-Class','GLA','GLC','GLE'],
+'BMW':['1 Series','3 Series','5 Series','X1','X3','X5'],
+'Volvo':['XC40','XC60','XC90','S60'],
+'Isuzu':['D-Max','mu-X'],
+'Ford':['Ranger','Everest','Focus']
+};
+function onCustMakeChange(){
+  var mk=document.getElementById('custMake').value;
+  var other=document.getElementById('custMakeOther');
+  other.style.display=mk==='Other'?'block':'none';
+  if(mk==='Other')other.focus();
+  var dl=document.getElementById('custModelList');
+  var list=CUST_MODELS[mk]||[];
+  dl.innerHTML=list.map(function(m){return '<option value="'+m+'">';}).join('');
+}
+
+/* CHANGED v6: opens with the make dropdown — editing an old customer auto-selects
+   its make; rare makes fall back to "Other…" with the old value pre-filled */
+function openCustomerModal(id){
+  editingCustomerId=id||null;
+  ['custName','custCompany','custPhone','custEmail','custPlate','custModel','custYear','custVin'].forEach(function(f){document.getElementById(f).value='';});
+  document.getElementById('custMakeOther').value='';
+  if(id){
+    DB.get('customers',id).then(function(c){
+      if(!c)return;
+      document.getElementById('custName').value=c.name||'';
+      document.getElementById('custCompany').value=c.company||'';
+      document.getElementById('custPhone').value=c.phone||'';
+      document.getElementById('custEmail').value=c.email||'';
+      document.getElementById('custPlate').value=c.vehiclePlate||'';
+      var mk=c.vehicleMake||'';
+      var sel=document.getElementById('custMake');
+      sel.value=VEHICLE_MAKES.indexOf(mk)>=0?mk:(mk?'Other':'');
+      document.getElementById('custMakeOther').value=(sel.value==='Other')?mk:'';
+      onCustMakeChange();
+      document.getElementById('custModel').value=c.vehicleModel||'';
+      document.getElementById('custYear').value=c.vehicleYear||'';
+      document.getElementById('custVin').value=c.vin||'';
+      document.getElementById('customerModalTitle').textContent='EDIT CUSTOMER';
+      document.getElementById('customerModal').classList.add('active');
+    });
+  }else{
+    document.getElementById('custMake').value='';
+    onCustMakeChange();
+    document.getElementById('customerModalTitle').textContent='ADD CUSTOMER';
+    document.getElementById('customerModal').classList.add('active');
+  }
+}
+/* CHANGED v6: Make required + clean value saved (dropdown value or typed "Other") */
+function saveCustomer(){
+  var n=document.getElementById('custName').value.trim();
+  if(!n){showToast('Name required','error');return;}
+  var mkSel=document.getElementById('custMake').value;
+  if(!mkSel){showToast('Select vehicle make','error');return;}
+  var mk=mkSel==='Other'?document.getElementById('custMakeOther').value.trim():mkSel;
+  if(mkSel==='Other'&&!mk){showToast('Type the vehicle make','error');return;}
+  var d={id:editingCustomerId||('cust_'+Date.now()),name:n,company:document.getElementById('custCompany').value.trim(),phone:document.getElementById('custPhone').value.trim(),email:document.getElementById('custEmail').value.trim(),vehiclePlate:document.getElementById('custPlate').value.trim(),vehicleMake:mk,vehicleModel:document.getElementById('custModel').value.trim(),vehicleYear:document.getElementById('custYear').value.trim(),vin:document.getElementById('custVin').value.trim(),createdBy:currentUser.id,createdAt:new Date().toISOString()};
+  DB.put('customers',d).then(function(){closeModal('customerModal');showToast('Customer saved','success');renderCustomers();});
+}
 function deleteCustomer(id){if(!confirm('Delete this customer?'))return;DB.del('customers',id).then(function(){showToast('Deleted','success');renderCustomers();});}
 function renderUsers(){if(currentUser.role!=='admin'){showView('dashboard');return;}DB.getAll('users').then(function(u){var h='<table class="data-table"><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Created</th><th>Actions</th></tr></thead><tbody>';u.forEach(function(x){h+='<tr><td><strong>'+esc(x.name)+'</strong>'+(x.id===currentUser.id?' <span style="font-size:9px;color:var(--success)">(you)</span>':'')+'</td><td>'+esc(x.email)+'</td><td><span class="role-tag" style="background:'+(x.role==='admin'?'var(--fg)':(x.role==='manager'?'#2563eb':'var(--bg-3)'))+';color:'+(x.role==='staff'?'var(--fg)':'#fff')+';border:'+(x.role==='staff'?'1px solid var(--border-hi)':'none')+'">'+x.role.toUpperCase()+'</span></td><td>'+(x.createdAt?new Date(x.createdAt).toLocaleDateString():'-')+'</td><td><div class="table-actions"><button class="table-action" onclick="openUserModal(\''+x.id+'\')"><i class="fas fa-edit"></i> Edit</button>';if(x.id!==currentUser.id)h+='<button class="table-action danger" onclick="deleteUser(\''+x.id+'\')"><i class="fas fa-trash"></i></button>';h+='</div></td></tr>';});h+='</tbody></table>';document.getElementById('usersTable').innerHTML=h;});}
 var editingUserId=null;
@@ -1617,7 +1702,7 @@ function getAnnotatedImageData(sd){return new Promise(function(resolve){if(!sd.i
 function saveJobToDB(silent){if(!state.currentJob){showToast('No job open','error');return;}var btn=document.getElementById('saveJobBtn');if(btn){btn.disabled=true;btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Saving...';}var sd=state.slots.map(serializeSlot);var hp=sd.filter(function(x){return x.imageData;}).length>0;if(state.currentJob.status==='pending'&&hp)state.currentJob.status='in_progress';var jr=fs.collection('jobs').doc(state.currentJob.id);jr.set(state.currentJob,{merge:true}).then(function(){return jr.collection('slots').get();}).then(function(snap){var b=fs.batch();snap.docs.forEach(function(d){b.delete(d.ref);});sd.forEach(function(x){b.set(jr.collection('slots').doc(x.type),x);});return b.commit();}).then(function(){if(btn){btn.disabled=false;btn.innerHTML='<i class="fas fa-save"></i> Save Job';}if(!silent)showToast('Job saved to cloud','success');}).catch(function(er){if(btn){btn.disabled=false;btn.innerHTML='<i class="fas fa-save"></i> Save Job';}showToast('Save failed: '+er.message,'error');});}
 function openJob(id){DB.get('jobs',id).then(function(j){if(!j){showToast('Job not found','error');return;}fs.collection('jobs').doc(id).collection('slots').get().then(function(snap){var slots=snap.docs.map(function(d){return d.data();});clearSlots();state.currentJob=j;document.getElementById('currentJobTitle').textContent=j.title+(j.status==='completed'?' \u2713':'');var cb=document.getElementById('completeBtn');if(cb)cb.style.display=j.status==='completed'?'none':'flex';var vg=document.getElementById('vehicleGrid'),dg=document.getElementById('defectGrid'),pg=document.getElementById('partsGrid');vg.innerHTML='';dg.innerHTML='';pg.innerHTML='';if(slots.length>0){slots.forEach(function(sd){var c=vg;if(sd.type.indexOf('defect_')===0)c=dg;else if(sd.type.indexOf('parts_')===0)c=pg;var sl=createSlot({type:sd.type,title:sd.title,icon:sd.icon,removable:sd.removable,container:c,labelText:sd.labelText,fontSize:sd.fontSize,showDate:sd.showDate,showLabel:sd.showLabel});if(sd.customDate)sl.customDate=new Date(sd.customDate);if(sd.imageData){var img=new Image();img.onload=function(){sl.originalImage=img;sl.croppedCanvas=null;updateSlotPreview(sl);updateStats();};img.src=sd.imageData;}});}else{initDefaultSlots();}updateStats();showView('inspection');});});}
 function clearSlots(){state.slots.forEach(function(s){if(s.element)s.element.remove();});state.slots=[];state.currentJob=null;}
-function initDefaultSlots(){var g=document.getElementById('vehicleGrid');createSlot({type:'mileage',title:'Mileage',icon:'fas fa-tachometer-alt',container:g});createSlot({type:'rear_view',title:'Rear View',icon:'fas fa-car-side',container:g});createSlot({type:'front_view',title:'Front View',icon:'fas fa-car',container:g});createSlot({type:'vin_plate',title:'VIN Plate',icon:'fas fa-barcode',container:g});addDefectSlot();addPartsSlot();addPartsSlot();}
+function initDefaultSlots(){var g=document.getElementById('vehicleGrid');createSlot({type:'mileage',title:'Mileage',icon:'fas fa-tachometer-alt',container:g});createSlot({type:'rear_view',title:'Rear View',icon:'fas fa-car-side',container:g});createSlot({type:'rear_view',title:'Rear View',icon:'fas fa-car-side',container:g});createSlot({type:'front_view',title:'Front View',icon:'fas fa-car',container:g});createSlot({type:'vin_plate',title:'VIN Plate',icon:'fas fa-barcode',container:g});addDefectSlot();addPartsSlot();addPartsSlot();}
 function addDefectSlot(){var g=document.getElementById('defectGrid');if(!g)return;var n=g.children.length+1;createSlot({type:'defect_'+n,title:'Defect #'+n,icon:'fas fa-exclamation-triangle',container:g,removable:true});}
 function addPartsSlot(){var g=document.getElementById('partsGrid');if(!g)return;var n=g.children.length+1;createSlot({type:'parts_'+n,title:'Parts #'+n,icon:'fas fa-cogs',container:g,removable:true});}
 function generatePDF(){if(!state.currentJob){showToast('No job open','error');return;}generateJobPDF(state.currentJob.id);}
