@@ -924,7 +924,20 @@ function doLogin(){var e=document.getElementById('loginEmail').value.trim(),p=do
 function doRegister(){var n=document.getElementById('regName').value.trim(),e=document.getElementById('regEmail').value.trim(),p=document.getElementById('regPassword').value;if(!n||!e||!p){showToast('All fields required','error');return;}if(p.length<6){showToast('Password min 6 chars','error');return;}firebase.auth().createUserWithEmailAndPassword(e,p).then(function(cred){return DB.getAll('users').then(function(u){var r=u.length===0?'admin':'staff';return fs.collection('users').doc(cred.user.uid).set({id:cred.user.uid,name:n,email:e,role:r,createdAt:new Date().toISOString()});});}).catch(function(er){showToast(er.message,'error');});}
 /* logout stops the global chat listener and clears the unread badge */
 function doLogout(){firebase.auth().signOut().then(function(){currentUser=null;stopGlobalChatNotifications();clearChatUnread();document.getElementById('appShell').classList.remove('active');document.getElementById('authScreen').style.display='flex';clearSlots();});}
-function checkSession(){firebase.auth().onAuthStateChanged(function(u){if(u){fs.collection('users').doc(u.uid).get().then(function(d){if(d.exists){currentUser=d.data();showApp();}else{var p={id:u.uid,name:u.email.split('@')[0],email:u.email,role:'staff',createdAt:new Date().toISOString()};fs.collection('users').doc(u.uid).set(p).then(function(){currentUser=p;showApp();});}});}else{document.getElementById('authScreen').style.display='flex';document.getElementById('appShell').classList.remove('active');}});}
+/* FIXED: wait for the real profile instead of inventing one from the email prefix */
+function checkSession(){firebase.auth().onAuthStateChanged(function(u){
+  if(!u){document.getElementById('authScreen').style.display='flex';document.getElementById('appShell').classList.remove('active');return;}
+  loadUser(u.uid,0);
+});}
+function loadUser(uid,attempt){
+  fs.collection('users').doc(uid).get().then(function(d){
+    if(d.exists){currentUser=d.data();showApp();return;}
+    if(attempt<5){setTimeout(function(){loadUser(uid,attempt+1);},1500);return;}
+    var auth=firebase.auth().currentUser;
+    var p={id:uid,name:auth.email.split('@')[0],email:auth.email,role:'staff',createdAt:new Date().toISOString()};
+    fs.collection('users').doc(uid).set(p).then(function(){currentUser=p;showApp();});
+  });
+}
 /* at login — load avatar into header, apply chat wallpaper, restore unread count, start global listener */
 function showApp(){document.getElementById('authScreen').style.display='none';document.getElementById('appShell').classList.add('active');document.getElementById('userNameDisplay').textContent=currentUser.name;var t=document.getElementById('userRoleTag');t.textContent=currentUser.role.toUpperCase();if(currentUser.role==='admin'){t.style.background='var(--fg)';t.style.color='var(--bg)';t.style.border='none';}else if(currentUser.role==='manager'){t.style.background='#2563eb';t.style.color='#fff';t.style.border='none';}else{t.style.background='var(--bg-3)';t.style.color='var(--fg)';t.style.border='1px solid var(--border-hi)';}document.getElementById('navUsers').style.display=currentUser.role==='admin'?'block':'none';updateHeaderAvatar();applyChatWallpaper();loadChatUnread();startGlobalChatNotifications();showView('dashboard');}
 var _chatUnsub=null;
