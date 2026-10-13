@@ -664,46 +664,6 @@ body.compact .act-btn span{display:none}
   .ai-grid{grid-template-columns:repeat(auto-fill,minmax(100px,1fr))}
   .ai-card{padding:10px}
 }
-  /* ================= DARK MODE ================= */
-body.dark-mode{--bg:#161618;--bg-2:#1d1d20;--bg-3:#26262a;--card:#1d1d20;--border:#333338;--border-hi:#3f3f46;--fg:#f2f2f4;--fg-2:#d4d4d8;--muted:#9a9aa0;--muted-2:#6b6b70;--info:#5b9bf8}
-/* header */
-body.dark-mode .app-header,body.dark-mode .insp-header,body.dark-mode .edit-header,body.dark-mode .ai-modal-header{background:var(--bg)}
-/* inputs & selects */
-body.dark-mode .auth-input,body.dark-mode .gen-input,body.dark-mode .search-input,body.dark-mode .chat-input,body.dark-mode .gen-select,
-body.dark-mode .filter-select,body.dark-mode .gen-textarea,body.dark-mode .label-input,body.dark-mode .date-input{background:var(--bg);color:var(--fg)}
-body.dark-mode .filter-select{background-image:url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%239a9aa0'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e")}
-body.dark-mode .gen-input::placeholder,body.dark-mode .auth-input::placeholder,body.dark-mode .search-input::placeholder{color:var(--muted-2)}
-/* buttons that hardcode white bg */
-body.dark-mode .toast,body.dark-mode .msg-notif,body.dark-mode .edit-modal,body.dark-mode .save-modal,body.dark-mode .gen-modal{background:rgba(13,13,15,.97)}
-body.dark-mode .toast,body.dark-mode .msg-notif{border:1px solid #333338}
-body.dark-mode .msg-notif-icon{background:var(--fg);color:var(--bg)}
-/* tables */
-body.dark-mode .data-table th{background:var(--bg)}
-body.dark-mode .data-table tr:hover td{background:var(--bg-2)}
-body.dark-mode .page-btn{background:var(--bg)}
-/* modals inner boxes */
-body.dark-mode .gen-box,body.dark-mode .save-box,body.dark-mode .notes-box{background:var(--bg);border-color:var(--fg)}
-body.dark-mode .save-opt:hover{background:var(--bg-2)}
-body.dark-mode .save-opt,body.dark-mode .page-btn,body.dark-mode .gen-btn,body.dark-mode .adj-btn,body.dark-mode .tool-btn,
-body.dark-mode .tool-action-btn,body.dark-mode .chat-sticker-btn,body.dark-mode .chat-msg-action,body.dark-mode .toggle-pill{background:var(--bg)}
-/* chat bits */
-body.dark-mode .chat-msg.me .chat-msg-bubble{background:#f2f2f4;color:#161618;border-color:#f2f2f4}
-body.dark-mode .chat-msg.me .chat-mention{color:#7db4ff}
-body.dark-mode .chat-msg-quote{background:var(--bg-2)}
-body.dark-mode .chat-user-ondot{border-color:var(--bg-2)}
-body.dark-mode .nav-badge{border-color:var(--bg)}
-body.dark-mode .chat-side{background:var(--bg-2)}
-body.dark-mode .chat-user-item:hover{background:var(--bg-3)}
-/* slots / inspection */
-body.dark-mode .slot-preview,body.dark-mode .edit-canvas-area,body.dark-mode .ai-modal-body{background:var(--bg-2)}
-body.dark-mode .preview-empty{color:var(--muted)}
-body.dark-mode .adjust-panel{background:var(--bg-2)}
-body.dark-mode .help-bar{background:var(--bg-2)}
-body.dark-mode .insp-bar-track,body.dark-mode .bar-row-track,body.dark-mode .ts-bar-track{background:var(--bg-3)}
-body.dark-mode .ring-bg{stroke:var(--bg-3)}
-/* swatches in modals */
-body.dark-mode .wp-swatch{border-color:var(--border-hi)}
-/* dark wallpaper preset should stay dark-safe */
 </style>
 </head>
 <body>
@@ -717,8 +677,7 @@ body.dark-mode .wp-swatch{border-color:var(--border-hi)}
 <header class="app-header"><div class="brand"><div class="brand-logo">V</div><div class="brand-text"><h1>VINDOC</h1><p>Inspection Platform</p></div></div>
 <nav class="app-nav"><button class="nav-btn active" data-nav="dashboard" onclick="showView('dashboard')">Dashboard</button><button class="nav-btn" data-nav="jobs" onclick="showView('jobs')">Jobs</button><button class="nav-btn" data-nav="customers" onclick="showView('customers')">Customers</button><button class="nav-btn" id="navUsers" data-nav="users" onclick="showView('users')" style="display:none">Users</button><button class="nav-btn" data-nav="partscatalog" onclick="showView('partscatalog')">Parts Catalog</button><button class="nav-btn" data-nav="chat" onclick="showView('chat')">Chat<span class="nav-badge" id="chatNavBadge"></span></button><button class="nav-btn" data-nav="knowledge" onclick="showView('knowledge')">Knowledge</button></nav>
 <!-- clickable avatar in the header — opens profile picture modal -->
-<div class="header-right"><div class="clock-display" id="clockDisplay"><i class="far fa-clock"></i><span>--</span></div><div class="user-badge"><div class="header-avatar" id="headerAvatar" onclick="openProfileModal()" title="Change profile picture"></div><span id="userNameDisplay"></span> <span class="role-tag" id="userRoleTag">ADMIN</span></div><button class="btn-logout" id="darkModeToggle" onclick="toggleDarkMode()" title="Dark mode"><i class="fas fa-moon"></i></button>
-<button class="btn-logout" onclick="doLogout()"><i class="fas fa-sign-out-alt"></i> Logout</button></div></header> 
+<div class="header-right"><div class="clock-display" id="clockDisplay"><i class="far fa-clock"></i><span>--</span></div><div class="user-badge"><div class="header-avatar" id="headerAvatar" onclick="openProfileModal()" title="Change profile picture"></div><span id="userNameDisplay"></span> <span class="role-tag" id="userRoleTag">ADMIN</span></div><button class="btn-logout" onclick="doLogout()"><i class="fas fa-sign-out-alt"></i> Logout</button></div></header>
 
 <div id="inspHeader" class="insp-header">
 <button class="insp-btn" style="background:var(--bg);border-color:var(--border-hi);color:var(--muted);" onclick="closeJob()"><i class="fas fa-times"></i> Close Job</button>
@@ -1686,16 +1645,6 @@ function toggleCompact(){document.body.classList.toggle('compact');var b=documen
 window.addEventListener('scroll',function(){var stBtn=document.getElementById('scrollTopBtn');var flBar=document.getElementById('floatBar');var onInspection=document.getElementById('inspectionView')&&document.getElementById('inspectionView').classList.contains('active');if(window.scrollY>250){stBtn.style.display='flex';if(flBar&&onInspection)flBar.classList.add('visible');}else{stBtn.style.display='none';if(flBar)flBar.classList.remove('visible');}});
 var _scrollTopBtn=document.getElementById('scrollTopBtn');if(_scrollTopBtn)_scrollTopBtn.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'});});
 function showToast(msg,type){type=type||'info';var c=document.getElementById('toastContainer');if(!c)return;var t=document.createElement('div');t.className='toast '+type;var ic=type==='success'?'check-circle':type==='error'?'exclamation-circle':'info-circle';t.innerHTML='<i class="fas fa-'+ic+'"></i><span>'+msg+'</span>';c.appendChild(t);setTimeout(function(){t.classList.add('out');setTimeout(function(){t.remove();},250);},2600);}
-/* ===== DARK MODE ===== */
-function toggleDarkMode(){
-  var on=document.body.classList.toggle('dark-mode');
-  try{localStorage.setItem('vindoc_dark',on?'1':'0');}catch(e){}
-  var b=document.getElementById('darkModeToggle');
-  if(b)b.innerHTML=on?'<i class="fas fa-sun"></i>':'<i class="fas fa-moon"></i>';
-}
-(function(){
-  try{if(localStorage.getItem('vindoc_dark')==='1'){document.body.classList.add('dark-mode');var b=document.getElementById('darkModeToggle');if(b)b.innerHTML='<i class="fas fa-sun"></i>';}}catch(e){}
-})();
 function updateClock(){var n=new Date();var el=document.querySelector('#clockDisplay span');if(el)el.textContent=String(n.getDate()).padStart(2,'0')+'.'+String(n.getMonth()+1).padStart(2,'0')+'.'+n.getFullYear()+' '+String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0')+':'+String(n.getSeconds()).padStart(2,'0');}
 setInterval(updateClock,1000);updateClock();
 if(firebaseConfig.apiKey==='PASTE_API_KEY_HERE'){document.getElementById('authScreen').innerHTML='<div class="auth-box"><div class="auth-title">VINDOC</div><p style="text-align:center;color:var(--danger);font-size:12px;margin-top:12px">Paste your Firebase config in the code.</p></div>';}else{checkSession();}
