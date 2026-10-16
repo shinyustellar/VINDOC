@@ -1787,7 +1787,66 @@ function updatePptxCount(){
   if(sel)sel.textContent=_pptxTickCount;
   if(sl)sl.textContent=_pptxTickCount;
 }
-function generatePPTX(){if(typeof PptxGenJS==='undefined'){showToast('PPTX library not loaded','error');return;}var checked=document.querySelectorAll('#pptxPhotoList input[type="checkbox"]:checked');var selectedIds=[];for(var i=0;i<checked.length;i++)selectedIds.push(parseInt(checked[i].dataset.pid));var photoSlots=[];selectedIds.forEach(function(id){var s=state.slots.find(function(x){return x.id===id;});if(s)photoSlots.push(serializeSlot(s));});if(photoSlots.length===0){showToast('No photos selected','error');return;}closeModal('pptxModal');photoSlots.sort(function(a,b){function getRank(s){if(['mileage','rear_view','front_view','vin_plate'].indexOf(s.type)!==-1)return 1;if(s.type.indexOf('defect_')===0)return 2;if(s.type.indexOf('parts_')===0)return 3;return 4;}return getRank(a)-getRank(b);});Promise.all(photoSlots.map(function(sd){return getAnnotatedImageData(sd);})).then(function(annotatedImages){var pptx=new PptxGenJS();pptx.defineLayout({name:'WIDE',width:13.33,height:7.5});pptx.layout='WIDE';var titleText=state.currentJob.title||'VEHICLE INSPECTION REPORT';for(var i=0;i<annotatedImages.length;i+=2){var s=pptx.addSlide();s.background={color:'FFFFFF'};if(i===0){s.addText(titleText,{x:0,y:0.2,w:'100%',h:0.8,align:'center',fontSize:28,color:'000000',bold:true,fontFace:'Arial'});var imgY=1.2,imgH=5.5;}else{var imgY=0.5,imgH=6.5;}var img1=annotatedImages[i];if(img1){s.addImage({data:img1,x:0.3,y:imgY,w:6.1,h:imgH,sizing:{type:'contain',w:6.1,h:imgH}});}if(annotatedImages[i+1]){s.addImage({data:annotatedImages[i+1],x:6.9,y:imgY,w:6.1,h:imgH,sizing:{type:'contain',w:6.1,h:imgH}});}}pptx.writeFile({fileName:'VINDOC_'+(state.currentJob.title||'Report').replace(/\s+/g,'_')+'.pptx'});showToast('PPTX generated','success');});}
+function generatePPTX(){
+  if(typeof PptxGenJS==='undefined'){showToast('PPTX library not loaded','error');return;}
+  var boxes=Array.prototype.slice.call(document.querySelectorAll('#pptxPhotoList input[type="checkbox"]'));
+  var ticked=boxes.filter(function(cb){return cb.checked;});
+  if(ticked.length===0){showToast('Tick at least one photo','error');return;}
+  var tickedMap={};
+  ticked.forEach(function(cb){tickedMap[cb.dataset.pid]=true;});
+  var ids=_pptxOrder||[];
+  if(!ids.length){
+    /* fallback: DOM order of ticked checkboxes */
+    ids=ticked.map(function(cb){return parseInt(cb.dataset.pid,10);});
+  }
+  var photoSlots=[];
+  ids.forEach(function(pid){
+    if(!tickedMap[pid])return;
+    var s=state.slots.find(function(x){return x.id===pid;});
+    if(s)photoSlots.push(serializeSlot(s));
+  });
+  if(photoSlots.length===0){showToast('No photos selected','error');return;}
+  closeModal('pptxModal');
+
+  /* ===== AUTO TITLE: PLATE - PARTS (from job + customer) ===== */
+  var cust=state.currentJob.customerId?(_cachedCustomers||[]).find(function(c){return c.id===state.currentJob.customerId;}):null;
+  var plate=(cust&&cust.vehiclePlate)?cust.vehiclePlate.trim():'';
+  var parts=(state.currentJob.parts||'').trim();
+  var autoTitle='';
+  if(plate&&parts)autoTitle=plate+' - '+parts;
+  else if(plate)autoTitle=plate;
+  else if(parts)autoTitle=parts;
+  autoTitle=autoTitle.toUpperCase();
+
+  Promise.all(photoSlots.map(function(sd){return getAnnotatedImageData(sd);})).then(function(annotatedImages){
+    var pptx=new PptxGenJS();
+    pptx.defineLayout({name:'WIDE',width:13.33,height:7.5});
+    pptx.layout='WIDE';
+
+    /* COVER slide — the main title */
+    if(autoTitle){
+      var cover=pptx.addSlide();
+      cover.background={color:'FFFFFF'};
+      cover.addText(autoTitle,{x:0,y:3.1,w:'100%',h:1.1,align:'center',fontSize:32,color:'000000',bold:true,fontFace:'Arial'});
+    }
+
+    for(var i=0;i<annotatedImages.length;i+=2){
+      var s=pptx.addSlide();
+      s.background={color:'FFFFFF'};
+      var imgY=0.5,imgH=6.5;
+      /* photo slide title = same PLATE - PARTS, Arial 32 */
+      if(autoTitle){
+        s.addText(autoTitle,{x:0,y:0.15,w:'100%',h:0.7,align:'center',fontSize:32,color:'000000',bold:true,fontFace:'Arial'});
+        imgY=1.05;imgH=5.9;
+      }
+      var img1=annotatedImages[i];
+      if(img1){s.addImage({data:img1,x:0.3,y:imgY,w:6.1,h:imgH,sizing:{type:'contain',w:6.1,h:imgH}});}
+      if(annotatedImages[i+1]){s.addImage({data:annotatedImages[i+1],x:6.9,y:imgY,w:6.1,h:imgH,sizing:{type:'contain',w:6.1,h:imgH}});}
+    }
+    pptx.writeFile({fileName:'VINDOC_'+(autoTitle||state.currentJob.title||'Report').replace(/\s+/g,'_')+'.pptx'});
+    showToast('PPTX generated — '+autoTitle,'success');
+  });
+}
 function updateStats(){var ld=state.slots.filter(function(s){return s.originalImage;}).length;var vS=state.slots.filter(function(s){return s.type==='mileage'||s.type==='rear_view'||s.type==='front_view'||s.type==='vin_plate';});var dS=state.slots.filter(function(s){return s.type.indexOf('defect_')===0;});var pS=state.slots.filter(function(s){return s.type.indexOf('parts_')===0;});var vL=vS.filter(function(s){return s.originalImage;}).length;var dL=dS.filter(function(s){return s.originalImage;}).length;var pL=pS.filter(function(s){return s.originalImage;}).length;var el;if((el=document.getElementById('count-vehicle')))el.textContent=vL+'/'+vS.length;if((el=document.getElementById('count-defect')))el.textContent=dL+'/'+dS.length;if((el=document.getElementById('count-parts')))el.textContent=pL+'/'+pS.length;if((el=document.getElementById('photoCount')))el.textContent=ld;if((el=document.getElementById('floatCount')))el.innerHTML=ld+' <small>loaded</small>';}
 function toggleCompact(){document.body.classList.toggle('compact');var b=document.getElementById('compactToggle');var a=document.body.classList.contains('compact');if(b){b.classList.toggle('active',a);b.innerHTML=a?'<i class="fas fa-expand-alt"></i> Full View':'<i class="fas fa-compress-alt"></i> Compact';}}
 window.addEventListener('scroll',function(){var stBtn=document.getElementById('scrollTopBtn');var flBar=document.getElementById('floatBar');var onInspection=document.getElementById('inspectionView')&&document.getElementById('inspectionView').classList.contains('active');if(window.scrollY>250){stBtn.style.display='flex';if(flBar&&onInspection)flBar.classList.add('visible');}else{stBtn.style.display='none';if(flBar)flBar.classList.remove('visible');}});
