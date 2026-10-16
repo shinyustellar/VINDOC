@@ -1731,6 +1731,7 @@ function openPptxModal(){
   var r=state.slots.filter(function(s){return s.originalImage;});
   if(r.length===0){showToast('No media','error');return;}
   _pptxTickNo={};_pptxTickCount=0;
+  r.sort(function(a,b){function getRank(s){if(s.type==='front_view')return 100;if(s.type==='rear_view')return 200;if(s.type==='mileage')return 300;if(s.type==='vin_plate')return 400;if(s.type.indexOf('defect_')===0)return 500+(parseInt(s.type.replace('defect_',''),10)||0);if(s.type.indexOf('parts_')===0)return 700+(parseInt(s.type.replace('parts_',''),10)||0);return 900;}return getRank(a)-getRank(b);});
   var h='';
   r.forEach(function(s){
     var c=renderAnnotatedCanvas(s);if(!c)return;
