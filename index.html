@@ -1720,44 +1720,9 @@ function buildPDF(job,cust,slots){var J=window.jspdf?window.jspdf.jsPDF:window.j
 doc.setFillColor(10,10,10);doc.rect(0,0,pW,pH,'F');doc.setTextColor(255,255,255);doc.setFontSize(42);doc.setFont('helvetica','bold');doc.text('VINDOC',pW/2,50,{align:'center'});doc.setFontSize(9);doc.setFont('helvetica','normal');doc.text('VEHICLE INSPECTION PLATFORM',pW/2,60,{align:'center'});doc.setDrawColor(255,255,255);doc.setLineWidth(0.5);doc.line(60,75,pW-60,75);doc.setFontSize(18);doc.setFont('helvetica','bold');doc.text(job.title||'Inspection Report',pW/2,110,{align:'center'});doc.setFontSize(10);doc.setFont('helvetica','normal');if(cust){var cv=(cust.vehicleMake||'')+' '+(cust.vehicleModel||'');if(cust.vehicleYear)cv+=' ('+cust.vehicleYear+')';doc.text('Vehicle: '+cv.trim(),pW/2,130,{align:'center'});doc.text('Plate: '+(cust.vehiclePlate||'-'),pW/2,140,{align:'center'});doc.text('VIN: '+(cust.vin||'-'),pW/2,150,{align:'center'});doc.text('Customer: '+(cust.name||'-'),pW/2,160,{align:'center'});}doc.text('Date: '+(job.inspectionDate||formatDateStamp(new Date())),pW/2,175,{align:'center'});doc.text('Inspector: '+(job.createdByName||'-'),pW/2,185,{align:'center'});var cst2=job.status==='completed'?'Completed':(job.status==='in_progress'?'In Progress':'Pending');doc.text('Status: '+cst2,pW/2,195,{align:'center'});doc.setFontSize(8);doc.setTextColor(180,180,180);doc.text('Official Inspection Report',pW/2,pH-25,{align:'center'});doc.text('Generated: '+formatDateStamp(new Date()),pW/2,pH-18,{align:'center'});doc.addPage();doc.setTextColor(0,0,0);
 doc.setFillColor(10,10,10);doc.rect(0,0,pW,38,'F');doc.setTextColor(255,255,255);doc.setFontSize(22);doc.setFont('helvetica','bold');doc.text('VINDOC',m,20);doc.setFontSize(8);doc.setFont('helvetica','normal');doc.text('VEHICLE INSPECTION REPORT',m,28);doc.text('Generated: '+formatDateStamp(new Date()),pW-m,28,{align:'right'});doc.setTextColor(0,0,0);var y=48;doc.setFontSize(14);doc.setFont('helvetica','bold');doc.text(job.title,m,y);y+=7;doc.setFontSize(9);doc.setFont('helvetica','normal');var st=job.status==='completed'?'Completed':(job.status==='in_progress'?'In Progress':'Pending');doc.text('Status: '+st,m,y);doc.text('Date: '+(job.inspectionDate||'-'),m+70,y);y+=5;doc.text('Inspector: '+(job.createdByName||'-'),m,y);y+=6;if(job.parts){doc.text('Parts Replaced: '+esc(job.parts),m,y);y+=5;}if(job.notes){var sn=doc.splitTextToSize('Notes: '+job.notes,pW-m*2);doc.text(sn,m,y);y+=sn.length*4+2;}y+=2;doc.setDrawColor(200,200,200);doc.line(m,y,pW-m,y);y+=7;if(cust){doc.setFontSize(11);doc.setFont('helvetica','bold');doc.text('Customer & Vehicle',m,y);y+=6;doc.setFontSize(9);doc.setFont('helvetica','normal');doc.text('Name: '+esc(cust.name||'-'),m,y);doc.text('Company: '+esc(cust.company||'-'),m+100,y);y+=5;doc.text('Phone: '+(cust.phone||'-'),m,y);doc.text('Email: '+(cust.email||'-'),m+100,y);y+=5;var v=(cust.vehicleMake||'')+' '+(cust.vehicleModel||'');if(cust.vehicleYear)v+=' ('+cust.vehicleYear+')';doc.text('Vehicle: '+esc(v.trim()||'-'),m,y);y+=5;doc.text('Plate: '+(cust.vehiclePlate||'-'),m,y);doc.text('VIN: '+(cust.vin||'-'),m+100,y);y+=7;doc.setDrawColor(200,200,200);doc.line(m,y,pW-m,y);y+=7;}doc.setFontSize(11);doc.setFont('helvetica','bold');doc.text('Inspection Photos',m,y);y+=8;var photoSlots=slots.filter(function(sd){return sd.imageData;});photoSlots.sort(function(a,b){function getRank(s){if(['mileage','rear_view','front_view','vin_plate'].indexOf(s.type)!==-1)return 1;if(s.type.indexOf('defect_')===0)return 2;if(s.type.indexOf('parts_')===0)return 3;return 4;}return getRank(a)-getRank(b);});if(photoSlots.length===0){doc.setFontSize(9);doc.setFont('helvetica','normal');doc.text('No photos in this job.',m,y);var pc=doc.internal.getNumberOfPages();for(var p=1;p<=pc;p++){doc.setPage(p);doc.setFontSize(7);doc.setFont('helvetica','normal');doc.setTextColor(150,150,150);doc.text('VINDOC \u2014 Page '+p+' of '+pc,pW/2,pH-8,{align:'center'});doc.setTextColor(0,0,0);}doc.save((job.title||'Report')+'.pdf');showToast('PDF report generated','success');}else{Promise.all(photoSlots.map(function(sd){return getAnnotatedImageData(sd);})).then(function(annotatedImages){var cols=2,cW=(pW-m*2-8)/cols,cH=cW*0.7,lH=7;var photoY=y;annotatedImages.forEach(function(imgData,i){var col=i%cols,row=Math.floor(i/cols);if(col===0&&row>0)photoY+=cH+lH+5;if(photoY+cH+lH>pH-15){doc.addPage();photoY=20;}var x=m+col*(cW+8);try{var tmp=new Image();tmp.src=imgData;var iw=tmp.width||800,ih=tmp.height||600;var ra=iw/ih;var dW=cW,dH=cW/ra;if(dH>cH){dH=cH;dW=cH*ra;}var dx=x+(cW-dW)/2,dy=photoY+(cH-dH)/2;doc.setDrawColor(220,220,220);doc.setLineWidth(0.3);doc.rect(x,photoY,cW,cH);doc.addImage(imgData,'JPEG',dx,dy,dW,dH);}catch(e){}var label="";var t=photoSlots[i].type;if(t==='mileage')label="VEHICLE MILEAGE";else if(t==='rear_view')label="VEHICLE REAR VIEW";else if(t==='front_view')label="VEHICLE FRONT VIEW";else if(t==='vin_plate')label="VEHICLE VIN PLATE";else if(t.indexOf('defect_')===0)label="DEFECT PART "+t.replace('defect_','');else if(t.indexOf('parts_')===0)label="PARTS REPLACEMENT "+t.replace('parts_','');else label=(photoSlots[i].title||'Photo '+(i+1)).toUpperCase();doc.setFontSize(8);doc.setFont('helvetica','bold');doc.text(label,x,photoY+cH+4);});var pc=doc.internal.getNumberOfPages();for(var p=1;p<=pc;p++){doc.setPage(p);doc.setFontSize(7);doc.setFont('helvetica','normal');doc.setTextColor(150,150,150);doc.text('VINDOC \u2014 Page '+p+' of '+pc,pW/2,pH-8,{align:'center'});doc.setTextColor(0,0,0);}doc.save((job.title||'Report')+'.pdf');showToast('PDF report generated','success');});}}
 /* click a PPTX thumbnail → see it full-size (labels readable) before selecting */
-/* click a PPTX thumbnail → FULL-SCREEN viewer with zoom */
 function pptxPreview(src){
-  var lb=document.getElementById('pptxLightbox');
-  if(!lb){
-    lb=document.createElement('div');
-    lb.id='pptxLightbox';
-    lb.style.cssText='position:fixed;inset:0;background:rgba(5,5,5,.97);z-index:9999;display:none;overflow:hidden;touch-action:none';
-    lb.innerHTML='<div style="position:absolute;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:14px 16px;background:linear-gradient(rgba(0,0,0,.5),transparent);z-index:5"><span style="color:#fff;font-family:Archivo,sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase">Full Preview</span><button id="pptxLbClose" style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:#fff;width:36px;height:36px;border-radius:8px;cursor:pointer;font-size:14px">✕</button></div><img id="pptxLbImg" style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);max-width:96vw;max-height:92vh;user-select:none;-webkit-user-drag:none;cursor:grab">';
-    document.body.appendChild(lb);
-    document.getElementById('pptxLbClose').onclick=function(){lb.style.display='none';lb.style.pointerEvents='none';};
-  }
-  var img=document.getElementById('pptxLbImg');
-  img.src=src;
-  img.style.transform='translate(-50%,-50%) scale(1)';
-  lb.style.display='block';
-  lb._scale=1;lb._x=0;lb._y=0;
-  /* wheel zoom */
-  lb.onwheel=function(e){e.preventDefault();lb._scale=Math.min(5,Math.max(.4,lb._scale+(e.deltaY<0?.15:-.15)));applyPptxLb();};
-  /* drag pan */
-  var drag=null;
-  img.onmousedown=function(e){e.preventDefault();drag={x:e.clientX-lb._x,y:e.clientY-lb._y};img.style.cursor='grabbing';};
-  window.addEventListener('mousemove',function(e){if(drag){lb._x=e.clientX-drag.x;lb._y=e.clientY-drag.y;applyPptxLb();}});
-  window.addEventListener('mouseup',function(){drag=null;img.style.cursor='grab';});
-  /* pinch zoom (touch) */
-  var pinch=null;
-  lb.ontouchstart=function(e){
-    if(e.touches.length===2){pinch={d:Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY),s:lb._scale};}
-    else if(e.touches.length===1){drag={x:e.touches[0].clientX-lb._x,y:e.touches[0].clientY-lb._y};}
-  };
-  lb.ontouchmove=function(e){
-    if(pinch&&e.touches.length===2){e.preventDefault();var d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);lb._scale=Math.min(5,Math.max(.4,pinch.s*(d/pinch.d)));applyPptxLb();}
-    else if(drag&&e.touches.length===1){e.preventDefault();lb._x=e.touches[0].clientX-drag.x;lb._y=e.touches[0].clientY-drag.y;applyPptxLb();}
-  };
-  lb.ontouchend=function(){pinch=null;drag=null;};
-  function applyPptxLb(){
-    img.style.transform='translate(calc(-50% + '+lb._x+'px),calc(-50% + '+lb._y+'px)) scale('+lb._scale+')';
-  }
-  window._applyPptxLb=applyPptxLb;
+  var img=document.getElementById('viewImage');
+  if(img){img.src=src;document.getElementById('viewModal').classList.add('active');}
 }
 /* ═══════════ PPTX PICKER v2 — tick-order slides ═══════════ */
 var _pptxTickNo={};var _pptxTickCount=0;
@@ -1769,7 +1734,7 @@ function openPptxModal(){
   var h='';
   r.forEach(function(s){
     var c=renderAnnotatedCanvas(s);if(!c)return;
-    var url=c.toDataURL('image/jpeg',0.85);
+    var url=c.toDataURL('image/jpeg',0.5);
     h+='<div class="pcard" onclick="pcardPick('+s.id+')">';
     h+='<div class="pcard-img"><img src="'+url+'" onclick="event.stopPropagation();pptxPreview(this.src)">';
     h+='<span class="smark"><span class="smark-tile"><span class="smark-fold"></span><span class="smark-num"></span><span class="smark-tag">slide</span></span></span>';
