@@ -221,8 +221,8 @@ html,body{font-family:'Hanken Grotesk',sans-serif;background:var(--bg);color:var
 .pptx-item input{width:18px;height:18px;cursor:pointer;flex-shrink:0}
 .pptx-item img{width:100%;height:130px;object-fit:cover;cursor:zoom-in;transition:transform .15s;display:block}
 .pptx-item img:hover{transform:scale(1.03)}
-.pptx-item .ptitle{display:flex;align-items:center;gap:8px;padding:9px 12px;font-size:11px;font-family:'Hanken Grotesk',sans-serif;font-weight:600;text-transform:uppercase;letter-spacing:.04em;background:var(--bg);border-top:1px solid var(--border)}
-.pptx-item .ptitle .pchk{margin-right:auto}
+.pptx-item .ptitle{display:flex;align-items:center;gap:9px;padding:9px 12px;min-height:20px;font-size:11px;font-family:'Hanken Grotesk',sans-serif;font-weight:600;text-transform:uppercase;letter-spacing:.04em;background:var(--bg);border-top:1px solid var(--border);white-space:nowrap;overflow:hidden}
+.pptx-item .ptitle .ptext{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
 /* ===== PPTX SLIDE MARKER — editorial (paper drop + corner fold) ===== */
 .pptx-item{position:relative}
 .slide-marker{position:absolute;top:4px;right:4px;display:none;z-index:5;width:26px;height:30px}
@@ -1697,7 +1697,7 @@ function openPptxModal(){
   r.forEach(function(s){
     var c=renderAnnotatedCanvas(s);if(!c)return;
     var url=c.toDataURL('image/jpeg',0.5);
-    h+='<label class="pptx-item"><span class="slide-marker"><span class="sm-tile"><span class="sm-fold"></span><span class="sm-num"></span></span><span class="sm-tag">slide</span></span><img src="'+url+'" onclick="event.preventDefault();event.stopPropagation();pptxPreview(this.src)"><span class="ptitle"><input type="checkbox" class="pchk" data-pid="'+s.id+'" onclick="pptxTick(this)">'+esc(s.title)+'</span></label>';
+    h+='<label class="pptx-item"><span class="slide-marker"><span class="sm-tile"><span class="sm-fold"></span><span class="sm-num"></span></span><span class="sm-tag">slide</span></span><img src="'+url+'" onclick="event.preventDefault();event.stopPropagation();pptxPreview(this.src)"><span class="ptitle"><input type="checkbox" class="pchk" data-pid="'+s.id+'" onclick="pptxTick(this)"><span class="ptext">'+esc(s.title)+'</span></span></label>';
   });
   document.getElementById('pptxPhotoList').innerHTML=h;
   document.getElementById('pptxModal').classList.add('active');
