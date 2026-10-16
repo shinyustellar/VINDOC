@@ -215,7 +215,7 @@ html,body{font-family:'Hanken Grotesk',sans-serif;background:var(--bg);color:var
 .gen-empty{text-align:center;padding:40px 20px;color:var(--muted)}
 .gen-empty i{font-size:32px;color:var(--muted-2);margin-bottom:10px}
 .gen-empty p{font-size:12px}
-.pptx-list{max-height:72vh;overflow-y:auto;display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:6px}
+.pptx-list{max-height:72vh;overflow-y:auto;display:grid;grid-template-columns:1fr 1fr;gap:22px 26px;padding:16px 20px 20px}
 .pptx-item{display:flex;align-items:center;gap:10px;border:1px solid var(--border-hi);padding:8px;cursor:pointer;transition:all 0.15s}
 .pptx-item:hover{border-color:var(--fg)}
 .pptx-item input{width:18px;height:18px;cursor:pointer;flex-shrink:0}
@@ -224,7 +224,7 @@ html,body{font-family:'Hanken Grotesk',sans-serif;background:var(--bg);color:var
 .pptx-item span{font-size:11px;font-family:'Hanken Grotesk',sans-serif;font-weight:600;text-transform:uppercase}
 /* ===== PPTX SLIDE MARKER — editorial (paper drop + corner fold) ===== */
 .pptx-item{position:relative}
-.slide-marker{position:absolute;top:-11px;right:-11px;display:none;z-index:5;width:32px;height:32px}
+.slide-marker{position:absolute;top:4px;right:4px;display:none;z-index:5;width:26px;height:30px}
 .slide-marker.on,.slide-marker.replay{display:block}
 .sm-tile{position:absolute;inset:0;background:var(--bg);border:1.5px solid var(--fg);display:grid;place-items:center;box-shadow:2px 2px 0 var(--fg);transition:box-shadow .18s ease,transform .18s ease}
 .sm-fold{position:absolute;top:-1.5px;right:-1.5px;width:0;height:0;border-style:solid;border-width:0 9px 9px 0;border-color:transparent var(--bg-2) transparent transparent;filter:drop-shadow(-1px 1px 0 var(--fg));transform-origin:top right;animation:foldOpen .45s .18s cubic-bezier(.3,1.4,.4,1) both}
