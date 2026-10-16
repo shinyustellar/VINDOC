@@ -1792,7 +1792,7 @@ function generatePPTX(){
   var boxes=Array.prototype.slice.call(document.querySelectorAll('#pptxPhotoList input[type="checkbox"]'));
   var ticked=boxes.filter(function(cb){return cb.checked;});
   if(ticked.length===0){showToast('Tick at least one photo','error');return;}
-  /* ORDER = tick order from _pptxTickNo (the numbers on the markers) */
+  /* ORDER = tick order (marker numbers) */
   var entries=[];
   for(var pid in _pptxTickNo){entries.push({pid:parseInt(pid,10),no:_pptxTickNo[pid]});}
   entries.sort(function(a,b){return a.no-b.no;});
@@ -1805,7 +1805,7 @@ function generatePPTX(){
   if(photoSlots.length===0){showToast('No photos selected','error');return;}
   closeModal('pptxModal');
 
-  /* ===== AUTO TITLE: PLATE - PARTS ===== */
+  /* auto title: PLATE - PARTS */
   var cust=state.currentJob.customerId?(_cachedCustomers||[]).find(function(c){return c.id===state.currentJob.customerId;}):null;
   var plate=(cust&&cust.vehiclePlate)?cust.vehiclePlate.trim():'';
   var parts=(state.currentJob.parts||'').trim();
@@ -1819,18 +1819,16 @@ function generatePPTX(){
     var pptx=new PptxGenJS();
     pptx.defineLayout({name:'WIDE',width:13.33,height:7.5});
     pptx.layout='WIDE';
-    if(autoTitle){
-      var cover=pptx.addSlide();
-      cover.background={color:'FFFFFF'};
-      cover.addText(autoTitle,{x:0,y:3.1,w:'100%',h:1.1,align:'center',fontSize:32,color:'000000',bold:true,fontFace:'Arial'});
-    }
     for(var i=0;i<annotatedImages.length;i+=2){
       var s=pptx.addSlide();
       s.background={color:'FFFFFF'};
-      var imgY=0.5,imgH=6.5;
-      if(autoTitle){
-        s.addText(autoTitle,{x:0,y:0.15,w:'100%',h:0.7,align:'center',fontSize:32,color:'000000',bold:true,fontFace:'Arial'});
-        imgY=1.05;imgH=5.9;
+      if(i===0&&autoTitle){
+        /* FIRST photo slide only — title on top, NOT bold, Arial 32 */
+        s.addText(autoTitle,{x:0,y:0.2,w:'100%',h:0.8,align:'center',fontSize:32,color:'000000',bold:false,fontFace:'Arial'});
+        var imgY=1.1,imgH=5.7;
+      }else{
+        /* all other slides — 2 images, full size, nothing else */
+        var imgY=0.4,imgH=6.7;
       }
       var img1=annotatedImages[i];
       if(img1){s.addImage({data:img1,x:0.3,y:imgY,w:6.1,h:imgH,sizing:{type:'contain',w:6.1,h:imgH}});}
