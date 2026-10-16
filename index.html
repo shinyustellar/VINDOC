@@ -665,6 +665,56 @@ body.compact .act-btn span{display:none}
   .ai-grid{grid-template-columns:repeat(auto-fill,minmax(100px,1fr))}
   .ai-card{padding:10px}
 }
+  /* ═══════════ PPTX PICKER v2 — editorial rework ═══════════ */
+.pptx-modal{position:fixed;inset:0;background:rgba(255,255,255,.97);backdrop-filter:blur(8px);z-index:2000;display:none;align-items:center;justify-content:center;padding:32px}
+.pptx-modal.active{display:flex}
+.pptx-shell{background:var(--bg);border:1px solid var(--fg);width:720px;max-width:100%;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,.14)}
+.pptx-head{background:var(--fg);color:var(--bg);padding:16px 22px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.pptx-head-title{font-family:'Archivo',sans-serif;font-size:12px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;display:flex;align-items:center;gap:10px}
+.pptx-head-title::before{content:'';width:4px;height:16px;background:var(--bg)}
+.pptx-head-close{background:transparent;border:1px solid rgba(255,255,255,.3);color:var(--bg);width:30px;height:30px;cursor:pointer;display:grid;place-items:center;font-size:12px;transition:all .15s}
+.pptx-head-close:hover{background:var(--bg);color:var(--fg)}
+.pptx-body{flex:1;overflow-y:auto;padding:20px;background:var(--bg-2)}
+.pptx-body::-webkit-scrollbar{width:8px}
+.pptx-body::-webkit-scrollbar-track{background:var(--bg-2)}
+.pptx-body::-webkit-scrollbar-thumb{background:var(--muted-2)}
+.pptx-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+/* — photo card (polaroid) — */
+.pcard{position:relative;background:var(--bg);border:1px solid var(--border);cursor:pointer;transition:all .2s ease;display:flex;flex-direction:column}
+.pcard:hover{border-color:var(--fg);box-shadow:0 6px 18px rgba(0,0,0,.1)}
+.pcard.sel{border-color:var(--fg);box-shadow:0 4px 14px rgba(0,0,0,.1)}
+.pcard-img{position:relative;height:140px;overflow:hidden;background:var(--bg-3)}
+.pcard-img img{width:100%;height:100%;object-fit:cover;display:block;cursor:zoom-in;transition:transform .25s ease}
+.pcard-img img:hover{transform:scale(1.04)}
+.pcard-cap{display:flex;align-items:center;gap:9px;padding:10px 13px;border-top:1px solid var(--border);min-height:22px;background:var(--bg)}
+.pcard-cap input{width:16px;height:16px;cursor:pointer;flex-shrink:0;margin:0;accent-color:var(--fg)}
+.pcard-cap .cap-t{flex:1;min-width:0;font-size:11px;font-family:'Hanken Grotesk',sans-serif;font-weight:600;text-transform:uppercase;letter-spacing:.03em;color:var(--fg);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* — slide marker (paper-fold, inside photo corner) — */
+.smark{position:absolute;top:8px;right:8px;display:none;z-index:4;width:26px;height:30px}
+.smark.on,.smark.replay{display:block}
+.smark-tile{position:absolute;inset:0;background:var(--bg);border:1.5px solid var(--fg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;box-shadow:1.5px 1.5px 0 var(--fg)}
+.smark-fold{position:absolute;top:-1px;right:-1px;width:0;height:0;border-style:solid;border-width:0 7px 7px 0;border-color:transparent var(--bg-2) transparent transparent;filter:drop-shadow(-1px 1px 0 var(--fg));transform-origin:top right;animation:foldOpen .45s .18s cubic-bezier(.3,1.4,.4,1) both}
+.smark-num{font-family:'Archivo',sans-serif;font-weight:800;font-size:12px;color:var(--fg);line-height:1;animation:inkSettle .35s .26s ease both}
+.smark-tag{font-family:'Archivo',sans-serif;font-size:5px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);animation:tagRise .3s .34s ease both}
+.smark.on{animation:markerDrop .45s cubic-bezier(.25,.9,.3,1.15) both}
+.smark.replay{animation:markerWiggle .28s ease both}
+.smark.replay .smark-fold{animation:foldOpen .45s .05s cubic-bezier(.3,1.4,.4,1) both}
+.smark.replay .smark-num{animation:inkSettle .3s .1s ease both}
+.smark.replay .smark-tag{animation:tagRise .25s .14s ease both}
+@keyframes markerDrop{0%{transform:translateY(-10px) rotate(-4deg);opacity:0;filter:blur(2px)}60%{transform:translateY(2px) rotate(.5deg);opacity:1;filter:blur(0)}80%{transform:translateY(-1px) scaleY(.96)}100%{transform:translateY(0) rotate(0) scaleY(1)}}
+@keyframes markerWiggle{0%{transform:rotate(0)}35%{transform:rotate(-3deg) scale(1.06)}70%{transform:rotate(1.5deg)}100%{transform:rotate(0) scale(1)}}
+@keyframes foldOpen{0%{transform:scaleX(0);opacity:0}70%{transform:scaleX(1.12);opacity:1}100%{transform:scaleX(1);opacity:1}}
+@keyframes inkSettle{0%{opacity:0;transform:scale(1.25)}100%{opacity:1;transform:scale(1)}}
+@keyframes tagRise{0%{opacity:0;transform:translateY(3px)}100%{opacity:1;transform:translateY(0)}}
+.pcard:hover .smark.on .smark-tile,.pcard:hover .smark.replay .smark-tile{box-shadow:2.5px 2.5px 0 var(--fg);transform:translate(-1px,-1px)}
+/* — footer band — */
+.pptx-foot{border-top:1px solid var(--fg);padding:14px 22px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-shrink:0;background:var(--bg)}
+.pptx-count{font-family:'Archivo',sans-serif;font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.pptx-count b{color:var(--fg);font-size:13px}
+.pptx-gen{background:var(--fg);color:var(--bg);border:1px solid var(--fg);padding:12px 28px;font-family:'Archivo',sans-serif;font-weight:700;font-size:11px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:8px}
+.pptx-gen:hover{background:var(--bg);color:var(--fg)}
+.pptx-gen:disabled{opacity:.4;cursor:not-allowed}
+@media(max-width:700px){.pptx-grid{grid-template-columns:1fr}.pptx-shell{width:100%}}
 </style>
 </head>
 <body>
@@ -822,12 +872,19 @@ body.compact .act-btn span{display:none}
 <div><label class="gen-label">Content *</label><textarea class="gen-textarea" id="kbContentInput" placeholder="Write the article content here..." style="min-height:200px"></textarea></div>
 </div><div class="gen-actions"><button class="gen-btn" onclick="closeModal('kbModal')">Cancel</button><button class="gen-btn primary" onclick="saveKb()">Save Article</button></div></div></div>
 
-<div class="gen-modal" id="pptxModal"><div class="gen-box wide"><div class="gen-box-title">SELECT PHOTOS FOR PPTX</div>
-<div id="pptxPhotoList" class="pptx-list"></div>
-<div class="gen-actions" style="margin-top:16px;">
-    <button class="gen-btn" onclick="closeModal('pptxModal')">Cancel</button>
-    <button class="gen-btn primary" onclick="generatePPTX()">Generate PPTX</button>
-</div></div></div>
+<div class="pptx-modal" id="pptxModal" onclick="if(event.target===this)closeModal('pptxModal')">
+  <div class="pptx-shell">
+    <div class="pptx-head">
+      <div class="pptx-head-title">Select Photos for PPTX</div>
+      <button class="pptx-head-close" onclick="closeModal('pptxModal')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="pptx-body"><div class="pptx-grid" id="pptxPhotoList"></div></div>
+    <div class="pptx-foot">
+      <div class="pptx-count"><b id="pptxSelN">0</b> selected &middot; <b id="pptxSlideN">0</b> slides</div>
+      <button class="pptx-gen" onclick="generatePPTX()"><i class="fas fa-file-powerpoint"></i> Generate PPTX</button>
+    </div>
+  </div>
+</div>
 
 <!-- profile picture modal (EVERY user can set their own) -->
 <div class="gen-modal" id="profileModal"><div class="gen-box">
@@ -1667,7 +1724,69 @@ function pptxPreview(src){
   var img=document.getElementById('viewImage');
   if(img){img.src=src;document.getElementById('viewModal').classList.add('active');}
 }
-function openPptxModal(){if(!state.currentJob){showToast('No job open','error');return;}var r=state.slots.filter(function(s){return s.originalImage;});if(r.length===0){showToast('No media','error');return;}var h='';r.forEach(function(s){var c=renderAnnotatedCanvas(s);if(!c)return;var url=c.toDataURL('image/jpeg',0.5);h+='<label class="pptx-item"><input type="checkbox" checked data-pid="'+s.id+'"><img src="'+url+'" onclick="event.preventDefault();event.stopPropagation();pptxPreview(this.src)"><span>'+s.title+'</span></label>';});document.getElementById('pptxPhotoList').innerHTML=h;document.getElementById('pptxModal').classList.add('active');}
+/* ═══════════ PPTX PICKER v2 — tick-order slides ═══════════ */
+var _pptxTickNo={};var _pptxTickCount=0;
+function openPptxModal(){
+  if(!state.currentJob){showToast('No job open','error');return;}
+  var r=state.slots.filter(function(s){return s.originalImage;});
+  if(r.length===0){showToast('No media','error');return;}
+  _pptxTickNo={};_pptxTickCount=0;
+  var h='';
+  r.forEach(function(s){
+    var c=renderAnnotatedCanvas(s);if(!c)return;
+    var url=c.toDataURL('image/jpeg',0.5);
+    h+='<div class="pcard" onclick="pcardPick('+s.id+')">';
+    h+='<div class="pcard-img"><img src="'+url+'" onclick="event.stopPropagation();pptxPreview(this.src)">';
+    h+='<span class="smark"><span class="smark-tile"><span class="smark-fold"></span><span class="smark-num"></span><span class="smark-tag">slide</span></span></span>';
+    h+='</div>';
+    h+='<div class="pcard-cap"><input type="checkbox" data-pid="'+s.id+'" onclick="event.stopPropagation();pptxTick(this)"><span class="cap-t">'+esc(s.title)+'</span></div>';
+    h+='</div>';
+  });
+  document.getElementById('pptxPhotoList').innerHTML=h;
+  updatePptxCount();
+  document.getElementById('pptxModal').classList.add('active');
+}
+function pcardPick(pid){
+  var cb=document.querySelector('#pptxPhotoList input[data-pid="'+pid+'"]');
+  if(cb){cb.checked=!cb.checked;pptxTick(cb);}
+}
+function pptxTick(cb){
+  var pid=parseInt(cb.dataset.pid,10);
+  var card=cb.closest('.pcard');
+  if(cb.checked){_pptxTickCount++;_pptxTickNo[pid]=_pptxTickCount;if(card)card.classList.add('sel');}
+  else{delete _pptxTickNo[pid];if(card)card.classList.remove('sel');}
+  renumberSmarks();
+  updatePptxCount();
+}
+function renumberSmarks(){
+  var entries=[];
+  for(var pid in _pptxTickNo){entries.push({pid:parseInt(pid,10),no:_pptxTickNo[pid]});}
+  entries.sort(function(a,b){return a.no-b.no;});
+  entries.forEach(function(e,i){_pptxTickNo[e.pid]=i+1;});
+  _pptxTickCount=entries.length;
+  document.querySelectorAll('#pptxPhotoList .pcard').forEach(function(card){
+    var cb=card.querySelector('input[type="checkbox"]');
+    var mark=card.querySelector('.smark');
+    var num=mark.querySelector('.smark-num');
+    if(!cb||!mark)return;
+    var pid=parseInt(cb.dataset.pid,10);
+    if(cb.checked&&_pptxTickNo[pid]){
+      if(num)num.textContent=_pptxTickNo[pid];
+      var already=mark.classList.contains('on')||mark.classList.contains('replay');
+      mark.classList.remove('on','replay');void mark.offsetWidth;
+      mark.classList.add(already?'replay':'on');
+    }else{
+      mark.classList.remove('on','replay');
+      if(num)num.textContent='';
+    }
+  });
+}
+function updatePptxCount(){
+  var sel=document.getElementById('pptxSelN');
+  var sl=document.getElementById('pptxSlideN');
+  if(sel)sel.textContent=_pptxTickCount;
+  if(sl)sl.textContent=_pptxTickCount;
+}
 function generatePPTX(){if(typeof PptxGenJS==='undefined'){showToast('PPTX library not loaded','error');return;}var checked=document.querySelectorAll('#pptxPhotoList input[type="checkbox"]:checked');var selectedIds=[];for(var i=0;i<checked.length;i++)selectedIds.push(parseInt(checked[i].dataset.pid));var photoSlots=[];selectedIds.forEach(function(id){var s=state.slots.find(function(x){return x.id===id;});if(s)photoSlots.push(serializeSlot(s));});if(photoSlots.length===0){showToast('No photos selected','error');return;}closeModal('pptxModal');photoSlots.sort(function(a,b){function getRank(s){if(['mileage','rear_view','front_view','vin_plate'].indexOf(s.type)!==-1)return 1;if(s.type.indexOf('defect_')===0)return 2;if(s.type.indexOf('parts_')===0)return 3;return 4;}return getRank(a)-getRank(b);});Promise.all(photoSlots.map(function(sd){return getAnnotatedImageData(sd);})).then(function(annotatedImages){var pptx=new PptxGenJS();pptx.defineLayout({name:'WIDE',width:13.33,height:7.5});pptx.layout='WIDE';var titleText=state.currentJob.title||'VEHICLE INSPECTION REPORT';for(var i=0;i<annotatedImages.length;i+=2){var s=pptx.addSlide();s.background={color:'FFFFFF'};if(i===0){s.addText(titleText,{x:0,y:0.2,w:'100%',h:0.8,align:'center',fontSize:28,color:'000000',bold:true,fontFace:'Arial'});var imgY=1.2,imgH=5.5;}else{var imgY=0.5,imgH=6.5;}var img1=annotatedImages[i];if(img1){s.addImage({data:img1,x:0.3,y:imgY,w:6.1,h:imgH,sizing:{type:'contain',w:6.1,h:imgH}});}if(annotatedImages[i+1]){s.addImage({data:annotatedImages[i+1],x:6.9,y:imgY,w:6.1,h:imgH,sizing:{type:'contain',w:6.1,h:imgH}});}}pptx.writeFile({fileName:'VINDOC_'+(state.currentJob.title||'Report').replace(/\s+/g,'_')+'.pptx'});showToast('PPTX generated','success');});}
 function updateStats(){var ld=state.slots.filter(function(s){return s.originalImage;}).length;var vS=state.slots.filter(function(s){return s.type==='mileage'||s.type==='rear_view'||s.type==='front_view'||s.type==='vin_plate';});var dS=state.slots.filter(function(s){return s.type.indexOf('defect_')===0;});var pS=state.slots.filter(function(s){return s.type.indexOf('parts_')===0;});var vL=vS.filter(function(s){return s.originalImage;}).length;var dL=dS.filter(function(s){return s.originalImage;}).length;var pL=pS.filter(function(s){return s.originalImage;}).length;var el;if((el=document.getElementById('count-vehicle')))el.textContent=vL+'/'+vS.length;if((el=document.getElementById('count-defect')))el.textContent=dL+'/'+dS.length;if((el=document.getElementById('count-parts')))el.textContent=pL+'/'+pS.length;if((el=document.getElementById('photoCount')))el.textContent=ld;if((el=document.getElementById('floatCount')))el.innerHTML=ld+' <small>loaded</small>';}
 function toggleCompact(){document.body.classList.toggle('compact');var b=document.getElementById('compactToggle');var a=document.body.classList.contains('compact');if(b){b.classList.toggle('active',a);b.innerHTML=a?'<i class="fas fa-expand-alt"></i> Full View':'<i class="fas fa-compress-alt"></i> Compact';}}
