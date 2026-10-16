@@ -665,14 +665,6 @@ body.compact .act-btn span{display:none}
   .ai-grid{grid-template-columns:repeat(auto-fill,minmax(100px,1fr))}
   .ai-card{padding:10px}
 }
-  /* ===== PPTX MANUAL ORDER ===== */
-.pptx-item{position:relative;align-items:center}
-.pptx-order-badge{position:absolute;top:-8px;left:-8px;min-width:22px;height:22px;padding:0 6px;background:var(--fg);color:var(--bg);border-radius:999px;font-family:'Archivo',sans-serif;font-weight:700;font-size:11px;display:grid;place-items:center;z-index:2;border:2px solid var(--bg)}
-.pptx-order-badge.off{background:var(--border-hi);color:var(--muted-2)}
-.pptx-order-btns{display:flex;flex-direction:column;gap:3px;margin-left:8px;flex-shrink:0}
-.pptx-ord-btn{width:26px;height:24px;background:var(--bg);border:1px solid var(--border-hi);color:var(--muted);cursor:pointer;display:grid;place-items:center;font-size:10px;border-radius:4px;transition:all .15s;padding:0}
-.pptx-ord-btn:hover{border-color:var(--fg);color:var(--fg)}
-.pptx-ord-btn:disabled{opacity:.3;cursor:not-allowed}
 </style>
 </head>
 <body>
@@ -1675,91 +1667,8 @@ function pptxPreview(src){
   var img=document.getElementById('viewImage');
   if(img){img.src=src;document.getElementById('viewModal').classList.add('active');}
 }
-/* ===== PPTX MODAL — manual ordering (badges + up/down + auto renumber) ===== */
-var _pptxOrder=[];
-function openPptxModal(){
-  if(!state.currentJob){showToast('No job open','error');return;}
-  var r=state.slots.filter(function(s){return s.originalImage;});
-  if(r.length===0){showToast('No media','error');return;}
-  /* starting arrangement = classic auto-order; you rearrange from here */
-  r.sort(function(a,b){function getRank(s){if(['mileage','rear_view','front_view','vin_plate'].indexOf(s.type)!==-1)return 1;if(s.type.indexOf('defect_')===0)return 2;if(s.type.indexOf('parts_')===0)return 3;return 4;}return getRank(a)-getRank(b);});
-  _pptxOrder=r.map(function(s){return s.id;});
-  rebuildPptxList(false);
-  document.getElementById('pptxModal').classList.add('active');
-}
-function rebuildPptxList(preserve){
-  var checks={};
-  if(preserve){
-    document.querySelectorAll('#pptxPhotoList input[type="checkbox"]').forEach(function(cb){checks[cb.dataset.pid]=cb.checked;});
-  }
-  var list=_pptxOrder.map(function(sid){return state.slots.find(function(x){return x.id===sid;});}).filter(Boolean);
-  /* badge numbers = slide position among TICKED photos only (1,2,3... = final PPTX order) */
-  var slideNo=0;var nums={};
-  list.forEach(function(s){
-    var ck=(checks[s.id]!==undefined)?checks[s.id]:true;
-    nums[s.id]=ck?++slideNo:0;
-  });
-  var h='';
-  list.forEach(function(s,i){
-    var c=renderAnnotatedCanvas(s);if(!c)return;
-    var url=c.toDataURL('image/jpeg',0.5);
-    var ck=(checks[s.id]!==undefined)?checks[s.id]:true;
-    h+='<div class="pptx-item" data-pid="'+s.id+'">';
-    h+=ck?'<span class="pptx-order-badge">'+nums[s.id]+'</span>':'<span class="pptx-order-badge off">–</span>';
-    h+='<input type="checkbox" '+(ck?'checked':'')+' data-pid="'+s.id+'" onchange="rebuildPptxList(true)">';
-    h+='<img src="'+url+'" onclick="event.preventDefault();event.stopPropagation();pptxPreview(this.src)">';
-    h+='<span>'+esc(s.title)+'</span>';
-    h+='<div class="pptx-order-btns">';
-    h+='<button class="pptx-ord-btn" onclick="pptxMove('+s.id+',-1)" '+(i===0?'disabled':'')+' title="Move up"><i class="fas fa-chevron-up"></i></button>';
-    h+='<button class="pptx-ord-btn" onclick="pptxMove('+s.id+',1)" '+(i===list.length-1?'disabled':'')+' title="Move down"><i class="fas fa-chevron-down"></i></button>';
-    h+='</div>';
-    h+='</div>';
-  });
-  document.getElementById('pptxPhotoList').innerHTML=h;
-}
-function pptxMove(id,dir){
-  var idx=_pptxOrder.indexOf(id);
-  if(idx<0)return;
-  var ni=idx+dir;
-  if(ni<0||ni>=_pptxOrder.length)return;
-  _pptxOrder[idx]=_pptxOrder[ni];
-  _pptxOrder[ni]=id;
-  rebuildPptxList(true);
-}
-function generatePPTX(){
-  if(typeof PptxGenJS==='undefined'){showToast('PPTX library not loaded','error');return;}
-  var checked=document.querySelectorAll('#pptxPhotoList input[type="checkbox"]:checked');
-  if(checked.length===0){showToast('Select at least one photo','error');return;}
-  /* ONLY ticked photos, in YOUR chosen order — no auto-sorting */
-  var ticked={};
-  checked.forEach(function(cb){ticked[cb.dataset.pid]=true;});
-  var ids=_pptxOrder.filter(function(sid){return ticked[sid];});
-  var photoSlots=[];
-  ids.forEach(function(id){
-    var s=state.slots.find(function(x){return x.id===id;});
-    if(s)photoSlots.push(serializeSlot(s));
-  });
-  closeModal('pptxModal');
-  Promise.all(photoSlots.map(function(sd){return getAnnotatedImageData(sd);})).then(function(annotatedImages){
-    var pptx=new PptxGenJS();
-    pptx.defineLayout({name:'WIDE',width:13.33,height:7.5});
-    pptx.layout='WIDE';
-    var titleText=state.currentJob.title||'VEHICLE INSPECTION REPORT';
-    for(var i=0;i<annotatedImages.length;i+=2){
-      var s=pptx.addSlide();
-      s.background={color:'FFFFFF'};
-      if(i===0){
-        s.addText(titleText,{x:0,y:0.2,w:'100%',h:0.8,align:'center',fontSize:28,color:'000000',bold:true,fontFace:'Arial'});
-        var imgY=1.2,imgH=5.5;
-      }else{var imgY=0.5,imgH=6.5;}
-      var img1=annotatedImages[i];
-      if(img1){s.addImage({data:img1,x:0.3,y:imgY,w:6.1,h:imgH,sizing:{type:'contain',w:6.1,h:imgH}});}
-      if(annotatedImages[i+1]){s.addImage({data:annotatedImages[i+1],x:6.9,y:imgY,w:6.1,h:imgH,sizing:{type:'contain',w:6.1,h:imgH}});}
-    }
-    pptx.writeFile({fileName:'VINDOC_'+(state.currentJob.title||'Report').replace(/\s+/g,'_')+'.pptx'});
-    showToast('PPTX generated — your order','success');
-  });
-}
+function openPptxModal(){if(!state.currentJob){showToast('No job open','error');return;}var r=state.slots.filter(function(s){return s.originalImage;});if(r.length===0){showToast('No media','error');return;}var h='';r.forEach(function(s){var c=renderAnnotatedCanvas(s);if(!c)return;var url=c.toDataURL('image/jpeg',0.5);h+='<label class="pptx-item"><input type="checkbox" checked data-pid="'+s.id+'"><img src="'+url+'" onclick="event.preventDefault();event.stopPropagation();pptxPreview(this.src)"><span>'+s.title+'</span></label>';});document.getElementById('pptxPhotoList').innerHTML=h;document.getElementById('pptxModal').classList.add('active');}
+function generatePPTX(){if(typeof PptxGenJS==='undefined'){showToast('PPTX library not loaded','error');return;}var checked=document.querySelectorAll('#pptxPhotoList input[type="checkbox"]:checked');var selectedIds=[];for(var i=0;i<checked.length;i++)selectedIds.push(parseInt(checked[i].dataset.pid));var photoSlots=[];selectedIds.forEach(function(id){var s=state.slots.find(function(x){return x.id===id;});if(s)photoSlots.push(serializeSlot(s));});if(photoSlots.length===0){showToast('No photos selected','error');return;}closeModal('pptxModal');photoSlots.sort(function(a,b){function getRank(s){if(['mileage','rear_view','front_view','vin_plate'].indexOf(s.type)!==-1)return 1;if(s.type.indexOf('defect_')===0)return 2;if(s.type.indexOf('parts_')===0)return 3;return 4;}return getRank(a)-getRank(b);});Promise.all(photoSlots.map(function(sd){return getAnnotatedImageData(sd);})).then(function(annotatedImages){var pptx=new PptxGenJS();pptx.defineLayout({name:'WIDE',width:13.33,height:7.5});pptx.layout='WIDE';var titleText=state.currentJob.title||'VEHICLE INSPECTION REPORT';for(var i=0;i<annotatedImages.length;i+=2){var s=pptx.addSlide();s.background={color:'FFFFFF'};if(i===0){s.addText(titleText,{x:0,y:0.2,w:'100%',h:0.8,align:'center',fontSize:28,color:'000000',bold:true,fontFace:'Arial'});var imgY=1.2,imgH=5.5;}else{var imgY=0.5,imgH=6.5;}var img1=annotatedImages[i];if(img1){s.addImage({data:img1,x:0.3,y:imgY,w:6.1,h:imgH,sizing:{type:'contain',w:6.1,h:imgH}});}if(annotatedImages[i+1]){s.addImage({data:annotatedImages[i+1],x:6.9,y:imgY,w:6.1,h:imgH,sizing:{type:'contain',w:6.1,h:imgH}});}}pptx.writeFile({fileName:'VINDOC_'+(state.currentJob.title||'Report').replace(/\s+/g,'_')+'.pptx'});showToast('PPTX generated','success');});}
 function updateStats(){var ld=state.slots.filter(function(s){return s.originalImage;}).length;var vS=state.slots.filter(function(s){return s.type==='mileage'||s.type==='rear_view'||s.type==='front_view'||s.type==='vin_plate';});var dS=state.slots.filter(function(s){return s.type.indexOf('defect_')===0;});var pS=state.slots.filter(function(s){return s.type.indexOf('parts_')===0;});var vL=vS.filter(function(s){return s.originalImage;}).length;var dL=dS.filter(function(s){return s.originalImage;}).length;var pL=pS.filter(function(s){return s.originalImage;}).length;var el;if((el=document.getElementById('count-vehicle')))el.textContent=vL+'/'+vS.length;if((el=document.getElementById('count-defect')))el.textContent=dL+'/'+dS.length;if((el=document.getElementById('count-parts')))el.textContent=pL+'/'+pS.length;if((el=document.getElementById('photoCount')))el.textContent=ld;if((el=document.getElementById('floatCount')))el.innerHTML=ld+' <small>loaded</small>';}
 function toggleCompact(){document.body.classList.toggle('compact');var b=document.getElementById('compactToggle');var a=document.body.classList.contains('compact');if(b){b.classList.toggle('active',a);b.innerHTML=a?'<i class="fas fa-expand-alt"></i> Full View':'<i class="fas fa-compress-alt"></i> Compact';}}
 window.addEventListener('scroll',function(){var stBtn=document.getElementById('scrollTopBtn');var flBar=document.getElementById('floatBar');var onInspection=document.getElementById('inspectionView')&&document.getElementById('inspectionView').classList.contains('active');if(window.scrollY>250){stBtn.style.display='flex';if(flBar&&onInspection)flBar.classList.add('visible');}else{stBtn.style.display='none';if(flBar)flBar.classList.remove('visible');}});
