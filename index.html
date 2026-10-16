@@ -224,12 +224,12 @@ html,body{font-family:'Hanken Grotesk',sans-serif;background:var(--bg);color:var
 .pptx-item span{font-size:11px;font-family:'Hanken Grotesk',sans-serif;font-weight:600;text-transform:uppercase}
 /* ===== PPTX SLIDE MARKER — editorial (paper drop + corner fold) ===== */
 .pptx-item{position:relative}
-.slide-marker{position:absolute;top:-8px;right:-8px;display:none;z-index:5;width:24px;height:24px}
+.slide-marker{position:absolute;top:-8px;right:-8px;display:none;z-index:5;width:26px;height:30px}
 .slide-marker.on,.slide-marker.replay{display:block}
-.sm-tile{position:absolute;inset:0;background:var(--bg);border:1.5px solid var(--fg);display:grid;place-items:center;box-shadow:2px 2px 0 var(--fg);transition:box-shadow .18s ease,transform .18s ease}
+.sm-tile{position:absolute;inset:0;background:var(--bg);border:1.5px solid var(--fg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;box-shadow:1.5px 1.5px 0 var(--fg);transition:box-shadow .18s ease,transform .18s ease}
 .sm-fold{position:absolute;top:-1px;right:-1px;width:0;height:0;border-style:solid;border-width:0 7px 7px 0;border-color:transparent var(--bg-2) transparent transparent;filter:drop-shadow(-1px 1px 0 var(--fg));transform-origin:top right;animation:foldOpen .45s .18s cubic-bezier(.3,1.4,.4,1) both}
 .sm-num{font-family:'Archivo',sans-serif;font-weight:800;font-size:11px;color:var(--fg);line-height:1;animation:inkSettle .35s .26s ease both}
-.sm-tag{position:absolute;bottom:-11px;left:50%;transform:translateX(-50%);font-family:'Archivo',sans-serif;font-size:5px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--bg);background:var(--fg);padding:2px 5px 1.5px;white-space:nowrap;animation:tagRise .3s .34s ease both}
+.sm-tag{font-family:'Archivo',sans-serif;font-size:5px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);white-space:nowrap;animation:tagRise .3s .34s ease both}
 .slide-marker.on{animation:markerDrop .45s cubic-bezier(.25,.9,.3,1.15) both}
 .slide-marker.replay{animation:markerWiggle .28s ease both}
 .slide-marker.replay .sm-fold{animation:foldOpen .45s .05s cubic-bezier(.3,1.4,.4,1) both}
