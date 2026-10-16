@@ -1792,23 +1792,20 @@ function generatePPTX(){
   var boxes=Array.prototype.slice.call(document.querySelectorAll('#pptxPhotoList input[type="checkbox"]'));
   var ticked=boxes.filter(function(cb){return cb.checked;});
   if(ticked.length===0){showToast('Tick at least one photo','error');return;}
-  var tickedMap={};
-  ticked.forEach(function(cb){tickedMap[cb.dataset.pid]=true;});
-  var ids=_pptxOrder||[];
-  if(!ids.length){
-    /* fallback: DOM order of ticked checkboxes */
-    ids=ticked.map(function(cb){return parseInt(cb.dataset.pid,10);});
-  }
+  /* ORDER = tick order from _pptxTickNo (the numbers on the markers) */
+  var entries=[];
+  for(var pid in _pptxTickNo){entries.push({pid:parseInt(pid,10),no:_pptxTickNo[pid]});}
+  entries.sort(function(a,b){return a.no-b.no;});
+  var ids=entries.map(function(e){return e.pid;});
   var photoSlots=[];
   ids.forEach(function(pid){
-    if(!tickedMap[pid])return;
     var s=state.slots.find(function(x){return x.id===pid;});
     if(s)photoSlots.push(serializeSlot(s));
   });
   if(photoSlots.length===0){showToast('No photos selected','error');return;}
   closeModal('pptxModal');
 
-  /* ===== AUTO TITLE: PLATE - PARTS (from job + customer) ===== */
+  /* ===== AUTO TITLE: PLATE - PARTS ===== */
   var cust=state.currentJob.customerId?(_cachedCustomers||[]).find(function(c){return c.id===state.currentJob.customerId;}):null;
   var plate=(cust&&cust.vehiclePlate)?cust.vehiclePlate.trim():'';
   var parts=(state.currentJob.parts||'').trim();
@@ -1822,19 +1819,15 @@ function generatePPTX(){
     var pptx=new PptxGenJS();
     pptx.defineLayout({name:'WIDE',width:13.33,height:7.5});
     pptx.layout='WIDE';
-
-    /* COVER slide — the main title */
     if(autoTitle){
       var cover=pptx.addSlide();
       cover.background={color:'FFFFFF'};
       cover.addText(autoTitle,{x:0,y:3.1,w:'100%',h:1.1,align:'center',fontSize:32,color:'000000',bold:true,fontFace:'Arial'});
     }
-
     for(var i=0;i<annotatedImages.length;i+=2){
       var s=pptx.addSlide();
       s.background={color:'FFFFFF'};
       var imgY=0.5,imgH=6.5;
-      /* photo slide title = same PLATE - PARTS, Arial 32 */
       if(autoTitle){
         s.addText(autoTitle,{x:0,y:0.15,w:'100%',h:0.7,align:'center',fontSize:32,color:'000000',bold:true,fontFace:'Arial'});
         imgY=1.05;imgH=5.9;
