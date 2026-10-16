@@ -1677,7 +1677,7 @@ function openPptxModal(){
   r.forEach(function(s){
     var c=renderAnnotatedCanvas(s);if(!c)return;
     var url=c.toDataURL('image/jpeg',0.5);
-    h+='<label class="pptx-item"><input type="checkbox" data-pid="'+s.id+'" data-tick="1" onclick="pptxTick(this)"><img src="'+url+'" onclick="event.preventDefault();event.stopPropagation();pptxPreview(this.src)"><span>'+s.title+'</span></label>';
+    h+='<label class="pptx-item"><span class="pptx-badge"></span><input type="checkbox" data-pid="'+s.id+'" data-tick="1" onclick="pptxTick(this)"><img src="'+url+'" onclick="event.preventDefault();event.stopPropagation();pptxPreview(this.src)"><span>'+s.title+'</span></label>';
   });
   document.getElementById('pptxPhotoList').innerHTML=h;
   document.getElementById('pptxModal').classList.add('active');
@@ -1686,11 +1686,31 @@ function pptxTick(cb){
   var pid=parseInt(cb.dataset.pid,10);
   if(cb.checked){
     _pptxTickCount++;
-    _pptxTickNo[pid]=_pptxTickCount;   /* this tick = next slide number */
+    _pptxTickNo[pid]=_pptxTickCount;
   }else{
-    delete _pptxTickNo[pid];           /* untick = removed from PPTX */
+    delete _pptxTickNo[pid];
   }
-  cb.dataset.tick=_pptxTickNo[pid]||'';
+  renumberPptxBadges();
+}
+function renumberPptxBadges(){
+  var entries=[];
+  for(var pid in _pptxTickNo){entries.push({pid:parseInt(pid,10),no:_pptxTickNo[pid]});}
+  entries.sort(function(a,b){return a.no-b.no;});
+  entries.forEach(function(e,i){_pptxTickNo[e.pid]=i+1;});
+  _pptxTickCount=entries.length;
+  document.querySelectorAll('#pptxPhotoList .pptx-item').forEach(function(item){
+    var cb=item.querySelector('input[type="checkbox"]');
+    var badge=item.querySelector('.pptx-badge');
+    if(!cb||!badge)return;
+    var pid=parseInt(cb.dataset.pid,10);
+    if(cb.checked&&_pptxTickNo[pid]){
+      badge.textContent=_pptxTickNo[pid];
+      badge.classList.add('on');
+    }else{
+      badge.classList.remove('on');
+      badge.textContent='';
+    }
+  });
 }
 function generatePPTX(){
   if(typeof PptxGenJS==='undefined'){showToast('PPTX library not loaded','error');return;}
