@@ -1694,7 +1694,55 @@ function downloadSlot(id){var s=state.slots.find(function(x){return x.id===id;})
 function downloadFromView(){if(state.viewContext){downloadSlot(state.viewContext.id);closeViewModal();}}
 function openSaveModal(){var r=state.slots.filter(function(s){return s.originalImage;});if(r.length===0){showToast('No media','error');return;}document.getElementById('saveModal').classList.add('active');}
 function getSlotBlob(s,cb){if(!s.originalImage){cb(null);return;}var c=renderAnnotatedCanvas(s);if(!c){cb(null);return;}c.toBlob(cb,getMime(),0.92);}
-function saveAsZip(){var r=state.slots.filter(function(s){return s.originalImage;});if(r.length===0){showToast('No media','error');return;}closeModal('saveModal');var ds=formatDateStamp(new Date()).replace(/\./g,'-');if(typeof JSZip==='undefined'){showToast('ZIP not available','info');return;}showToast('Creating ZIP...','info');var z=new JSZip();var c=0;function nx(i){if(i>=r.length){z.generateAsync({type:'blob'}).then(function(co){var u=URL.createObjectURL(co);var a=document.createElement('a');a.href=u;a.download='VINDOC_'+ds+'.zip';document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(u);showToast('ZIP downloaded ('+r.length+' files)','success');});return;}getSlotBlob(r[i],function(b){if(b){z.file(r[i].type+'_'+ds+'.'+getExt(),b);c++;}nx(i+1);});}nx(0);}
+/* ===== SAVE ALL / ZIP - filename matches PPTX style ("PLATE - PARTS.zip"),
+   photos inside sorted like the PPTX picker (front, rear, mileage, VIN, defects, parts) ===== */
+function saveAsZip(){
+  var r=state.slots.filter(function(s){return s.originalImage;});
+  if(r.length===0){showToast('No media','error');return;}
+  closeModal('saveModal');
+  if(typeof JSZip==='undefined'){showToast('ZIP not available','info');return;}
+  var ds=formatDateStamp(new Date()).replace(/\./g,'-');
+  var job=state.currentJob||{};
+  /* same card order as the PPTX picker: front -> rear -> mileage -> VIN -> defects -> parts */
+  function rank(s){
+    var t=s.type||'';var n=parseInt(t.replace(/^[^_]+_/,''),10)||0;
+    if(t==='front_view')return 1;
+    if(t==='rear_view')return 2;
+    if(t==='mileage')return 3;
+    if(t==='vin_plate')return 4;
+    if(t.indexOf('defect_')===0)return 100+n;
+    if(t.indexOf('parts_')===0)return 200+n;
+    return 300+n;
+  }
+  r.sort(function(a,b){return rank(a)-rank(b);});
+  function start(cust){
+    var plate=(cust&&cust.vehiclePlate?String(cust.vehiclePlate):'').trim();
+    var parts=(job.parts?String(job.parts):'').trim();
+    var base=(plate?plate+' - ':'')+(parts||job.title||'');
+    base=base.replace(/[\\\/:*?"<>|]+/g,'-').replace(/\s+/g,' ').trim();
+    if(!base)base='VINDOC_'+ds;
+    showToast('Creating ZIP...','info');
+    var z=new JSZip();var c=0;var idx=0;
+    function nx(i){
+      if(i>=r.length){
+        z.generateAsync({type:'blob'}).then(function(co){
+          var u=URL.createObjectURL(co);var a=document.createElement('a');
+          a.href=u;a.download=base+'.zip';document.body.appendChild(a);a.click();a.remove();
+          URL.revokeObjectURL(u);showToast('ZIP downloaded ('+c+' files)','success');
+        });return;
+      }
+      getSlotBlob(r[i],function(b){
+        if(b){c++;idx++;z.file(('0'+idx).slice(-2)+'_'+r[i].type+'.'+getExt(),b);}
+        nx(i+1);
+      });
+    }
+    nx(0);
+  }
+  var cu=(_cachedCustomers||[]).find(function(x){return x.id===job.customerId;});
+  if(cu)start(cu);
+  else if(job.customerId){fs.collection('customers').doc(job.customerId).get().then(function(d){start(d.exists?d.data():null);}).catch(function(){start(null);});}
+  else start(null);
+}
 function saveToFolder(){var r=state.slots.filter(function(s){return s.originalImage;});if(r.length===0){showToast('No media','error');return;}var ds=formatDateStamp(new Date()).replace(/\./g,'-');if(window.showDirectoryPicker){window.showDirectoryPicker().then(function(dh){closeModal('saveModal');showToast('Saving...','info');var c=0;function nx(i){if(i>=r.length){showToast('All saved!','success');return;}getSlotBlob(r[i],function(b){if(b){var fn=r[i].type+'_'+ds+'.'+getExt();dh.getFileHandle(fn,{create:true}).then(function(fh){return fh.createWritable();}).then(function(w){return w.write(b).then(function(){return w.close();});}).then(function(){c++;nx(i+1);}).catch(function(){nx(i+1);});}else{nx(i+1);}});};nx(0);}).catch(function(e){if(e.name!=='AbortError'){closeModal('saveModal');saveIndividualFallback(r,ds);}});}else{closeModal('saveModal');saveIndividualFallback(r,ds);}}
 function saveIndividualFallback(r,ds){showToast('Downloading '+r.length+' files...','info');r.forEach(function(s,i){setTimeout(function(){getSlotBlob(s,function(b){if(b){var u=URL.createObjectURL(b);var a=document.createElement('a');a.href=u;a.download=s.type+'_'+ds+'.'+getExt();document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(u);}});},i*500);});}
 function removeSlot(id){var i=state.slots.findIndex(function(s){return s.id===id;});if(i===-1)return;if(state.slots[i].element)state.slots[i].element.remove();state.slots.splice(i,1);updateStats();showToast('Removed','success');}
