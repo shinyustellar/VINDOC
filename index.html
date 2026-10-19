@@ -1986,6 +1986,35 @@ function drawSelectionUI(ctx,s){if(s.type==='arrow'){ctx.save();ctx.strokeStyle=
 function hitTestShape(s,x,y){var q=_unrot(s,x,y);var b=getShapeBounds(s);var p=Math.max((s.lineWidth||2)/2+4,8);if(s.type==='text')return q.x>=b.left-p&&q.x<=b.right+p&&q.y>=b.top-p&&q.y<=b.bottom+p;if(s.type==='rect')return q.x>=b.left-p&&q.x<=b.right+p&&q.y>=b.top-p&&q.y<=b.bottom+p;if(s.type==='oval'){var cx=(b.left+b.right)/2,cy=(b.top+b.bottom)/2;var rx=Math.max(1,(b.right-b.left)/2),ry=Math.max(1,(b.bottom-b.top)/2);var dx=(q.x-cx)/(rx+p),dy=(q.y-cy)/(ry+p);return dx*dx+dy*dy<=1;}if(s.type==='arrow')return ptLineDist(x,y,s.x1,s.y1,s.x2,s.y2)<=p;return false;}
 function hitTestHandle(s,x,y){if(s.type==='arrow'){if(Math.hypot(x-s.x2,y-s.y2)<=18)return 'p2';if(Math.hypot(x-s.x1,y-s.y1)<=16)return 'p1';return null;}var b=getShapeBounds(s);var q=_unrot(s,x,y);var cx=(b.left+b.right)/2,cy=(b.top+b.bottom)/2;if(Math.hypot(q.x-cx,q.y-(b.top-42))<=16)return 'rot';var hs=16;if(Math.abs(q.x-(b.left-10))<=hs&&Math.abs(q.y-(b.top-10))<=hs)return 'tl';if(Math.abs(q.x-(b.right+10))<=hs&&Math.abs(q.y-(b.top-10))<=hs)return 'tr';if(Math.abs(q.x-(b.left-10))<=hs&&Math.abs(q.y-(b.bottom+10))<=hs)return 'bl';if(Math.abs(q.x-(b.right+10))<=hs&&Math.abs(q.y-(b.bottom+10))<=hs)return 'br';if(Math.abs(q.x-cx)<=hs&&Math.abs(q.y-(b.top-10))<=hs)return 't';if(Math.abs(q.x-cx)<=hs&&Math.abs(q.y-(b.bottom+10))<=hs)return 'b';if(s.type!=='text'){if(Math.abs(q.x-(b.left-10))<=hs&&Math.abs(q.y-cy)<=hs)return 'l';if(Math.abs(q.x-(b.right+10))<=hs&&Math.abs(q.y-cy)<=hs)return 'r';}return null;}
 function resizeShape(s,h,mx,my,o){if(h==='p1'||h==='p2'){if(h==='p1'){s.x1=mx;s.y1=my;}else{s.x2=mx;s.y2=my;}var dx=s.x2-s.x1,dy=s.y2-s.y1;if(dx*dx+dy*dy<64){if(h==='p1'){s.x1=o.x1;s.y1=o.y1;}else{s.x2=o.x2;s.y2=o.y2;}}return;}var q=_unrot(s,mx,my);mx=q.x;my=q.y;var b=getShapeBounds(o);var nL=b.left,nT=b.top,nR=b.right,nB=b.bottom,m=6;if(h.indexOf('l')>=0)nL=Math.min(mx,nR-m);if(h.indexOf('r')>=0)nR=Math.max(mx,nL+m);if(h.indexOf('t')>=0)nT=Math.min(my,nB-m);if(h.indexOf('b')>=0)nB=Math.max(my,nT+m);if(s.rot){var rr=((s.rot%360)*Math.PI/180);var ocx=(b.left+b.right)/2,ocy=(b.top+b.bottom)/2;var ncx=(nL+nR)/2,ncy=(nT+nB)/2;var cdx=ncx-ocx,cdy=ncy-ocy;var co=Math.cos(rr),si=Math.sin(rr);var tx=cdx*co-cdy*si-cdx,ty=cdx*si+cdy*co-cdy;nL+=tx;nR+=tx;nT+=ty;nB+=ty;}if(o.x1<=o.x2){s.x1=nL;s.x2=nR;}else{s.x1=nR;s.x2=nL;}if(o.y1<=o.y2){s.y1=nT;s.y2=nB;}else{s.y1=nB;s.y2=nT;}}
+<script>
+/* ===== VINDOC DIAG: PPTX check — DELETE THIS BLOCK AFTER TESTING ===== */
+(function(){
+  function info(){
+    try{
+      return 'VINDOC PPTX CHECK\n\n'+
+        'openPptxModal: '+(typeof openPptxModal)+'\n'+
+        'generatePPTX: '+(typeof generatePPTX)+'\n'+
+        'PPTX library: '+(typeof PptxGenJS==='function'?'LOADED':'NOT LOADED')+'\n'+
+        'photo list element: '+(document.getElementById('pptxPhotoList')?'OK':'MISSING')+'\n'+
+        'job open: '+((typeof state!=='undefined'&&state&&state.currentJob)?(state.currentJob.title||'yes'):'NONE');
+    }catch(e){ return 'VINDOC PPTX CHECK\n\ninfo error: '+e.message; }
+  }
+  window.addEventListener('error',function(e){
+    var m=String(e.message||'');
+    if(/pptx/i.test(m))alert('PPTX CLICK ERROR:\n'+m);
+    else console.log('VINDOC DIAG (other error): '+m);
+  });
+  window.addEventListener('unhandledrejection',function(e){
+    var r=e&&e.reason; var m=(r&&r.reason)?r.message:String(r);
+    alert('PPTX BACKGROUND ERROR:\n'+m);
+  });
+  var _o=window.openPptxModal;
+  if(typeof _o==='function'){ window.openPptxModal=function(){ try{ return _o.apply(this,arguments); }catch(e){ alert('ERROR opening PPTX window:\n'+e.message); } }; }
+  var _g=window.generatePPTX;
+  if(typeof _g==='function'){ window.generatePPTX=function(){ try{ return _g.apply(this,arguments); }catch(e){ alert('ERROR generating PPTX:\n'+e.message); } }; }
+  setTimeout(function(){ alert(info()); },800);
+})();
+</script>
 </script>
 </body>
 </html>
