@@ -1883,28 +1883,25 @@ function updatePptxCount(){
   if(sl)sl.textContent=_pptxTickCount;
 }
 function generatePPTX(){
-  /* LOUD DIAGNOSTIC v2 - same features + step popups + auto-fallback */
+  /* v2 CLEAN: tick order + auto title PLATE - PARTS + safe fallback + visible errors */
   try{
-    if(typeof PptxGenJS==='undefined'){alert('PPTX ERROR A: PowerPoint library NOT loaded.');showToast('PPTX library not loaded','error');return;}
+    if(typeof PptxGenJS==='undefined'){showToast('PPTX library not loaded','error');return;}
     var boxes=Array.prototype.slice.call(document.querySelectorAll('#pptxPhotoList input[type="checkbox"]'));
     var ticked=boxes.filter(function(cb){return cb.checked;});
     if(ticked.length===0){showToast('Tick at least one photo','error');return;}
-    /* ORDER = tick order (marker numbers) - with fallback if list missing/empty */
+    /* ORDER = tick order (marker numbers), fallback = card order */
     var _tn=(typeof _pptxTickNo!=='undefined')?_pptxTickNo:null;
     var entries=[];
     if(_tn){for(var pid in _tn){entries.push({pid:parseInt(pid,10),no:_tn[pid]});}}
     entries.sort(function(a,b){return a.no-b.no;});
     var ids=entries.map(function(e){return e.pid;});
-    if(ids.length===0){
-      ids=ticked.map(function(cb){return parseInt(cb.dataset.pid,10);});
-      alert('PPTX NOTE: tick-order list '+( _tn?'was empty':'not found')+' - using photo-card order instead ('+ids.length+' photo(s)).');
-    }
+    if(ids.length===0){ids=ticked.map(function(cb){return parseInt(cb.dataset.pid,10);});console.log('VINDOC PPTX: tick-order list not available, using card order');}
     var photoSlots=[];
     ids.forEach(function(pid){
       var s=state.slots.find(function(x){return x.id===pid;});
       if(s)photoSlots.push(serializeSlot(s));
     });
-    if(photoSlots.length===0){alert('PPTX ERROR B: ticked photos not found in the open job.');return;}
+    if(photoSlots.length===0){showToast('No photos selected','error');return;}
     closeModal('pptxModal');
     /* auto title: PLATE - PARTS */
     var cust=state.currentJob.customerId?(_cachedCustomers||[]).find(function(c){return c.id===state.currentJob.customerId;}):null;
@@ -1915,11 +1912,10 @@ function generatePPTX(){
     else if(plate)autoTitle=plate;
     else if(parts)autoTitle=parts;
     autoTitle=autoTitle.toUpperCase();
-    alert('PPTX STEP 1 of 3 OK: '+photoSlots.length+' photo(s), title "'+(autoTitle||state.currentJob.title||'Report')+'". Preparing images...');
     Promise.all(photoSlots.map(function(sd){return getAnnotatedImageData(sd);})).then(function(annotatedImages){
       try{
         var ok=0;for(var q=0;q<annotatedImages.length;q++)if(annotatedImages[q])ok++;
-        if(ok===0){alert('PPTX ERROR C: photos came out EMPTY (image data missing).');return;}
+        if(ok===0){showToast('PPTX failed: photos came out empty','error');return;}
         var pptx=new PptxGenJS();
         pptx.defineLayout({name:'WIDE',width:13.33,height:7.5});
         pptx.layout='WIDE';
@@ -1936,14 +1932,12 @@ function generatePPTX(){
           if(img1){s.addImage({data:img1,x:0.3,y:imgY,w:6.1,h:imgH,sizing:{type:'contain',w:6.1,h:imgH}});}
           if(annotatedImages[i+1]){s.addImage({data:annotatedImages[i+1],x:6.9,y:imgY,w:6.1,h:imgH,sizing:{type:'contain',w:6.1,h:imgH}});}
         }
-        alert('PPTX STEP 2 of 3 OK: slides built ('+ok+' photo(s)). Writing the file, please wait...');
         var wp=pptx.writeFile({fileName:(autoTitle||state.currentJob.title||'Report')+'.pptx'});
-        var done=function(){alert('PPTX STEP 3 of 3 DONE! File sent to the browser - check the Downloads folder.');showToast('PPTX generated — '+autoTitle,'success');};
-        var fail=function(er){alert('PPTX ERROR E (writing the file): '+(er&&er.message?er.message:String(er)));};
-        if(wp&&wp.then)wp.then(done).catch(fail);else done();
-      }catch(e){alert('PPTX ERROR D (building slides): '+(e&&e.message?e.message:String(e)));}
-    }).catch(function(er){alert('PPTX ERROR C (loading photos): '+(er&&er.message?er.message:String(er)));});
-  }catch(e){alert('PPTX ERROR B (preparing photos): '+(e&&e.message?e.message:String(e)));}
+        if(wp&&wp.then)wp.then(function(){showToast('PPTX generated — '+autoTitle,'success');},function(er){showToast('PPTX failed: '+(er&&er.message?er.message:'write error'),'error');});
+        else showToast('PPTX generated — '+autoTitle,'success');
+      }catch(e){showToast('PPTX failed (slides): '+(e&&e.message?e.message:String(e)),'error');}
+    }).catch(function(er){showToast('PPTX failed (photos): '+(er&&er.message?er.message:String(er)),'error');});
+  }catch(e){showToast('PPTX failed: '+(e&&e.message?e.message:String(e)),'error');}
 }
 function updateStats(){var ld=state.slots.filter(function(s){return s.originalImage;}).length;var vS=state.slots.filter(function(s){return s.type==='mileage'||s.type==='rear_view'||s.type==='front_view'||s.type==='vin_plate';});var dS=state.slots.filter(function(s){return s.type.indexOf('defect_')===0;});var pS=state.slots.filter(function(s){return s.type.indexOf('parts_')===0;});var vL=vS.filter(function(s){return s.originalImage;}).length;var dL=dS.filter(function(s){return s.originalImage;}).length;var pL=pS.filter(function(s){return s.originalImage;}).length;var el;if((el=document.getElementById('count-vehicle')))el.textContent=vL+'/'+vS.length;if((el=document.getElementById('count-defect')))el.textContent=dL+'/'+dS.length;if((el=document.getElementById('count-parts')))el.textContent=pL+'/'+pS.length;if((el=document.getElementById('photoCount')))el.textContent=ld;if((el=document.getElementById('floatCount')))el.innerHTML=ld+' <small>loaded</small>';}
 function toggleCompact(){document.body.classList.toggle('compact');var b=document.getElementById('compactToggle');var a=document.body.classList.contains('compact');if(b){b.classList.toggle('active',a);b.innerHTML=a?'<i class="fas fa-expand-alt"></i> Full View':'<i class="fas fa-compress-alt"></i> Compact';}}
@@ -1998,6 +1992,12 @@ function drawSelectionUI(ctx,s){if(s.type==='arrow'){ctx.save();ctx.strokeStyle=
 function hitTestShape(s,x,y){var q=_unrot(s,x,y);var b=getShapeBounds(s);var p=Math.max((s.lineWidth||2)/2+4,8);if(s.type==='text')return q.x>=b.left-p&&q.x<=b.right+p&&q.y>=b.top-p&&q.y<=b.bottom+p;if(s.type==='rect')return q.x>=b.left-p&&q.x<=b.right+p&&q.y>=b.top-p&&q.y<=b.bottom+p;if(s.type==='oval'){var cx=(b.left+b.right)/2,cy=(b.top+b.bottom)/2;var rx=Math.max(1,(b.right-b.left)/2),ry=Math.max(1,(b.bottom-b.top)/2);var dx=(q.x-cx)/(rx+p),dy=(q.y-cy)/(ry+p);return dx*dx+dy*dy<=1;}if(s.type==='arrow')return ptLineDist(x,y,s.x1,s.y1,s.x2,s.y2)<=p;return false;}
 function hitTestHandle(s,x,y){if(s.type==='arrow'){if(Math.hypot(x-s.x2,y-s.y2)<=18)return 'p2';if(Math.hypot(x-s.x1,y-s.y1)<=16)return 'p1';return null;}var b=getShapeBounds(s);var q=_unrot(s,x,y);var cx=(b.left+b.right)/2,cy=(b.top+b.bottom)/2;if(Math.hypot(q.x-cx,q.y-(b.top-42))<=16)return 'rot';var hs=16;if(Math.abs(q.x-(b.left-10))<=hs&&Math.abs(q.y-(b.top-10))<=hs)return 'tl';if(Math.abs(q.x-(b.right+10))<=hs&&Math.abs(q.y-(b.top-10))<=hs)return 'tr';if(Math.abs(q.x-(b.left-10))<=hs&&Math.abs(q.y-(b.bottom+10))<=hs)return 'bl';if(Math.abs(q.x-(b.right+10))<=hs&&Math.abs(q.y-(b.bottom+10))<=hs)return 'br';if(Math.abs(q.x-cx)<=hs&&Math.abs(q.y-(b.top-10))<=hs)return 't';if(Math.abs(q.x-cx)<=hs&&Math.abs(q.y-(b.bottom+10))<=hs)return 'b';if(s.type!=='text'){if(Math.abs(q.x-(b.left-10))<=hs&&Math.abs(q.y-cy)<=hs)return 'l';if(Math.abs(q.x-(b.right+10))<=hs&&Math.abs(q.y-cy)<=hs)return 'r';}return null;}
 function resizeShape(s,h,mx,my,o){if(h==='p1'||h==='p2'){if(h==='p1'){s.x1=mx;s.y1=my;}else{s.x2=mx;s.y2=my;}var dx=s.x2-s.x1,dy=s.y2-s.y1;if(dx*dx+dy*dy<64){if(h==='p1'){s.x1=o.x1;s.y1=o.y1;}else{s.x2=o.x2;s.y2=o.y2;}}return;}var q=_unrot(s,mx,my);mx=q.x;my=q.y;var b=getShapeBounds(o);var nL=b.left,nT=b.top,nR=b.right,nB=b.bottom,m=6;if(h.indexOf('l')>=0)nL=Math.min(mx,nR-m);if(h.indexOf('r')>=0)nR=Math.max(mx,nL+m);if(h.indexOf('t')>=0)nT=Math.min(my,nB-m);if(h.indexOf('b')>=0)nB=Math.max(my,nT+m);if(s.rot){var rr=((s.rot%360)*Math.PI/180);var ocx=(b.left+b.right)/2,ocy=(b.top+b.bottom)/2;var ncx=(nL+nR)/2,ncy=(nT+nB)/2;var cdx=ncx-ocx,cdy=ncy-ocy;var co=Math.cos(rr),si=Math.sin(rr);var tx=cdx*co-cdy*si-cdx,ty=cdx*si+cdy*co-cdy;nL+=tx;nR+=tx;nT+=ty;nB+=ty;}if(o.x1<=o.x2){s.x1=nL;s.x2=nR;}else{s.x1=nR;s.x2=nL;}if(o.y1<=o.y2){s.y1=nT;s.y2=nB;}else{s.y1=nB;s.y2=nT;}}
+<script>
+/* ===== VINDOC PATCH: missing PPTX photo baker (getAnnotatedImageData) ===== */
+if(typeof getAnnotatedImageData==='undefined'){
+window.getAnnotatedImageData=function(sd){return new Promise(function(resolve){if(!sd.imageData){resolve(null);return;}var img=new Image();img.onload=function(){var c=document.createElement('canvas');c.width=img.width;c.height=img.height;var ctx=c.getContext('2d');ctx.drawImage(img,0,0);var md=Math.min(c.width,c.height);var fp=Math.max(20,((sd.fontSize||48)/500)*md);ctx.font='800 '+fp+'px \'Hanken Grotesk\',sans-serif';ctx.shadowColor='rgba(0,0,0,0.8)';ctx.shadowBlur=fp*0.15;ctx.shadowOffsetY=fp*0.05;var px=fp*0.2,py=fp*0.2;if(sd.showLabel&&sd.labelText){ctx.textBaseline='top';ctx.fillStyle='#fff';ctx.fillText(String(sd.labelText).trim().toUpperCase(),px,py);}if(sd.showDate){var d=sd.customDate?new Date(sd.customDate):new Date();var ds=(typeof formatDateStamp==='function')?formatDateStamp(d):(String(d.getDate()).padStart(2,'0')+'.'+String(d.getMonth()+1).padStart(2,'0')+'.'+d.getFullYear());var m=ctx.measureText(ds);ctx.textBaseline='bottom';ctx.fillStyle='#fff';ctx.fillText(ds,c.width-m.width-px,c.height-py);}resolve(c.toDataURL('image/jpeg',0.6));};img.onerror=function(){resolve(null);};img.src=sd.imageData;});};
+}
+</script>
 </script>
 </body>
 </html>
