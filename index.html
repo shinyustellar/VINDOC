@@ -1882,7 +1882,8 @@ function updatePptxCount(){
   if(sel)sel.textContent=_pptxTickCount;
   if(sl)sl.textContent=_pptxTickCount;
 }
-function generatePPTX(){
+function getAnnotatedImageData(sd){return new Promise(function(resolve){if(!sd.imageData){resolve(null);return;}var img=new Image();img.onload=function(){var c=document.createElement('canvas');c.width=img.width;c.height=img.height;var ctx=c.getContext('2d');ctx.drawImage(img,0,0);var md=Math.min(c.width,c.height);var fp=Math.max(20,((sd.fontSize||48)/500)*md);ctx.font='800 '+fp+'px \'Hanken Grotesk\',sans-serif';ctx.shadowColor='rgba(0,0,0,0.8)';ctx.shadowBlur=fp*0.15;ctx.shadowOffsetY=fp*0.05;var px=fp*0.2,py=fp*0.2;if(sd.showLabel&&sd.labelText){ctx.textBaseline='top';ctx.fillStyle='#fff';ctx.fillText(sd.labelText.trim().toUpperCase(),px,py);}if(sd.showDate){var d=sd.customDate?new Date(sd.customDate):new Date();var ds=(typeof formatDateStamp==='function')?formatDateStamp(d):(String(d.getDate()).padStart(2,'0')+'.'+String(d.getMonth()+1).padStart(2,'0')+'.'+d.getFullYear());var m=ctx.measureText(ds);ctx.textBaseline='bottom';ctx.fillStyle='#fff';ctx.fillText(ds,c.width-m.width-px,c.height-py);}resolve(c.toDataURL('image/jpeg',0.6));};img.onerror=function(){resolve(null);};img.src=sd.imageData;});}
+  function generatePPTX(){
   /* v2 CLEAN: tick order + auto title PLATE - PARTS + safe fallback + visible errors */
   try{
     if(typeof PptxGenJS==='undefined'){showToast('PPTX library not loaded','error');return;}
