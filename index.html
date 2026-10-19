@@ -1883,55 +1883,67 @@ function updatePptxCount(){
   if(sl)sl.textContent=_pptxTickCount;
 }
 function generatePPTX(){
-  if(typeof PptxGenJS==='undefined'){showToast('PPTX library not loaded','error');return;}
-  var boxes=Array.prototype.slice.call(document.querySelectorAll('#pptxPhotoList input[type="checkbox"]'));
-  var ticked=boxes.filter(function(cb){return cb.checked;});
-  if(ticked.length===0){showToast('Tick at least one photo','error');return;}
-  /* ORDER = tick order (marker numbers) */
-  var entries=[];
-  for(var pid in _pptxTickNo){entries.push({pid:parseInt(pid,10),no:_pptxTickNo[pid]});}
-  entries.sort(function(a,b){return a.no-b.no;});
-  var ids=entries.map(function(e){return e.pid;});
-  var photoSlots=[];
-  ids.forEach(function(pid){
-    var s=state.slots.find(function(x){return x.id===pid;});
-    if(s)photoSlots.push(serializeSlot(s));
-  });
-  if(photoSlots.length===0){showToast('No photos selected','error');return;}
-  closeModal('pptxModal');
-
-  /* auto title: PLATE - PARTS */
-  var cust=state.currentJob.customerId?(_cachedCustomers||[]).find(function(c){return c.id===state.currentJob.customerId;}):null;
-  var plate=(cust&&cust.vehiclePlate)?cust.vehiclePlate.trim():'';
-  var parts=(state.currentJob.parts||'').trim();
-  var autoTitle='';
-  if(plate&&parts)autoTitle=plate+' - '+parts;
-  else if(plate)autoTitle=plate;
-  else if(parts)autoTitle=parts;
-  autoTitle=autoTitle.toUpperCase();
-
-  Promise.all(photoSlots.map(function(sd){return getAnnotatedImageData(sd);})).then(function(annotatedImages){
-    var pptx=new PptxGenJS();
-    pptx.defineLayout({name:'WIDE',width:13.33,height:7.5});
-    pptx.layout='WIDE';
-    for(var i=0;i<annotatedImages.length;i+=2){
-      var s=pptx.addSlide();
-      s.background={color:'FFFFFF'};
-      if(i===0&&autoTitle){
-        /* FIRST photo slide only — title on top, NOT bold, Arial 32 */
-        s.addText(autoTitle,{x:0,y:0.2,w:'100%',h:0.8,align:'center',fontSize:32,color:'000000',bold:false,fontFace:'Arial'});
-        var imgY=1.1,imgH=5.7;
-      }else{
-        /* all other slides — 2 images, full size, nothing else */
-        var imgY=0.4,imgH=6.7;
-      }
-      var img1=annotatedImages[i];
-      if(img1){s.addImage({data:img1,x:0.3,y:imgY,w:6.1,h:imgH,sizing:{type:'contain',w:6.1,h:imgH}});}
-      if(annotatedImages[i+1]){s.addImage({data:annotatedImages[i+1],x:6.9,y:imgY,w:6.1,h:imgH,sizing:{type:'contain',w:6.1,h:imgH}});}
+  /* LOUD DIAGNOSTIC v2 - same features + step popups + auto-fallback */
+  try{
+    if(typeof PptxGenJS==='undefined'){alert('PPTX ERROR A: PowerPoint library NOT loaded.');showToast('PPTX library not loaded','error');return;}
+    var boxes=Array.prototype.slice.call(document.querySelectorAll('#pptxPhotoList input[type="checkbox"]'));
+    var ticked=boxes.filter(function(cb){return cb.checked;});
+    if(ticked.length===0){showToast('Tick at least one photo','error');return;}
+    /* ORDER = tick order (marker numbers) - with fallback if list missing/empty */
+    var _tn=(typeof _pptxTickNo!=='undefined')?_pptxTickNo:null;
+    var entries=[];
+    if(_tn){for(var pid in _tn){entries.push({pid:parseInt(pid,10),no:_tn[pid]});}}
+    entries.sort(function(a,b){return a.no-b.no;});
+    var ids=entries.map(function(e){return e.pid;});
+    if(ids.length===0){
+      ids=ticked.map(function(cb){return parseInt(cb.dataset.pid,10);});
+      alert('PPTX NOTE: tick-order list '+( _tn?'was empty':'not found')+' - using photo-card order instead ('+ids.length+' photo(s)).');
     }
-    pptx.writeFile({fileName:(autoTitle||state.currentJob.title||'Report')+'.pptx'});
-    showToast('PPTX generated — '+autoTitle,'success');
-  });
+    var photoSlots=[];
+    ids.forEach(function(pid){
+      var s=state.slots.find(function(x){return x.id===pid;});
+      if(s)photoSlots.push(serializeSlot(s));
+    });
+    if(photoSlots.length===0){alert('PPTX ERROR B: ticked photos not found in the open job.');return;}
+    closeModal('pptxModal');
+    /* auto title: PLATE - PARTS */
+    var cust=state.currentJob.customerId?(_cachedCustomers||[]).find(function(c){return c.id===state.currentJob.customerId;}):null;
+    var plate=(cust&&cust.vehiclePlate)?cust.vehiclePlate.trim():'';
+    var parts=(state.currentJob.parts||'').trim();
+    var autoTitle='';
+    if(plate&&parts)autoTitle=plate+' - '+parts;
+    else if(plate)autoTitle=plate;
+    else if(parts)autoTitle=parts;
+    autoTitle=autoTitle.toUpperCase();
+    alert('PPTX STEP 1 of 3 OK: '+photoSlots.length+' photo(s), title "'+(autoTitle||state.currentJob.title||'Report')+'". Preparing images...');
+    Promise.all(photoSlots.map(function(sd){return getAnnotatedImageData(sd);})).then(function(annotatedImages){
+      try{
+        var ok=0;for(var q=0;q<annotatedImages.length;q++)if(annotatedImages[q])ok++;
+        if(ok===0){alert('PPTX ERROR C: photos came out EMPTY (image data missing).');return;}
+        var pptx=new PptxGenJS();
+        pptx.defineLayout({name:'WIDE',width:13.33,height:7.5});
+        pptx.layout='WIDE';
+        for(var i=0;i<annotatedImages.length;i+=2){
+          var s=pptx.addSlide();
+          s.background={color:'FFFFFF'};
+          if(i===0&&autoTitle){
+            s.addText(autoTitle,{x:0,y:0.2,w:'100%',h:0.8,align:'center',fontSize:32,color:'000000',bold:false,fontFace:'Arial'});
+            var imgY=1.1,imgH=5.7;
+          }else{
+            var imgY=0.4,imgH=6.7;
+          }
+          var img1=annotatedImages[i];
+          if(img1){s.addImage({data:img1,x:0.3,y:imgY,w:6.1,h:imgH,sizing:{type:'contain',w:6.1,h:imgH}});}
+          if(annotatedImages[i+1]){s.addImage({data:annotatedImages[i+1],x:6.9,y:imgY,w:6.1,h:imgH,sizing:{type:'contain',w:6.1,h:imgH}});}
+        }
+        alert('PPTX STEP 2 of 3 OK: slides built ('+ok+' photo(s)). Writing the file, please wait...');
+        var wp=pptx.writeFile({fileName:(autoTitle||state.currentJob.title||'Report')+'.pptx'});
+        var done=function(){alert('PPTX STEP 3 of 3 DONE! File sent to the browser - check the Downloads folder.');showToast('PPTX generated — '+autoTitle,'success');};
+        var fail=function(er){alert('PPTX ERROR E (writing the file): '+(er&&er.message?er.message:String(er)));};
+        if(wp&&wp.then)wp.then(done).catch(fail);else done();
+      }catch(e){alert('PPTX ERROR D (building slides): '+(e&&e.message?e.message:String(e)));}
+    }).catch(function(er){alert('PPTX ERROR C (loading photos): '+(er&&er.message?er.message:String(er)));});
+  }catch(e){alert('PPTX ERROR B (preparing photos): '+(e&&e.message?e.message:String(e)));}
 }
 function updateStats(){var ld=state.slots.filter(function(s){return s.originalImage;}).length;var vS=state.slots.filter(function(s){return s.type==='mileage'||s.type==='rear_view'||s.type==='front_view'||s.type==='vin_plate';});var dS=state.slots.filter(function(s){return s.type.indexOf('defect_')===0;});var pS=state.slots.filter(function(s){return s.type.indexOf('parts_')===0;});var vL=vS.filter(function(s){return s.originalImage;}).length;var dL=dS.filter(function(s){return s.originalImage;}).length;var pL=pS.filter(function(s){return s.originalImage;}).length;var el;if((el=document.getElementById('count-vehicle')))el.textContent=vL+'/'+vS.length;if((el=document.getElementById('count-defect')))el.textContent=dL+'/'+dS.length;if((el=document.getElementById('count-parts')))el.textContent=pL+'/'+pS.length;if((el=document.getElementById('photoCount')))el.textContent=ld;if((el=document.getElementById('floatCount')))el.innerHTML=ld+' <small>loaded</small>';}
 function toggleCompact(){document.body.classList.toggle('compact');var b=document.getElementById('compactToggle');var a=document.body.classList.contains('compact');if(b){b.classList.toggle('active',a);b.innerHTML=a?'<i class="fas fa-expand-alt"></i> Full View':'<i class="fas fa-compress-alt"></i> Compact';}}
