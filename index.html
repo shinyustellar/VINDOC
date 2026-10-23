@@ -1918,6 +1918,39 @@ function getAnnotatedImageData(sd){return new Promise(function(resolve){if(!sd.i
     alert('SAVE ERROR D: '+(e&&e.message?e.message:String(e)));
   }
 }
+  function saveJobToDB(silent){
+  /* CLEAN - auto-save on click; alerts only on real failures */
+  try{
+    if(!state.currentJob){showToast('No job open','error');return;}
+    if(!state.currentJob.id){alert('SAVE FAILED: this job has no cloud ID.');return;}
+    if(typeof serializeSlot!=='function'){alert('SAVE FAILED: serializeSlot is not defined.');return;}
+    var btn=document.getElementById('saveJobBtn');
+    if(btn){btn.disabled=true;btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Saving...';}
+    var sd=state.slots.map(serializeSlot);
+    var hp=sd.filter(function(x){return x.imageData;}).length;
+    if(state.currentJob.status==='pending'&&hp>0)state.currentJob.status='in_progress';
+    var jr=fs.collection('jobs').doc(state.currentJob.id);
+    jr.set(state.currentJob,{merge:true}).then(function(){
+      return jr.collection('slots').get();
+    }).then(function(snap){
+      var b=fs.batch();
+      snap.docs.forEach(function(d){b.delete(d.ref);});
+      sd.forEach(function(x){b.set(jr.collection('slots').doc(x.type),x);});
+      return b.commit();
+    }).then(function(){
+      if(btn){btn.disabled=false;btn.innerHTML='<i class="fas fa-save"></i> Save Job';}
+      if(!silent)showToast('Job saved to cloud','success');
+    }).catch(function(er){
+      if(btn){btn.disabled=false;btn.innerHTML='<i class="fas fa-save"></i> Save Job';}
+      alert('Save failed: '+(er&&er.message?er.message:String(er)));
+      showToast('Save failed: '+(er&&er.message?er.message:'failed'),'error');
+    });
+  }catch(e){
+    var b2=document.getElementById('saveJobBtn');
+    if(b2){b2.disabled=false;b2.innerHTML='<i class="fas fa-save"></i> Save Job';}
+    alert('Save failed: '+(e&&e.message?e.message:String(e)));
+  }
+}
   function generatePPTX(){
   /* v2 CLEAN: tick order + auto title PLATE - PARTS + safe fallback + visible errors */
   try{
