@@ -1883,6 +1883,41 @@ function updatePptxCount(){
   if(sl)sl.textContent=_pptxTickCount;
 }
 function getAnnotatedImageData(sd){return new Promise(function(resolve){if(!sd.imageData){resolve(null);return;}var img=new Image();img.onload=function(){var c=document.createElement('canvas');c.width=img.width;c.height=img.height;var ctx=c.getContext('2d');ctx.drawImage(img,0,0);var md=Math.min(c.width,c.height);var fp=Math.max(20,((sd.fontSize||48)/500)*md);ctx.font='800 '+fp+'px \'Hanken Grotesk\',sans-serif';ctx.shadowColor='rgba(0,0,0,0.8)';ctx.shadowBlur=fp*0.15;ctx.shadowOffsetY=fp*0.05;var px=fp*0.2,py=fp*0.2;if(sd.showLabel&&sd.labelText){ctx.textBaseline='top';ctx.fillStyle='#fff';ctx.fillText(sd.labelText.trim().toUpperCase(),px,py);}if(sd.showDate){var d=sd.customDate?new Date(sd.customDate):new Date();var ds=(typeof formatDateStamp==='function')?formatDateStamp(d):(String(d.getDate()).padStart(2,'0')+'.'+String(d.getMonth()+1).padStart(2,'0')+'.'+d.getFullYear());var m=ctx.measureText(ds);ctx.textBaseline='bottom';ctx.fillStyle='#fff';ctx.fillText(ds,c.width-m.width-px,c.height-py);}resolve(c.toDataURL('image/jpeg',0.6));};img.onerror=function(){resolve(null);};img.src=sd.imageData;});}
+ function saveJobToDB(silent){
+  /* LOUD DIAGNOSTIC - same save logic + step popups + full error catch */
+  try{
+    if(!state.currentJob){showToast('No job open','error');if(!silent)alert('SAVE CHECK: no job is open. Open a job first, then press Save.');return;}
+    if(!state.currentJob.id){alert('SAVE ERROR A: this job has no cloud ID. Tell me this exact message.');return;}
+    if(typeof serializeSlot!=='function'){alert('SAVE ERROR B: serializeSlot is not defined (another missing function). Tell me this exact message.');return;}
+    var btn=document.getElementById('saveJobBtn');
+    if(btn){btn.disabled=true;btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Saving...';}
+    var sd=state.slots.map(serializeSlot);
+    var hp=sd.filter(function(x){return x.imageData;}).length;
+    if(state.currentJob.status==='pending'&&hp>0)state.currentJob.status='in_progress';
+    if(!silent)alert('SAVE STEP 1 of 3: uploading job card ('+hp+' photo(s) in '+sd.length+' slot(s))...');
+    var jr=fs.collection('jobs').doc(state.currentJob.id);
+    jr.set(state.currentJob,{merge:true}).then(function(){
+      if(!silent)alert('SAVE STEP 2 of 3: job card saved. Now uploading photos (big jobs take a while)...');
+      return jr.collection('slots').get();
+    }).then(function(snap){
+      var b=fs.batch();
+      snap.docs.forEach(function(d){b.delete(d.ref);});
+      sd.forEach(function(x){b.set(jr.collection('slots').doc(x.type),x);});
+      return b.commit();
+    }).then(function(){
+      if(btn){btn.disabled=false;btn.innerHTML='<i class="fas fa-save"></i> Save Job';}
+      if(!silent){alert('SAVE STEP 3 of 3 DONE: job + photos saved to cloud. Safe to quit now.');showToast('Job saved to cloud','success');}
+    }).catch(function(er){
+      if(btn){btn.disabled=false;btn.innerHTML='<i class="fas fa-save"></i> Save Job';}
+      alert('SAVE ERROR C (cloud write): '+(er&&er.message?er.message:String(er)));
+      showToast('Save failed: '+(er&&er.message?er.message:'failed'),'error');
+    });
+  }catch(e){
+    var b2=document.getElementById('saveJobBtn');
+    if(b2){b2.disabled=false;b2.innerHTML='<i class="fas fa-save"></i> Save Job';}
+    alert('SAVE ERROR D: '+(e&&e.message?e.message:String(e)));
+  }
+}
   function generatePPTX(){
   /* v2 CLEAN: tick order + auto title PLATE - PARTS + safe fallback + visible errors */
   try{
